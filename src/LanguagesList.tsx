@@ -10,6 +10,7 @@ export function LanguagesList({ languages, learn }) {
           <>
             <LanguageHeading name={language.name} />
             <LanguageSection
+              name={language.name}
               level={language.level[0]}
               words={language.level[1]}
               learn={learn}

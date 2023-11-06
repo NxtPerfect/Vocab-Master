@@ -12,3 +12,13 @@ body {
 .card {
   background-color: blue;
 }
+
+.error {
+  display: grid;
+  height: 100%;
+  width: 100%;
+}
+
+.error > * {
+  place-self: center;
+}
