@@ -22,3 +22,14 @@ body {
 .error > * {
   place-self: center;
 }
+
+.study_card {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.study_card > * {
+  margin: 1rem;
+}

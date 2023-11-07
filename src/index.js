@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "/study/:name/:level",
+    path: "/study",
     element: <Study />,
     errorElement: <ErrorPage />,
   },

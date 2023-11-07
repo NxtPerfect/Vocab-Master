@@ -10,13 +10,15 @@ function App() {
   const [languages, setLanguages] = useState([
     {
       name: "German",
-      level: ["A1", ["Das Auto", "Car"]],
-      due: ["07.07.7077", ["Die Verabshiedung", "farewell"]],
+      level: "A1",
+      words: ["Das Auto", "Car"],
+      dueWords: ["07.07.7077", ["Die Verabshiedung", "farewell"]],
     },
     {
       name: "Spanish",
-      level: ["A1", ["Madre", "Mother"]],
-      due: ["07.07.7077", ["Loco", "crazy"]],
+      level: "A1",
+      words: ["Madre", "Mother"],
+      dueWords: ["07.07.7077", ["Loco", "crazy"]],
     },
   ]);
   // const [languages, setLanguages] = useState(() => {

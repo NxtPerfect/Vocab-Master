@@ -1,7 +1,7 @@
 import { LanguageHeading } from "./LanguageHeading.tsx";
 import { LanguageSection } from "./LanguageSection.tsx";
 
-export function LanguagesList({ languages, learn }) {
+export function LanguagesList({ languages }) {
   return (
     <>
       {languages.length === 0 && "No languages"}
@@ -9,12 +9,7 @@ export function LanguagesList({ languages, learn }) {
         return (
           <>
             <LanguageHeading name={language.name} />
-            <LanguageSection
-              name={language.name}
-              level={language.level[0]}
-              words={language.level[1]}
-              learn={learn}
-            />
+            <LanguageSection language={language} />
           </>
         );
       })}
