@@ -8,10 +8,16 @@ export function LanguageSection({ language }) {
       <div className="card-top">
         <h3>{language.level}</h3>
         <span>
-          words learnt: <i>0/{language.words.length / 2}</i>(
+          words learnt: 0/{language.words.length / 2} (
           {(0 / (language.words.length / 2)) * 100}%) <br />
           last word: {language.words[0]}
         </span>
+        <div className="progress-bar">
+          <div
+            className="progress-bar-completed"
+            style={{ width: (1 / language.words.length / 2) * 100 + "%" }}
+          />
+        </div>
       </div>
       <div className="card-bottom">
         <button onClick={() => navigate("/study", { state: { language } })}>

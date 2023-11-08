@@ -8,8 +8,13 @@ export function LanguagesList({ languages }) {
       {languages.map((language) => {
         return (
           <>
-            <LanguageHeading name={language.name} />
-            <LanguageSection language={language} />
+            <hr />
+            <div className="language_list">
+              <LanguageHeading name={language.name} />
+              <div className="language_list_sections">
+                <LanguageSection language={language} />
+              </div>
+            </div>
           </>
         );
       })}

@@ -12,9 +12,11 @@ export function Study(props) {
   const language = location.state.language;
   return (
     <>
-      <h2>{language.name}</h2>
-      <h5>{language.level}</h5>
-      <StudyCard words={language.words} />
+      <div className="study">
+        <h2>{language.name}</h2>
+        <h5>{language.level}</h5>
+        <StudyCard words={language.words} />
+      </div>
     </>
   );
 }
