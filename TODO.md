@@ -1,3 +1,8 @@
+# Focus on Minimum Viable Product
+do css later, first make it functional
+focus on flashcard
+and login/register
+
 express backend
 react frontend
 react-router
