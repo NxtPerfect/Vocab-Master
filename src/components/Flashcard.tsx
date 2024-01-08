@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Word } from "../App"
+import Nav from "./Nav"
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]) // 2: true 3: true 0 1 -> guessed: nie ma
@@ -82,13 +83,14 @@ function Flashcard() {
     incrementIndex()
   }
 
-  if (words.length === 0) return "Loading words..."
+  if (words.length === 0) return (<><Nav />Loading words...</>)
   if (randomIndexes.length === 0 || words[randomIndexes[currentIndex]] === undefined) {
-    return "All words lernt"
+    return (<><Nav />All words lernt</>)
   }
   if (show === true) {
     return (
       <>
+        <Nav />
         <div>
           <div key={words[randomIndexes[currentIndex]].word_id}>{words[randomIndexes[currentIndex]].sideA} {words[randomIndexes[currentIndex]].sideB}</div>
           <button onClick={guessedCorrect}>Correct</button>
@@ -100,6 +102,7 @@ function Flashcard() {
 
   return (
     <>
+      <Nav />
       Flashcard
       {language}
       {level}

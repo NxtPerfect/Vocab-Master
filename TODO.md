@@ -20,9 +20,11 @@ react-router
     - [x] use that list of numbers to go through with index, to show that word
     - [x] words type, with english/translated field, as well as "guessed" bool
         - [x] if guessed once, set it to true, if already true, remove that number from list and go index -1
-        - [/] if guessed wrong, reset that atribute
-        - [ ] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
-- [ ] login/register page
+        - [x] if guessed wrong, reset that atribute
+        - [?] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
+- [/] login/register page
+    - [x] validate password correct
+    - [/] set cookie with username + userid
     - [ ] hash password
     - [ ] signup button
 
