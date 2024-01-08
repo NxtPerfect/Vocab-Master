@@ -18,17 +18,17 @@ export interface Word {
 
 function App() {
 
-  const [languages, setLanguages] = useState([])
-
-  useEffect(() => {
-    fetch('http://localhost:6942/api/languages')
-      .then(res => res.json())
-      .then(data => {
-        setLanguages((curr) => [...curr, data as Array<Word>])
-        console.log(languages)
-      })
-      .catch(err => console.log(err))
-  }, [])
+  // const [languages, setLanguages] = useState([])
+  //
+  // useEffect(() => {
+  //   fetch('http://localhost:6942/api/languages')
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       setLanguages((curr) => [...curr, data as Array<Word>])
+  //       console.log(languages)
+  //     })
+  //     .catch(err => console.log(err))
+  // }, [])
 
   return (
     <>

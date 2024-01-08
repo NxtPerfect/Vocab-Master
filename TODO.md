@@ -11,7 +11,7 @@ react-router
 - [/] home page
     - [/] language section
     - [ ] folding language sections
-- [/] top nav bar with name, home, login, signup, logout
+- [x] top nav bar with name, home, login, signup, logout
 - [/] flashcard page
     - [x] correct/wrong button
     - [x] reveal button
@@ -23,10 +23,12 @@ react-router
         - [x] if guessed wrong, reset that atribute
         - [?] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
 - [/] login/register page
-    - [x] validate password correct
-    - [/] set cookie with username + userid
-    - [ ] hash password
+    - [x] validate password correct in database
+    - [x] set cookie with username + userid
+    - [/] register new account
+    - [ ] regex if password, login and email are correct
     - [ ] signup button
+    - [ ] hash password
 
 # Backend
 - [ ] read words from sql database

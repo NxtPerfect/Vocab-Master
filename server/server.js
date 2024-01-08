@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import mysql from "mysql"
 import bodyParser from 'body-parser'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -17,6 +18,8 @@ const db = mysql.createConnection({
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cors())
+app.use(express.json())
 
 // TODO later, need to have this database setup first
 app.post('/api/languages', (req, res) => {
@@ -37,22 +40,31 @@ app.get('/api/german/a1', (req, res) => {
   console.log("Sent words")
 })
 
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body
-  const sql = `SELECT * FROM users WHERE username LIKE '${username}';`
+app.post('/login', (req, res) => {
+  const sql = `SELECT * FROM users WHERE username LIKE ?;`
+  const values = [
+    req.body.username
+  ]
   console.log('requesting fr')
-  console.log(sql)
-  db.query(sql, (err, data) => {
-    console.log(data)
-    if (err) {
-      res.send('Login failed')
-      return
-    }
-    if (data[0]['password'] == password) {
-      console.log("Got the login correct")
-      res.send('Login successful')
-      return data
-    }
+  db.query(sql, [values], (err, data) => {
+    if (err) return res.json('Login failed')
+    if (data.length == 0) return res.json('User doesn\'t exist')
+    console.log('got data')
+    return res.json('Success')
+  })
+})
+
+// Doesn't work just yet
+app.post('/register', (req, res) => {
+  const sql = `INSERT INTO users (id, username, password) VALUES (?);`
+  const values = [
+    req.body.username,
+    req.body.password
+  ]
+  console.log('requesting fr')
+  db.query(sql, [values], (err, data) => {
+    if (err) return res.json('Error registering')
+    return res.json('Success')
   })
 })
 
