@@ -1,5 +1,5 @@
 # Vocab master
-full stackk website for learning vocabulary in foreign languages using flashcards
+full stackk website for learning vocabulary in foreign languages using flashcards<br>
 created with ![React](https://img.shields.io/badge/react-blue?style=for-the-badge&logo=react)![Express](https://img.shields.io/badge/express-red?style=for-the-badge&logo=express)![MySql](https://img.shields.io/badge/mysql-black?style=for-the-badge&logo=mysql)
 
 ## Features
