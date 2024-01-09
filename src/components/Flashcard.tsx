@@ -1,34 +1,43 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { NavigateFunction, Params, useNavigate, useParams } from "react-router-dom"
 import { Word } from "../App"
 import Nav from "./Nav"
+import Cookies from 'js-cookie'
 
 function Flashcard() {
-  const [words, setWords] = useState<Array<Word>>([]) // 2: true 3: true 0 1 -> guessed: nie ma
+  const [words, setWords] = useState<Array<Word>>([])
   const [randomIndexes, setRandomIndexes] = useState<Array<number>>([])
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [show, setShow] = useState<boolean>(false)
   const [changedWords, setChangedWords] = useState<boolean>(false)
-  const params = useParams()
-  const language = params.language
-  const level = params.level
+  const params: Params = useParams()
+  const language: string | undefined = params.language
+  const level: string | undefined = params.level
+  const navigate: NavigateFunction = useNavigate()
 
-  // Access api
-  // and get words
+  /** Access api
+    * and get words
+    */
   useEffect(() => {
+    console.log("I run")
     fetch(`http://localhost:6942/api/german/a1`)
       .then(res => res.json())
       .then(data => {
         setWords(data)
-        setChangedWords((curr) => !curr)
+        setChangedWords(true)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        setChangedWords(true)
+      })
+
   }, [])
 
-  // Populate array with indexes of words
-  // randomize them
-  // then pick from them, to pick random word from "words"
-  // Somehow now it's undefined, and won't make it work like that
+  /** Populate array with indexes of words
+    * randomize them
+    * then pick from them, to pick random word from "words"
+    * Somehow now it's undefined, and won't make it work like that
+    */
   useEffect(() => {
     const indexes = Array.from(Array(words.length).keys())
     for (let index = 0; index < words.length; index++) {
@@ -84,13 +93,42 @@ function Flashcard() {
   }
 
   if (words.length === 0) return (<><Nav />Loading words...</>)
-  if (randomIndexes.length === 0 || words[randomIndexes[currentIndex]] === undefined) {
+  if ((randomIndexes.length === 0 || words[randomIndexes[currentIndex]] === undefined) && changedWords) {
+    // save user progress
+    // Currently this is run when we're still rendering object, which is no good
+    const progressData: Array<Object> = []
+    words.forEach(word => {
+      progressData.push({
+        user_id: Cookies.get('email'), word_id: word.word_id, language: language, level: level
+      })
+    });
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      mode: 'cors',
+      body: JSON.stringify({ progressData })
+    }
+    fetch("http://localhost:6942/api/german/a1/save", requestOptions)
+      .then((res) => {
+        return res.json()
+      })
+      .then((data) => {
+        if (data === 'Success') {
+          navigate('/')
+          return data
+        }
+        alert('Failed to save progress')
+      })
+      .catch((err) => console.log(err))
     return (<><Nav />All words lernt</>)
   }
   if (show === true) {
     return (
       <>
         <Nav />
+        Flashcard
+        {language}
+        {level}
         <div>
           <div key={words[randomIndexes[currentIndex]].word_id}>{words[randomIndexes[currentIndex]].sideA} {words[randomIndexes[currentIndex]].sideB}</div>
           <button onClick={guessedCorrect}>Correct</button>
@@ -107,7 +145,7 @@ function Flashcard() {
       {language}
       {level}
       <div>
-        <div key={words[randomIndexes[currentIndex]].word_id}>{words[randomIndexes[currentIndex]].sideA} {words[randomIndexes[currentIndex]].sideB}</div>
+        <div key={words[randomIndexes[currentIndex]].word_id}>{words[randomIndexes[currentIndex]].sideA}</div>
         <button onClick={() => { setShow(true) }}>Haha</button>
       </div>
     </>

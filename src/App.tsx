@@ -34,7 +34,7 @@ function App() {
     <>
       <Nav />
       <main>
-        <Link to="/flashcard/german/a1" style={{ textdecoration: "none" }}>Flashcard</Link>
+        <Link to="/flashcard/german/a1" style={{ textDecoration: "none" }}>Flashcard</Link>
 
       </main>
       <footer>Footer</footer>
