@@ -99,7 +99,7 @@ function Flashcard() {
     const progressData: Array<Object> = []
     words.forEach(word => {
       progressData.push({
-        user_id: Cookies.get('email'), word_id: word.word_id, language: language, level: level
+        email: Cookies.get('email'), word_id: word.word_id, language: language, level: level
       })
     });
     const requestOptions = {
