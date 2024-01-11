@@ -25,8 +25,7 @@ react-router
         - [x] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
     - [x] max of 30 words per day
     - [x] check which ones are already learnt, don't select these
-    - [ ] back arrow, to go back to home page
-    - [ ] modal window confirmation before exiting
+    - [/] modal window confirmation before exiting
 - [/] login/register page
     - [x] validate password correct in database
     - [x] signup button
