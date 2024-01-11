@@ -9,7 +9,8 @@ react-router
 
 # Frontend
 - [/] home page
-    - [/] language section
+    - [/] more language sections
+    - [ ] footer
     - [ ] folding language sections
 - [x] top nav bar with name, home, login, signup, logout
 - [/] flashcard page
@@ -21,9 +22,11 @@ react-router
     - [x] words type, with english/translated field, as well as "guessed" bool
         - [x] if guessed once, set it to true, if already true, remove that number from list and go index -1
         - [x] if guessed wrong, reset that atribute
-        - [?] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
-    - [ ] max of 20 or 50 words per day
-    - [ ] check which ones are already learnt, don't select these
+        - [x] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
+    - [x] max of 30 words per day
+    - [x] check which ones are already learnt, don't select these
+    - [ ] back arrow, to go back to home page
+    - [ ] modal window confirmation before exiting
 - [/] login/register page
     - [x] validate password correct in database
     - [x] signup button
@@ -40,6 +43,7 @@ react-router
 # Backend
 - [x] read words from sql database
 - [x] login/register backend
-- [/] save user progress
-    - [ ] currently the fetch runs instantly after render
-    - [ ] it throws an error anyway
+- [x] save user progress
+    - [x] currently the fetch runs instantly after render
+    - [x] it throws an error anyway
+    - [x] don't show words if in user_progress
