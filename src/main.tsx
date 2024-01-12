@@ -6,6 +6,7 @@ import Error from "./Error.tsx";
 import Flashcard from "./components/Flashcard.tsx";
 import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
+import Terms from "./components/Terms.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,11 @@ const router = createBrowserRouter([
 	{
 		path: "/register",
 		element: <Register />,
+		errorElement: <Error />,
+	},
+	{
+		path: "/terms",
+		element: <Terms />,
 		errorElement: <Error />,
 	},
 ]);

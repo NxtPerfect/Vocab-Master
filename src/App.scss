@@ -1,9 +1,201 @@
+@use 'sass:color';
+
 $text: #ebf8f7;
 $background: #030a09;
 $primary: #98dcdb;
 $secondary: #2c3882;
 $accent: #6a55c6;
+$border-radius: 1svw;
+
+@mixin betterButton($width, $height, $bg, $color, $bg-alt, $color-alt) {
+  width: $width;
+  height: $height;
+  background-color: $bg;
+  color: $color;
+  border-radius: 100vw;
+  border: 0;
+  transition: color 0.1s linear, background-color 0.1s linear;
+
+  &:focus,
+  &:hover {
+    background-color: $bg-alt;
+    color: $color-alt;
+    transition: color 0.1s linear, background-color 0.1s linear;
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: color.scale($bg-alt, $lightness: 20%);
+    color: color.scale($color-alt, $lightness: 20%);
+    transition: color 0.1s linear, background-color 0.1s linear;
+  }
+}
 
 * {
   min-width: 0;
+  margin: 0;
+  background-color: $background;
+  color: $text;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+:root {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  margin: .25rem .5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+  align-content: center;
+
+  .language_section {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    background-color: $secondary;
+    padding: 1.5rem 1.2rem;
+    border-radius: $border-radius;
+
+    .link {
+      color: $primary;
+      background: $secondary;
+
+      &:hover,
+      &:focus {
+        cursor: pointer;
+        color: $accent;
+        transition: color 0.1s linear;
+      }
+
+      button {
+        @include betterButton(4rem, 2rem, $accent, $text, $primary, $background);
+      }
+    }
+
+    .language_section_top {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      background-color: $secondary;
+
+      h1 {
+        text-transform: capitalize;
+        background-color: $secondary;
+      }
+
+      button {
+        @include betterButton(1.5rem, 1.5rem, $primary, $background, $accent, $text);
+
+        &:hover>.icon,
+        &:active>.icon {
+          background-color: $accent;
+          transition: background-color 0.1s linear;
+
+          &:active>.icon {
+            background-color: color.scale($accent, $lightness: 20%);
+            transition: background-color 0.1s linear;
+
+            path {
+              color: $text;
+              transition: color 0.1s linear;
+            }
+          }
+
+          path {
+            color: $text;
+            transition: color 0.1s linear;
+          }
+        }
+
+
+        .icon {
+          background-color: $primary;
+          transition: background-color 0.1s linear;
+        }
+
+        .icon>path {
+          color: $secondary;
+          transition: color 0.1s linear;
+        }
+      }
+
+    }
+  }
+
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1.2rem .5rem;
+  margin-bottom: 3rem;
+  background-color: $primary;
+
+  * {
+    background-color: $primary;
+  }
+
+  h1 {
+    color: $secondary;
+    font-size: 2rem;
+  }
+
+  .nav_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $primary;
+
+    .link {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: $accent;
+      font-size: 1.25rem;
+
+      &:hover,
+      &:active {
+        cursor: $primary;
+        color: $secondary;
+        transition: color 0.1s linear;
+      }
+    }
+
+    .login {
+      background-color: $text;
+      color: $secondary;
+      border-radius: $border-radius;
+      padding: .25rem .5rem;
+      transition: color 0.1s linear, background-color 0.1s linear;
+
+      &:hover,
+      &:active {
+        background-color: $secondary;
+        color: $text;
+        transition: background-color 0.1s linear;
+      }
+    }
+
+    .register {
+      background-color: $secondary;
+      color: $text;
+      border-radius: $border-radius;
+      padding: .25rem .5rem;
+      transition: color 0.1s linear, background-color 0.1s linear;
+
+      &:hover,
+      &:active {
+        background-color: $text;
+        color: $secondary;
+        transition: color 0.1s linear, background-color 0.1s linear;
+      }
+    }
+  }
 }

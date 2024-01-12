@@ -1,16 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { useBlocker } from "react-router-dom";
 
-function Modal(route: string) {
-  const navigate = useNavigate();
+function Modal({ blocker }: Blocker) {
   return (
     <>
-      Please confirm
-      <button type="button" onClick={() => navigate(route)}>
-        Confirm
-      </button>
-      <button type="button" onClick={close}>
-        Confirm
-      </button>
+      <div>
+        <h2>
+          You are about to leave this website and loose all your data. Proceed?
+        </h2>
+        <div>
+          <button type="button" onClick={() => blocker.proceed()}>
+            Ok
+          </button>
+          <button type="button" onClick={() => blocker.reset()}>
+            Cancel
+          </button>
+        </div>
+      </div>
     </>
   );
 }

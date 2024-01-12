@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import {
   NavigateFunction,
   Params,
+  useBlocker,
   useNavigate,
   useParams,
 } from "react-router-dom";
 import { Word } from "../App";
 import Nav from "./Nav";
+import Modal from "./Modal";
+import Footer from "./Footer";
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]);
@@ -19,6 +22,11 @@ function Flashcard() {
   const language: string | undefined = params.language;
   const level: string | undefined = params.level;
   const navigate: NavigateFunction = useNavigate();
+  let blocker: Blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      randomIndexes.length !== 0 &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   /** Access api
    * and get words
@@ -135,6 +143,7 @@ function Flashcard() {
       <>
         <Nav />
         Loading words...
+        <Footer />
       </>
     );
   }
@@ -144,6 +153,7 @@ function Flashcard() {
       <>
         <Nav />
         All words learnt!!!
+        <Footer />
       </>
     );
   }
@@ -167,6 +177,8 @@ function Flashcard() {
             Wrong
           </button>
         </div>
+        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+        <Footer />
       </>
     );
   }
@@ -190,6 +202,8 @@ function Flashcard() {
           Haha
         </button>
       </div>
+      {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      <Footer />
     </>
   );
 }

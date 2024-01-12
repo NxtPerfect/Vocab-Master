@@ -8,12 +8,12 @@ react frontend
 react-router
 
 # Frontend
-- [/] home page
-    - [/] more language sections
-    - [ ] footer
-    - [ ] folding language sections
+- [x] home page
+    - [x] more language sections
+    - [x] footer
+    - [x] folding language sections
 - [x] top nav bar with name, home, login, signup, logout
-- [/] flashcard page
+- [x] flashcard page
     - [x] correct/wrong button
     - [x] reveal button
     - [x] pick randomly words
@@ -25,7 +25,7 @@ react-router
         - [x] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
     - [x] max of 30 words per day
     - [x] check which ones are already learnt, don't select these
-    - [/] modal window confirmation before exiting
+    - [x] modal window confirmation before exiting
 - [/] login/register page
     - [x] validate password correct in database
     - [x] signup button
@@ -46,3 +46,11 @@ react-router
     - [x] currently the fetch runs instantly after render
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
+
+# CSS
+- [ ] Home
+- [ ] Nav
+- [ ] Footer
+- [ ] Flashcard
+- [ ] Login
+- [ ] Register

@@ -1,11 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useBlocker, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Nav from "./Nav";
 import { ChangeEvent, useState } from "react";
+import Modal from "./Modal";
+import Footer from "./Footer";
 
 function Login() {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	let blocker: Blocker = useBlocker(
+		({ currentLocation, nextLocation }) =>
+			(email !== "" || password !== "") &&
+			currentLocation.pathname !== nextLocation.pathname,
+	);
 
 	const navigate = useNavigate();
 	function handleSubmit(e: HTMLFormElement) {
@@ -67,9 +74,11 @@ function Login() {
 				></input>
 				<button type="submit">Login</button>
 				<Link to={"/register"} style={{ textDecoration: "none" }}>
-					<button>Create new account</button>
+					<button type="button">Create new account</button>
 				</Link>
 			</form>
+			{blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+			<Footer />
 		</>
 	);
 }

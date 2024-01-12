@@ -21,6 +21,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/languages", (req, res) => {
+	const sql =
+		"SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level FROM words GROUP BY language ORDER BY language";
+	db.query(sql, (err, data) => {
+		if (err) return res.json(err);
+		return res.json(data);
+	});
+});
+
 app.post("/api/:language&:level", (req, res) => {
 	const { language, level } = req.params;
 	const user_id = req.body.user_id;
