@@ -7,6 +7,13 @@ $secondary: #2c3882;
 $accent: #6a55c6;
 $border-radius: 1svw;
 
+@media (prefers-reduced-motion: no-preference) {
+  :has(:target) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 3rem;
+  }
+}
+
 @mixin betterButton($width, $height, $bg, $color, $bg-alt, $color-alt) {
   width: $width;
   height: $height;
@@ -59,6 +66,7 @@ main {
     background-color: $secondary;
     padding: 1.5rem 1.2rem;
     border-radius: $border-radius;
+    width: 40svw;
 
     .link {
       color: $primary;
@@ -72,7 +80,9 @@ main {
       }
 
       button {
-        @include betterButton(4rem, 2rem, $accent, $text, $primary, $background);
+        @include betterButton(10rem, 2rem, $primary, $background, $secondary, $text);
+        font-weight: 600;
+        font-size: 1.1rem;
       }
     }
 
@@ -125,6 +135,35 @@ main {
       }
 
     }
+
+    .language_levels_wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      align-items: center;
+      width: max(100%, 8rem);
+      height: max(30svh, 8rem);
+      min-height: 2rem;
+      max-height: 40rem;
+      background-color: $accent;
+      border-radius: $border-radius;
+
+      .language_level {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        background-color: inherit;
+        height: 100%;
+
+        a,
+        p,
+        h3 {
+          background-color: inherit;
+        }
+
+      }
+    }
   }
 
 }
@@ -166,6 +205,10 @@ nav {
         color: $secondary;
         transition: color 0.1s linear;
       }
+
+      &:active {
+        color: color.scale($secondary, $lightness: 20%);
+      }
     }
 
     .login {
@@ -180,6 +223,10 @@ nav {
         background-color: $secondary;
         color: $text;
         transition: background-color 0.1s linear;
+      }
+
+      &:active {
+        background-color: color.scale($secondary, $lightness: 20%);
       }
     }
 
@@ -196,6 +243,59 @@ nav {
         color: $secondary;
         transition: color 0.1s linear, background-color 0.1s linear;
       }
+
+      &:active {
+        background-color: color.scale($text, $lightness: -10%);
+      }
     }
+  }
+}
+
+footer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  grid-template-columns: 1fr 1fr 1fr;
+  background-color: $secondary;
+  margin: 5rem 0;
+  padding: 5rem 0;
+
+  * {
+    background-color: inherit;
+  }
+
+  .footer_center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    * {
+      margin: .5rem;
+    }
+
+    .link {
+      color: color.scale($background, $lightness: 70%);
+      transition: color 0.1s linear;
+
+      &:hover,
+      &:active {
+        color: $background;
+        transition: color 0.1s linear;
+      }
+
+      &:active {
+        color: color.scale($primary, $lightness: 10%);
+        transition: color 0.1s linear;
+      }
+    }
+  }
+}
+
+// Mobile CSS
+@media screen and (max-width: 650px) {
+  * {
+    background-color: red;
   }
 }

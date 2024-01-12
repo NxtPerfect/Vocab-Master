@@ -48,8 +48,10 @@ react-router
     - [x] don't show words if in user_progress
 
 # CSS
-- [ ] Home
-- [ ] Nav
+- [/] Home
+    - [ ] when folding, it doesn't change height
+    - [ ] maybe alter the colors for every 2nd item?
+- [x] Nav
 - [ ] Footer
 - [ ] Flashcard
 - [ ] Login

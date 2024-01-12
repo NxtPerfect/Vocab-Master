@@ -1,23 +1,22 @@
 import { Link } from "react-router-dom";
 
 function Footer() {
-  return (
-    <>
-      <footer>
-        <div>
-          <h2>Vocab Master</h2>
-        </div>
-        <div>
-          <Link to="/" style={{ textDecoration: "none" }}>
-            Home
-          </Link>
-          <Link to="/terms" style={{ textDecoration: "none" }}>
-            Terms of Service
-          </Link>
-        </div>
-      </footer>
-    </>
-  );
+	return (
+		<>
+			<footer>
+				<h2>Vocab Master</h2>
+				<div className="footer_center">
+					<Link to="/" className="link" style={{ textDecoration: "none" }}>
+						Home
+					</Link>
+					<Link to="/terms" className="link" style={{ textDecoration: "none" }}>
+						Terms of Service
+					</Link>
+				</div>
+				Copyright (c) 2024 Aurora. All Rights Reserved.
+			</footer>
+		</>
+	);
 }
 
 export default Footer;
