@@ -49,10 +49,10 @@ react-router
 
 # CSS
 - [/] Home
-    - [ ] when folding, it doesn't change height
-    - [ ] maybe alter the colors for every 2nd item?
+    - [x] when folding, it doesn't change height
+    - [/] maybe alter the colors for every 2nd item?
 - [x] Nav
-- [ ] Footer
+- [x] Footer
 - [ ] Flashcard
 - [ ] Login
 - [ ] Register

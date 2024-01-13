@@ -58,7 +58,9 @@ main {
   justify-items: center;
   align-content: center;
 
-  .language_section {
+
+  .language_section,
+  .language_section:nth-of-type(2n) {
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -136,6 +138,7 @@ main {
 
     }
 
+
     .language_levels_wrapper {
       display: flex;
       flex-direction: row;
@@ -147,6 +150,7 @@ main {
       max-height: 40rem;
       background-color: $accent;
       border-radius: $border-radius;
+
 
       .language_level {
         display: flex;
@@ -166,6 +170,107 @@ main {
     }
   }
 
+  .language_section:nth-of-type(2n) {
+    background-color: $primary;
+
+
+    .language_section_top {
+      background-color: $primary;
+
+      h1 {
+        background-color: $primary;
+        color: $background;
+      }
+
+      button {
+        @include betterButton(1.5rem, 1.5rem, $secondary, $background, $accent, $text);
+
+        &:hover>.icon,
+        &:active>.icon {
+          background-color: $accent;
+          transition: background-color 0.1s linear;
+
+          &:active>.icon {
+            background-color: color.scale($accent, $lightness: 20%);
+            transition: background-color 0.1s linear;
+
+            path {
+              color: $text;
+              transition: color 0.1s linear;
+            }
+          }
+
+          path {
+            color: $text;
+            transition: color 0.1s linear;
+          }
+        }
+
+        .icon {
+          background-color: $secondary;
+        }
+
+        .icon>path {
+          color: $text;
+        }
+      }
+    }
+
+    .language_levels_wrapper {
+      background-color: $secondary;
+
+      .language_level {
+        background-color: inherit;
+
+        .link {
+          color: $text;
+          background: $secondary;
+
+          &:hover,
+          &:focus {
+            cursor: pointer;
+            color: $accent;
+            transition: color 0.1s linear;
+          }
+
+          button {
+            @include betterButton(10rem, 2rem, $accent, $text, $primary, $background);
+            font-weight: 600;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: $accent;
+  border-radius: $border-radius;
+  padding: 2rem 0;
+  margin: auto;
+  width: max(35svw, 25rem);
+  height: max(30svh, 15rem);
+
+  label {
+    background-color: inherit;
+  }
+
+  input {
+    border: 0;
+    border-radius: $border-radius;
+    background-color: $secondary;
+    padding: .5rem;
+  }
+
+  button,
+  a {
+    @include betterButton(8rem, 1.5rem, $primary, $background, $secondary, $text)
+  }
 }
 
 nav {
