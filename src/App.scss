@@ -7,6 +7,14 @@ $secondary: #2c3882;
 $accent: #6a55c6;
 $border-radius: 1svw;
 
+@media (prefers-color-scheme: light) {
+  $text: #071312;
+  $background: #f4fbfb;
+  $primary: #236764;
+  $secondary: #7e89d3;
+  $accent: #4e39ac;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :has(:target) {
     scroll-behavior: smooth;
@@ -27,14 +35,14 @@ $border-radius: 1svw;
   &:hover {
     background-color: $bg-alt;
     color: $color-alt;
-    transition: color 0.1s linear, background-color 0.1s linear;
+    // transition: color 0.1s linear, background-color 0.1s linear;
     cursor: pointer;
   }
 
   &:active {
     background-color: color.scale($bg-alt, $lightness: 20%);
     color: color.scale($color-alt, $lightness: 20%);
-    transition: color 0.1s linear, background-color 0.1s linear;
+    // transition: color 0.1s linear, background-color 0.1s linear;
   }
 }
 
@@ -69,6 +77,7 @@ main {
     padding: 1.5rem 1.2rem;
     border-radius: $border-radius;
     width: 40svw;
+    transition: color 0.1s linear;
 
     .link {
       color: $primary;
@@ -78,7 +87,7 @@ main {
       &:focus {
         cursor: pointer;
         color: $accent;
-        transition: color 0.1s linear;
+        // transition: color 0.1s linear;
       }
 
       button {
@@ -98,19 +107,21 @@ main {
       h1 {
         text-transform: capitalize;
         background-color: $secondary;
+        margin: .5rem;
       }
 
       button {
         @include betterButton(1.5rem, 1.5rem, $primary, $background, $accent, $text);
+        transition: background-color 0.1s linear;
 
         &:hover>.icon,
         &:active>.icon {
           background-color: $accent;
-          transition: background-color 0.1s linear;
+          // transition: background-color 0.1s linear;
 
           &:active>.icon {
             background-color: color.scale($accent, $lightness: 20%);
-            transition: background-color 0.1s linear;
+            // transition: background-color 0.1s linear;
 
             path {
               color: $text;
@@ -184,15 +195,16 @@ main {
 
       button {
         @include betterButton(1.5rem, 1.5rem, $secondary, $background, $accent, $text);
+        transition: background-color 0.1s linear;
 
         &:hover>.icon,
         &:active>.icon {
           background-color: $accent;
-          transition: background-color 0.1s linear;
+          // transition: background-color 0.1s linear;
 
           &:active>.icon {
             background-color: color.scale($accent, $lightness: 20%);
-            transition: background-color 0.1s linear;
+            // transition: background-color 0.1s linear;
 
             path {
               color: $text;
@@ -225,12 +237,13 @@ main {
         .link {
           color: $text;
           background: $secondary;
+          transition: background-color 0.1s linear;
 
           &:hover,
           &:focus {
             cursor: pointer;
             color: $accent;
-            transition: color 0.1s linear;
+            // transition: color 0.1s linear;
           }
 
           button {
@@ -303,12 +316,13 @@ nav {
       text-decoration: none;
       color: $accent;
       font-size: 1.25rem;
+      transition: background-color 0.1s linear;
 
       &:hover,
       &:active {
         cursor: $primary;
         color: $secondary;
-        transition: color 0.1s linear;
+        // transition: color 0.1s linear;
       }
 
       &:active {
@@ -327,7 +341,7 @@ nav {
       &:active {
         background-color: $secondary;
         color: $text;
-        transition: background-color 0.1s linear;
+        // transition: background-color 0.1s linear;
       }
 
       &:active {
@@ -346,12 +360,17 @@ nav {
       &:active {
         background-color: $text;
         color: $secondary;
-        transition: color 0.1s linear, background-color 0.1s linear;
+        // transition: color 0.1s linear, background-color 0.1s linear;
       }
 
       &:active {
         background-color: color.scale($text, $lightness: -10%);
       }
+    }
+
+    button {
+      @include betterButton(5rem, 1.5rem, $secondary, $text, $accent, $text);
+      margin: 0 1rem;
     }
   }
 }
@@ -387,12 +406,12 @@ footer {
       &:hover,
       &:active {
         color: $background;
-        transition: color 0.1s linear;
+        // transition: color 0.1s linear;
       }
 
       &:active {
         color: color.scale($primary, $lightness: 10%);
-        transition: color 0.1s linear;
+        // transition: color 0.1s linear;
       }
     }
   }

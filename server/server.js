@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.get("/api/languages", (req, res) => {
 	const sql =
-		"SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level FROM words GROUP BY language ORDER BY language";
+		"SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level, COUNT(*) as count FROM words GROUP BY language ORDER BY language";
 	db.query(sql, (err, data) => {
 		if (err) return res.json(err);
 		return res.json(data);

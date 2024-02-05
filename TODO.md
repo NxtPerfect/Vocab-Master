@@ -1,11 +1,11 @@
 # Focus on Minimum Viable Product
-do css later, first make it functional
-focus on flashcard
-and login/register
+apparently i only need transition on the normal element
+not on hover/active/focus
 
 express backend
 react frontend
 react-router
+react-query
 
 # Frontend
 - [x] home page
@@ -26,6 +26,7 @@ react-router
     - [x] max of 30 words per day
     - [x] check which ones are already learnt, don't select these
     - [x] modal window confirmation before exiting
+    - [ ] progress bar for how many words learnt -> as gradient
 - [/] login/register page
     - [x] validate password correct in database
     - [x] signup button
@@ -38,6 +39,14 @@ react-router
     - [x] return error message to show above the form, below the header
     - [x] use email for login
     - [ ] hash password
+    - [ ] animated loading circle, rotates, changes it's width
+    - [/] react query for fetches
+    - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
+    - [ ] if user prefers dark mode - css query
+    - [ ] minimal mode, where it's black/white, and has no animations
+    - [ ] as cookie save secret token from database
+    - [ ] write tests
+    ~- [ ] profile to see what takes the longest, optimize - so far nothing~
 
 # Backend
 - [x] read words from sql database
@@ -46,13 +55,16 @@ react-router
     - [x] currently the fetch runs instantly after render
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
+- [ ] add 24h timeout, before next study can be done, so that you don't spam it
 
 # CSS
-- [/] Home
+- [x] Home
     - [x] when folding, it doesn't change height
-    - [/] maybe alter the colors for every 2nd item?
+    - [x] maybe alter the colors for every 2nd item?
+    - [ ] gradient as progress bar
+    - [ ] add visible spacing between levels
 - [x] Nav
 - [x] Footer
-- [ ] Flashcard
-- [ ] Login
-- [ ] Register
+- [!] Flashcard
+- [x] Login
+- [x] Register

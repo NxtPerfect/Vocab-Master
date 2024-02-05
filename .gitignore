@@ -133,3 +133,5 @@ dist
 bun.lockb
 tsconfig.*
 vite.*
+*.odt
+*.docx
