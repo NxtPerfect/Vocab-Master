@@ -22,7 +22,7 @@ function App() {
         const temp = data.map((lang: object) => ({
           language: lang.language,
           level: lang.level.split(","),
-          count: lang.count,
+          countTotal: lang.countTotal.split(","),
         }));
         console.log(temp);
         setLanguages((curr: Array<object>) => [...curr, ...temp]);
@@ -37,16 +37,16 @@ function App() {
       <main>
         {languages.map(
           (
-            language: { language: string; level: Array<string>, count: number },
+            language: { language: string; level: Array<string>, countTotal: Array<string> },
             index: number,
-            count: number,
           ) => {
+            console.log(language.level, language.countTotal)
             return (
               <LanguageSection
                 index={index}
                 language={language.language}
                 level={language.level}
-                countTotal={language.count}
+                countTotal={language.countTotal}
                 countLearnt={0}
               />
             );

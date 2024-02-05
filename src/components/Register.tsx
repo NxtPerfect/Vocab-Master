@@ -45,7 +45,7 @@ function Register() {
       .then((data) => {
         if (data === "Success") {
           navigate("/");
-          Cookies.set("username", username, { expires: 7, samesite: "strict" });
+          Cookies.set("username", username, { expires: 7, samesite: "none", secure: true });
           return data;
         }
         console.log(data);

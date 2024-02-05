@@ -22,9 +22,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/languages", (req, res) => {
-	const sql =
-		"SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level, COUNT(*) as count FROM words GROUP BY language ORDER BY language";
-	db.query(sql, (err, data) => {
+  const sql = 
+  "SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level, GROUP_CONCAT(COUNT ORDER BY level) as countTotal FROM (SELECT language, level, COUNT(*) as COUNT FROM words GROUP BY language, level) AS subquery GROUP BY language ORDER BY language;"
+  db.query(sql, (err, data) => {
 		if (err) return res.json(err);
 		return res.json(data);
 	});
@@ -39,8 +39,6 @@ app.post("/api/:language&:level", (req, res) => {
 		if (err) return res.json(err);
 		return res.json(data);
 	});
-	console.log("Sent words");
-	console.log("\n");
 });
 
 // This needs to get user_id from the database
@@ -59,7 +57,6 @@ app.post("/api/save_progress", (req, res) => {
 					console.log(err);
 					return reject(err);
 				}
-				console.log("saved progress");
 				resolve(data);
 			});
 		});
@@ -76,11 +73,9 @@ app.post("/api/save_progress", (req, res) => {
 app.post("/login", (req, res) => {
 	const sql = "SELECT * FROM users WHERE email LIKE ?;";
 	const values = [req.body.email];
-	console.log("requesting fr");
 	db.query(sql, [values], (err, data) => {
 		if (err) return res.status(500).json("Login failed");
 		if (data.length === 0) return res.status(409).json("User doesn't exist");
-		console.log("got data");
 		return res.status(200).json({ message: "Success", user_id: data });
 	});
 });
@@ -89,14 +84,12 @@ app.post("/login", (req, res) => {
 // validate email, username and password again
 app.post("/register", (req, res) => {
 	const values = [null, req.body.email, req.body.username, req.body.password];
-	console.log("validating");
 	const valid = "SELECT email FROM users WHERE email LIKE ?;";
 	db.query(valid, [values[1]], (err, data) => {
 		if (err) return res.status(500).json("Error validating");
 		if (data.length !== 0)
 			return res.status(409).json("Email address already exists");
 		const sql = "INSERT INTO users (id, email, username, password) VALUES (?);";
-		console.log("registering");
 		db.query(sql, [values], (err, _data) => {
 			if (err) return res.status(500).json("Error registering");
 			return res.status(200).json("Success");

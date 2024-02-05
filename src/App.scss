@@ -60,11 +60,11 @@ $border-radius: 1svw;
 }
 
 main {
-  margin: .25rem .5rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-content: center;
+  gap: 3rem;
 
 
   .language_section,
@@ -112,38 +112,29 @@ main {
 
       button {
         @include betterButton(1.5rem, 1.5rem, $primary, $background, $accent, $text);
+        padding: 0;
         transition: background-color 0.1s linear;
 
         &:hover>.icon,
         &:active>.icon {
-          background-color: $accent;
-          // transition: background-color 0.1s linear;
-
-          &:active>.icon {
-            background-color: color.scale($accent, $lightness: 20%);
-            // transition: background-color 0.1s linear;
-
-            path {
-              color: $text;
-              transition: color 0.1s linear;
-            }
-          }
 
           path {
-            color: $text;
+            stroke: $text;
+            background-color: transparent;
             transition: color 0.1s linear;
           }
         }
 
 
         .icon {
-          background-color: $primary;
+          background-color: transparent;
           transition: background-color 0.1s linear;
         }
 
         .icon>path {
-          color: $secondary;
+          stroke: $secondary;
           transition: color 0.1s linear;
+          stroke-width: 4px;
         }
       }
 
@@ -195,35 +186,25 @@ main {
 
       button {
         @include betterButton(1.5rem, 1.5rem, $secondary, $background, $accent, $text);
+        padding: 0;
         transition: background-color 0.1s linear;
 
         &:hover>.icon,
         &:active>.icon {
-          background-color: $accent;
           // transition: background-color 0.1s linear;
-
-          &:active>.icon {
-            background-color: color.scale($accent, $lightness: 20%);
-            // transition: background-color 0.1s linear;
-
-            path {
-              color: $text;
-              transition: color 0.1s linear;
-            }
-          }
-
           path {
-            color: $text;
+            stroke: color.scale($text, $lightness: 20%);
             transition: color 0.1s linear;
           }
         }
 
         .icon {
-          background-color: $secondary;
+          background-color: transparent;
         }
 
         .icon>path {
-          color: $text;
+          stroke: $text;
+          stroke-width: 4px;
         }
       }
     }

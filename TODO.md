@@ -38,15 +38,13 @@ react-query
     - [x] check if password == confirm password
     - [x] return error message to show above the form, below the header
     - [x] use email for login
-    - [ ] hash password
     - [ ] animated loading circle, rotates, changes it's width
-    - [/] react query for fetches
+    - [ ] react query for fetches
     - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
     - [ ] if user prefers dark mode - css query
     - [ ] minimal mode, where it's black/white, and has no animations
     - [ ] as cookie save secret token from database
     - [ ] write tests
-    ~- [ ] profile to see what takes the longest, optimize - so far nothing~
 
 # Backend
 - [x] read words from sql database
@@ -55,7 +53,11 @@ react-query
     - [x] currently the fetch runs instantly after render
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
+- [ ] show words learnt / total count of words
+    -- doesn't read progress yet
+    -- so we should make another query if we're logged in?
 - [ ] add 24h timeout, before next study can be done, so that you don't spam it
+- [ ] hash password
 
 # CSS
 - [x] Home
@@ -65,6 +67,6 @@ react-query
     - [ ] add visible spacing between levels
 - [x] Nav
 - [x] Footer
-- [!] Flashcard
+- [ ] Flashcard
 - [x] Login
 - [x] Register

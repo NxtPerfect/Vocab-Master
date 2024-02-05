@@ -30,7 +30,7 @@ function Login() {
 			.then((data) => {
 				if (data.message === "Success") {
 					navigate("/");
-					Cookies.set("email", email, { expires: 7, samesite: "strict" });
+					Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
 					Cookies.set("user_id", data.user_id[0].id, {
 						expires: 7,
 						samesite: "strict",

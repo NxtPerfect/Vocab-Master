@@ -13,7 +13,7 @@ function LanguageSection({
   level,
   countTotal,
   countLearnt
-}: { index: number; language: string; level: Array<string>, countTotal: number, countLearnt }) {
+}: { index: number; language: string; level: Array<string>, countTotal: Array<string>, countLearnt: Array<string> }) {
   const [fold, setFold] = useState<boolean>(false);
   return (
     <>
@@ -25,10 +25,7 @@ function LanguageSection({
         <div className="language_section_top">
           <h1>{language}</h1>
           <button type="button" onClick={() => setFold((curr) => !curr)}>
-            <FontAwesomeIcon
-              className="icon"
-              icon={!fold ? faArrowTurnDown : faArrowLeft}
-            />
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{!fold ? <path d="M6 9l6 6 6-6"/> : <path d="M15 18l-6-6 6-6"/>}</svg>
           </button>
         </div>
         <div className="language_levels_wrapper">
@@ -36,7 +33,10 @@ function LanguageSection({
             ? level.map((levelLevel: string, levelIndex: number) => (
               <div className="language_level">
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
-                <p>Progress: {countLearnt}/{countTotal}</p>
+                <p>Progress: {countLearnt}/{countTotal[levelIndex]}</p>
+                <div>
+                  Progress bar
+                </div>
                 <Link
                   className="link"
                   key={levelIndex}
