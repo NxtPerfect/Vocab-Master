@@ -53,31 +53,34 @@ function Login() {
 	return (
 		<>
 			<Nav />
-			<form onSubmit={handleSubmit}>
-				<label htmlFor="email">Email</label>
-				<input
-					type="email"
-					name="email"
-					placeholder="email@proton.com"
-					value={email}
-					onChange={updateEmail}
-					required
-				></input>
-				<label htmlFor="password">Password</label>
-				<input
-					type="password"
-					name="password"
-					placeholder="********"
-					value={password}
-					onChange={updatePassword}
-					required
-				></input>
-				<button type="submit">Login</button>
-				<Link to={"/register"} style={{ textDecoration: "none" }}>
-					<button type="button">Create new account</button>
-				</Link>
-			</form>
-			{blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      <main>
+        <form onSubmit={handleSubmit}>
+          <h1>Login</h1>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="email@proton.com"
+            value={email}
+            onChange={updateEmail}
+            required
+          ></input>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="********"
+            value={password}
+            onChange={updatePassword}
+            required
+          ></input>
+          <button type="submit">Login</button>
+          <Link to={"/register"} style={{ textDecoration: "none" }}>
+            <button type="button">Create new account</button>
+          </Link>
+        </form>
+        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      </main>
 			<Footer />
 		</>
 	);

@@ -37,7 +37,7 @@ function Flashcard() {
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({ user_id: Cookies.get("user_id") }),
     };
-    fetch(`http://localhost:6942/api/${language}&${level}`, requestOptions) // change language & level accoring to params
+    fetch(`http://localhost:6942/api/${language}&${level}`, requestOptions) // change language & level according to params
       .then((res) => res.json())
       .then((data) => {
         setWords(data);

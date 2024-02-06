@@ -41,7 +41,6 @@ react-query
     - [ ] animated loading circle, rotates, changes it's width
     - [ ] react query for fetches
     - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
-    - [ ] if user prefers dark mode - css query
     - [ ] minimal mode, where it's black/white, and has no animations
     - [ ] as cookie save secret token from database
     - [ ] write tests
@@ -53,9 +52,16 @@ react-query
     - [x] currently the fetch runs instantly after render
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
-- [ ] show words learnt / total count of words
-    -- doesn't read progress yet
-    -- so we should make another query if we're logged in?
+- [/] show words learnt / total count of words
+    -- SOLUTION
+    fetch data conditionally, when a user has login cookie set
+    then we do another fetch call, and set usestate for progress
+    then we have to somehow insert that data into our list of languages
+
+    Now we just have to merge this data into languages
+    and use it in language sections
+- [ ] show an indicator if we already lernt from that level
+
 - [ ] add 24h timeout, before next study can be done, so that you don't spam it
 - [ ] hash password
 
@@ -64,9 +70,10 @@ react-query
     - [x] when folding, it doesn't change height
     - [x] maybe alter the colors for every 2nd item?
     - [ ] gradient as progress bar
-    - [ ] add visible spacing between levels
+    - [x] add visible spacing between levels
 - [x] Nav
 - [x] Footer
 - [ ] Flashcard
 - [x] Login
 - [x] Register
+- [ ] Error Page

@@ -97,47 +97,50 @@ function Register() {
   return (
     <>
       <Nav />
-      <form onSubmit={handleSubmit}>
-        {errorMessage !== "Success" ? errorMessage : null}
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          placeholder="email@proton.com"
-          value={email}
-          onChange={updateEmail}
-          required
-        />
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          name="username"
-          placeholder="username"
-          value={username}
-          onChange={updateUsername}
-          required
-        />
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          name="password"
-          placeholder="********"
-          value={password}
-          onChange={updatePassword}
-          required
-        />
-        <label htmlFor="password">Confirm Password</label>
-        <input
-          type="password"
-          name="confirm_password"
-          placeholder="********"
-          value={confirmPassword}
-          onChange={updateConfirmPassword}
-          required
-        />
-        <button type="submit">Register</button>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-      </form>
+      <main>
+        <form onSubmit={handleSubmit}>
+          <h1>Register</h1>
+          {errorMessage !== "Success" ? errorMessage : null}
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="email@proton.com"
+            value={email}
+            onChange={updateEmail}
+            required
+          />
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="username"
+            value={username}
+            onChange={updateUsername}
+            required
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="********"
+            value={password}
+            onChange={updatePassword}
+            required
+          />
+          <label htmlFor="password">Confirm Password</label>
+          <input
+            type="password"
+            name="confirm_password"
+            placeholder="********"
+            value={confirmPassword}
+            onChange={updateConfirmPassword}
+            required
+          />
+          <button type="submit">Register</button>
+          {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+        </form>
+      </main>
       <Footer />
     </>
   );

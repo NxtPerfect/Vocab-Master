@@ -59,12 +59,23 @@ $border-radius: 1svw;
   flex-direction: column;
 }
 
+@keyframes rainbow {
+  from {
+    background: linear-gradient(-90deg, $primary 0%, $text 100%);
+  }
+  to {
+    background: linear-gradient(-90deg, $text 0%, $primary 100%);
+  }
+}
+
 main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-content: center;
   gap: 3rem;
+  padding: 3rem 0;
+  background: linear-gradient(125deg, color.scale($primary, $lightness: -50%) 0%, $background 50%, color.scale($secondary, $lightness: -25%));
 
 
   .language_section,
@@ -74,7 +85,8 @@ main {
     justify-content: start;
     align-items: center;
     background-color: $secondary;
-    padding: 1.5rem 1.2rem;
+    padding: .5rem 1.2rem;
+    padding-bottom: 2.5rem;
     border-radius: $border-radius;
     width: 40svw;
     transition: color 0.1s linear;
@@ -103,11 +115,12 @@ main {
       align-items: center;
       justify-content: center;
       background-color: $secondary;
+      padding: 1rem;
+      gap: .5rem;
 
       h1 {
         text-transform: capitalize;
         background-color: $secondary;
-        margin: .5rem;
       }
 
       button {
@@ -152,6 +165,7 @@ main {
       max-height: 40rem;
       background-color: $accent;
       border-radius: $border-radius;
+      gap: 2rem;
 
 
       .language_level {
@@ -160,7 +174,10 @@ main {
         justify-content: space-evenly;
         align-items: center;
         background-color: inherit;
+        box-shadow: black 0 0 1rem;
         height: 100%;
+        width: 100%;
+        border-radius: $border-radius;
 
         a,
         p,
@@ -247,6 +264,7 @@ form {
   border-radius: $border-radius;
   padding: 2rem 0;
   margin: auto;
+  grid-column: span 2;
   width: max(35svw, 25rem);
   height: max(30svh, 15rem);
 
@@ -263,7 +281,9 @@ form {
 
   button,
   a {
-    @include betterButton(8rem, 1.5rem, $primary, $background, $secondary, $text)
+    @include betterButton(10rem, 2rem, $primary, $background, $secondary, $text);
+    font-size: 1rem;
+    font-weight: bold;
   }
 }
 
@@ -273,7 +293,6 @@ nav {
   justify-content: space-around;
   align-items: center;
   padding: 1.2rem .5rem;
-  margin-bottom: 3rem;
   background-color: $primary;
 
   * {
@@ -283,6 +302,9 @@ nav {
   h1 {
     color: $secondary;
     font-size: 2rem;
+    text-decoration: underline;
+    text-decoration-thickness: .2rem;
+    animation: 5s infinite rainbow;
   }
 
   .nav_buttons {
@@ -363,7 +385,6 @@ footer {
   text-align: center;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: $secondary;
-  margin: 5rem 0;
   padding: 5rem 0;
 
   * {
@@ -399,7 +420,7 @@ footer {
 }
 
 // Mobile CSS
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 900px) {
   * {
     background-color: red;
   }
