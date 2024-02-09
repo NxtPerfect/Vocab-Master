@@ -8,7 +8,7 @@ function LanguageSection({
   level,
   countTotal,
   countLearnt
-}: { index: number; language: string; level: Array<string>, countTotal: Array<string>, countLearnt: Array<string> }) {
+}: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number> }) {
   const [fold, setFold] = useState<boolean>(false);
   return (
     <>

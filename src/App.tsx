@@ -17,8 +17,20 @@ export interface Word {
 
 interface Language {
   language: string;
+  level: Array<string>;
+  countTotal: Array<number>;
+  countUser: Array<number>;
+}
+
+type LanguageDataRaw = {
+  language: string;
   level: string;
-  countTotal: number;
+  countTotal: string;
+}
+
+type UserProgressDataRaw = {
+  language: string;
+  level: string;
   countUser: number;
 }
 
@@ -31,7 +43,7 @@ function App() {
     queryKey: ["languages"],
     queryFn: async () => {
       const langQuery = await queryLanguageData()
-      if (!langQuery && !Cookie.get("user-id")) return;
+      if (!langQuery && !Cookie.get("user_id")) return;
       await queryUserProgress()
     },
     onSuccess: (data) => console.log(data),
@@ -42,10 +54,12 @@ function App() {
     try {
       const data = await axios.get('http://localhost:6942/api/languages/total');
       // Process the data into array
-      const temp = data.data.map((lang: object) => ({
-        language: lang.language,
-        level: lang.level.split(","),
-        countTotal: lang.countTotal.split(",")
+      // I need to win the battle with these types below
+      const temp = data.data.map((lang: LanguageDataRaw) => ({
+        language: lang.language as string,
+        level: lang.level.split(",") as Array<string>,
+        countTotal: lang.countTotal.split(",") as Array<number>,
+        countUser: 0
       } as Language));
       // Add languages, levels and amount of words they have
       // To show proper LanguageSection
@@ -62,11 +76,21 @@ function App() {
       const data = await axios.post("http://localhost:6942/api/languages/user", {
         user_id: Cookie.get("user_id")
       });
-      console.log("Got the progress with the boooyysss");
-      console.log(data.data);
-      // We get array with object with userProgressTotal: number
-      // Instead we should return language + level + number
-      setUserProgress((curr: Array<number>) => [...curr, ...data.data.userProgressTotal]);
+      console.log("Got the progress with the boooyysss")
+      console.log(data.data[0].userProgressTotal)
+      console.log(data.data[0])
+      // We return the correct data, now we have to merge it
+      // language, level, total words learnt
+      if (data.data === undefined || data.data.length === 0) return;
+      // setUserProgress((curr: Array<number>) => [...curr, ...data.data[0].userProgressTotal]);
+      setLanguages((curr: Array<Language>) => {
+        curr.map((lang: Language) => {
+          data.data.map((progress: { language: string, level: string, userProgressTotal: number }) => {
+            if (lang.language === progress.language && lang.level === progress.level) lang.countUser = progress.userProgressTotal
+          })
+        })
+        return curr
+      })
       return data.data;
     } catch (err) {
       console.log(err);
@@ -80,7 +104,7 @@ function App() {
       <main>
         {languages.map(
           (
-            language: { language: string; level: Array<string>, countTotal: Array<string> },
+            language: Language,
             index: number,
           ) => {
             console.log(language.level, language.countTotal)
@@ -90,7 +114,7 @@ function App() {
                 language={language.language}
                 level={language.level}
                 countTotal={language.countTotal}
-                countLearnt={userProgress.length > 0 ? userProgress[index] : 0}
+                countLearnt={language.countUser}
               />
             );
           },

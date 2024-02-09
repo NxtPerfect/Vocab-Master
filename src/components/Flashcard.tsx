@@ -11,6 +11,8 @@ import { Word } from "../App";
 import Nav from "./Nav";
 import Modal from "./Modal";
 import Footer from "./Footer";
+import axios from "axios";
+import { useQuery } from "react-query";
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]);
@@ -31,23 +33,29 @@ function Flashcard() {
   /** Access api
    * and get words
    */
-  useEffect(() => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ user_id: Cookies.get("user_id") }),
-    };
-    fetch(`http://localhost:6942/api/${language}&${level}`, requestOptions) // change language & level according to params
-      .then((res) => res.json())
-      .then((data) => {
-        setWords(data);
-        setChangedWords(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        setChangedWords(true);
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      await queryWords()
+    },
+    onSuccess: (data: { language: string, level: string, word_id: number, sideA: string, sideB: string }) => console.log(data),
+    onError: (err: Error) => console.log(err)
+  })
+
+  async function queryWords() {
+    try {
+      const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
+        user_id: Cookies.get("user_id")
       });
-  }, []);
+      setWords(data.data);
+      setChangedWords(true);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+      setChangedWords(true);
+      throw err;
+    }
+  }
 
   /** Populate array with indexes of words
    * randomize them

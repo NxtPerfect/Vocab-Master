@@ -1,39 +1,39 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query-devtools";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import App from "./App.tsx";
 import ErrorPage from "./ErrorPage.tsx";
 import Flashcard from "./components/Flashcard.tsx";
 import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
 import Terms from "./components/Terms.tsx";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query-devtools";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <React.Suspense fallback={<>Loading...</>}><App /><ReactQueryDevtools /></React.Suspense>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/flashcard/:language/:level",
-    element: <Flashcard />,
+    element: <React.Suspense fallback={<>Loading...</>}><Flashcard /><ReactQueryDevtools /></React.Suspense>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <React.Suspense fallback={<>Loading...</>}><Login /><ReactQueryDevtools /></React.Suspense>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/register",
-    element: <Register />,
+    element: <React.Suspense fallback={<>Loading..</>}><Register /><ReactQueryDevtools /></React.Suspense>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/terms",
-    element: <Terms />,
+    element: <React.Suspense fallback={<>Loading...</>}><Terms /><ReactQueryDevtools /></React.Suspense>,
     errorElement: <ErrorPage />,
   },
 ]);
@@ -45,7 +45,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-      <ReactQueryDevtools />
     </QueryClientProvider>
   </React.StrictMode>
 );

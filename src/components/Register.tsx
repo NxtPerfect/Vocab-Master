@@ -4,6 +4,8 @@ import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import Modal from "./Modal";
 import Footer from "./Footer";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -11,6 +13,7 @@ function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   let blocker: Blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -21,37 +24,69 @@ function Register() {
       currentLocation.pathname !== nextLocation.pathname,
   );
 
-  const navigate = useNavigate();
+  const { data, refetch } = useQuery({
+    queryKey: ["register"],
+    queryFn: async () => {
+      await queryRegister()
+    },
+    onSuccess: (data) => console.log(data),
+    onError: (err) => console.log(err),
+    refetchOnWindowFocus: false,
+    enabled: false
+  })
+
+  async function queryRegister() {
+    try {
+      const data = await axios.post("http://localhost:6942/register", { email: email, username: username, password: password })
+      console.log("Before check", data)
+      if (data.data === "Success") {
+        navigate("/");
+        Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
+        return data;
+      }
+      console.log("After check", data);
+      alert("User exists");
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   function handleSubmit(e: HTMLFormElement) {
     e.preventDefault();
+
     setErrorMessage(
       validateRegister(email, username, password, confirmPassword),
     );
     if (errorMessage !== "Success") return "Failed";
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      mode: "cors",
-      body: JSON.stringify({
-        email: email,
-        username: username,
-        password: password,
-      }),
-    };
-    fetch("http://localhost:6942/register", requestOptions)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        if (data === "Success") {
-          navigate("/");
-          Cookies.set("username", username, { expires: 7, samesite: "none", secure: true });
-          return data;
-        }
-        console.log(data);
-        alert("User exists");
-      })
-      .catch((err) => console.log(err));
+    refetch()
+    // setErrorMessage(
+    //   validateRegister(email, username, password, confirmPassword),
+    // );
+    // if (errorMessage !== "Success") return "Failed";
+    // const requestOptions = {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   mode: "cors",
+    //   body: JSON.stringify({
+    //     email: email,
+    //     username: username,
+    //     password: password,
+    //   }),
+    // };
+    // fetch("http://localhost:6942/register", requestOptions)
+    //   .then((res) => {
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     if (data === "Success") {
+    //       navigate("/");
+    //       Cookies.set("username", username, { expires: 7, samesite: "none", secure: true });
+    //       return data;
+    //     }
+    //     console.log(data);
+    //     alert("User exists");
+    //   })
+    //   .catch((err) => console.log(err));
   }
 
   function updateEmail(e: ChangeEvent<HTMLInputElement>) {

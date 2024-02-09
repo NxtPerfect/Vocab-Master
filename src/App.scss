@@ -59,15 +59,6 @@ $border-radius: 1svw;
   flex-direction: column;
 }
 
-@keyframes rainbow {
-  from {
-    background: linear-gradient(-90deg, $primary 0%, $text 100%);
-  }
-  to {
-    background: linear-gradient(-90deg, $text 0%, $primary 100%);
-  }
-}
-
 main {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -304,7 +295,6 @@ nav {
     font-size: 2rem;
     text-decoration: underline;
     text-decoration-thickness: .2rem;
-    animation: 5s infinite rainbow;
   }
 
   .nav_buttons {

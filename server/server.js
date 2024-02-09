@@ -32,7 +32,7 @@ app.get("/api/languages/total", (req, res) => {
 
 app.post("/api/languages/user", (req, res) => {
   const user_id = req.body.user_id
-  const sql = "SELECT GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = ? GROUP BY language, level) subquery GROUP BY language, level ORDER BY language, level;"
+  const sql = "SELECT language, level, GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = ? GROUP BY language, level) subquery GROUP BY language, level ORDER BY language, level;"
   db.query(sql, [user_id], (err, data) => {
     if (err) return res.json(err)
     return res.json(data)
