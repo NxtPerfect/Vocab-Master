@@ -5,6 +5,8 @@ import Nav from "./components/Nav";
 import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import LanguageSection from "./components/LanguageSection";
+import { useQuery, useQueryClient } from "react-query";
+import axios from "axios";
 
 export interface Word {
   word_id: number;
@@ -24,44 +26,53 @@ function App() {
   const [languages, setLanguages] = useState<Array<Language>>([]);
   const [userProgress, setUserProgress] = useState<Array<number>>([]);
 
-  // Now this runs twice, because of that unmount
-  // as we don't abort the fetch if we unmount
-  // fix would be to use react-query
-  // but it's not that easy to incorporate...
-  useEffect(() => {
-    if (languages.length !== 0) return
-    fetch("http://localhost:6942/api/languages/total")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data)
-        const temp = data.map((lang: object) => ({
-          language: lang.language,
-          level: lang.level.split(","),
-          countTotal: lang.countTotal.split(","),
-        } as Language));
-        setLanguages((curr: Array<Language>) => [...curr, ...temp]);
-      })
-      .catch((err) => console.log(err));
-    if (!Cookie.get("user_id")) return
+  // Fetch all languages and user's progress if logged in
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      const langQuery = await queryLanguageData()
+      if (!langQuery && !Cookie.get("user-id")) return;
+      await queryUserProgress()
+    },
+    onSuccess: (data) => console.log(data),
+    onError: (err) => console.log(err)
+  })
 
-    // If user is logged in
-    // fetch their progress to show how many they've learnt
-    // still needs to udate the languages usestate somehow
-    // and merge it in there
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ user_id: Cookie.get("user_id") }),
-    };
-    fetch("http://localhost:6942/api/languages/user", requestOptions)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data)
-        console.log("Got the progress with the boooyysss")
-        setUserProgress((curr: Array<number>) => [...curr, ...data]);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  async function queryLanguageData() {
+    try {
+      const data = await axios.get('http://localhost:6942/api/languages/total');
+      // Process the data into array
+      const temp = data.data.map((lang: object) => ({
+        language: lang.language,
+        level: lang.level.split(","),
+        countTotal: lang.countTotal.split(",")
+      } as Language));
+      // Add languages, levels and amount of words they have
+      // To show proper LanguageSection
+      setLanguages((curr: Array<Language>) => [...curr, ...temp]);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
+  async function queryUserProgress() {
+    try {
+      const data = await axios.post("http://localhost:6942/api/languages/user", {
+        user_id: Cookie.get("user_id")
+      });
+      console.log("Got the progress with the boooyysss");
+      console.log(data.data);
+      // We get array with object with userProgressTotal: number
+      // Instead we should return language + level + number
+      setUserProgress((curr: Array<number>) => [...curr, ...data.data.userProgressTotal]);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
 
   return (
     <>
@@ -79,7 +90,7 @@ function App() {
                 language={language.language}
                 level={language.level}
                 countTotal={language.countTotal}
-                countLearnt={0}
+                countLearnt={userProgress.length > 0 ? userProgress[index] : 0}
               />
             );
           },

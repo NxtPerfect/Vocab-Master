@@ -5,9 +5,9 @@ function Terms() {
   return (
     <>
       <Nav />
-      <span>
+      <main>
         Terms of Service Please use and don't when the and then understood?
-      </span>
+      </main>
       <Footer />
     </>
   );
