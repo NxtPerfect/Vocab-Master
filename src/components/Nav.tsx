@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-function Nav() {
+function Nav({ streak }: { streak: number }) {
   const navigate = useNavigate();
   function unsetCookies() {
     Cookies.remove("email");
@@ -16,7 +16,7 @@ function Nav() {
             <Link className="link" to="/">
               Home
             </Link>
-            <p>🔥100 days</p>
+            <p>🔥{streak} days</p>
             {Cookies.get("email")}
             <button type="button" onClick={unsetCookies}>
               Log out

@@ -36,7 +36,7 @@ type UserProgressDataRaw = {
 
 function App() {
   const [languages, setLanguages] = useState<Array<Language>>([]);
-  const [userProgress, setUserProgress] = useState<Array<number>>([]);
+  const [userStreak, setUserStreak] = useState<number>(0);
 
   // Fetch all languages and user's progress if logged in
   const { isPending, isError, data, error } = useQuery({
@@ -59,7 +59,7 @@ function App() {
         language: lang.language as string,
         level: lang.level.split(",") as Array<string>,
         countTotal: lang.countTotal.split(",") as Array<number>,
-        countUser: 0
+        countUser: []
       } as Language));
       // Add languages, levels and amount of words they have
       // To show proper LanguageSection
@@ -73,20 +73,28 @@ function App() {
 
   async function queryUserProgress() {
     try {
-      const data = await axios.post("http://localhost:6942/api/languages/user", {
+      const data = await axios.post("http://localhost:6942/api/user", {
         user_id: Cookie.get("user_id")
       });
       console.log("Got the progress with the boooyysss")
-      console.log(data.data[0].userProgressTotal)
-      console.log(data.data[0])
       // We return the correct data, now we have to merge it
       // language, level, total words learnt
       if (data.data === undefined || data.data.length === 0) return;
-      // setUserProgress((curr: Array<number>) => [...curr, ...data.data[0].userProgressTotal]);
+
+      // Modify languages array to add user's word learnt
+      // Currently .includes will always return true if item in array
+      // Instead it should see if item already added in there, if yes
+      // then ignore it
+      // Currently will only find first match, then ignore all other attempts
+      let added = false
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
-          data.data.map((progress: { language: string, level: string, userProgressTotal: number }) => {
-            if (lang.language === progress.language && lang.level === progress.level) lang.countUser = progress.userProgressTotal
+          data.data.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
+            if (lang.language === progress.language && lang.level.includes(progress.level) && !added) {
+              lang.countUser.push(progress.userProgressTotal)
+              setUserStreak(progress.streak)
+              added = true
+            }
           })
         })
         return curr
@@ -98,16 +106,36 @@ function App() {
     }
   }
 
+  async function queryWhenLastWord() {
+    try {
+      const data = await axios.get('http://localhost:6942/api/languages/');
+      // Process the data into array
+      // I need to win the battle with these types below
+      const temp = data.data.map((lang: LanguageDataRaw) => ({
+        language: lang.language as string,
+        level: lang.level.split(",") as Array<string>,
+        countTotal: lang.countTotal.split(",") as Array<number>,
+        countUser: []
+      } as Language));
+      // Add languages, levels and amount of words they have
+      // To show proper LanguageSection
+      setLanguages((curr: Array<Language>) => [...curr, ...temp]);
+      return data.data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
   return (
     <>
-      <Nav />
+      <Nav streak={userStreak} />
       <main>
         {languages.map(
           (
             language: Language,
             index: number,
           ) => {
-            console.log(language.level, language.countTotal)
             return (
               <LanguageSection
                 index={index}

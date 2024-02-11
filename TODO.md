@@ -38,8 +38,8 @@ react-query
     - [x] check if password == confirm password
     - [x] return error message to show above the form, below the header
     - [x] use email for login
+    - [x] react query for fetches
     - [ ] animated loading circle, rotates, changes it's width
-    - [ ] react query for fetches
     - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
     - [ ] minimal mode, where it's black/white, and has no animations
     - [ ] as cookie save secret token from database
@@ -52,17 +52,22 @@ react-query
     - [x] currently the fetch runs instantly after render
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
-- [/] show words learnt / total count of words
-    -- SOLUTION
-    fetch data conditionally, when a user has login cookie set
-    then we do another fetch call, and set usestate for progress
-    then we have to somehow insert that data into our list of languages
-
-    Now we just have to merge this data into languages
-    and use it in language sections
-- [ ] show an indicator if we already lernt from that level
-
+- [x] show words learnt / total count of words
+- [/] show an indicator if we already lernt from that level
+    --[x] We need to store date of when we add words
+    probably in user_progress
+    --[ ] then we just need to check if that's today's date
+    if yes then check the indicator, else no
+    and we'll also know if we're on streak or not
+    and we can also add that timeout as we now know
+        -- so how do we structure it?
+        We need information on all the languages for setting the icon
+        we need just last learnt for streak, which we can get from all of them
+    as well as show the learn button only if we didn't learn it today
+    !! THIS NEEDS TO BE DONE SERVER SIDE, IF WE SAVE DATA FROM THEN
+    IT CAN BE EASILY OFF AND FOCKED !!
 - [ ] add 24h timeout, before next study can be done, so that you don't spam it
+- [ ] currently even if there are no words to learn we still can press the button
 - [ ] hash password
 
 # CSS

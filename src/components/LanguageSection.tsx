@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
+
+/*
+  * Showing words learnt is currently a very wacky way, but it works
+  * should be done a little bit different
+  * also needs cleanup from all the ternary operators
+  */
 function LanguageSection({
   index,
   language,
@@ -29,7 +35,7 @@ function LanguageSection({
               <div className="language_level">
                 {fold ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
-                <p>Progress: {countLearnt}/{countTotal[levelIndex]}</p>
+                <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
                 <div>
                   Progress bar
                 </div>
