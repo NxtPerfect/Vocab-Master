@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 
 /*
@@ -15,7 +17,33 @@ function LanguageSection({
   countTotal,
   countLearnt
 }: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number> }) {
-  const [fold, setFold] = useState<boolean>(false);
+  const [fold, setFold] = useState<boolean>(false)
+  const [learnt, setLearnt] = useState<boolean>(false)
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      await queryIsLearntToday()
+    },
+    onSuccess: (data) => console.log(data),
+    onError: (err) => console.log(err)
+  })
+
+  // It requests for level array, we need to split it into query for each level or return array of each of them
+  async function queryIsLearntToday() {
+    try {
+      const data = await axios.post(`http://localhost:6942/api/${language}&${level}/learnt`, { user_id: Cookies.get("user_id") });
+      console.log("Test query", data)
+      console.log(data.data)
+      setLearnt(data.data)
+      return data.data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
+
   return (
     <>
       <div
@@ -33,7 +61,7 @@ function LanguageSection({
           {!fold
             ? level.map((levelLevel: string, levelIndex: number) => (
               <div className="language_level">
-                {fold ? "✅" : "❌"}
+                {learnt ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
                 <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
                 <div>

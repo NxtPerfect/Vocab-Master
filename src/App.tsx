@@ -1,12 +1,11 @@
-import { Link } from "react-router-dom";
-import "./App.scss";
+import axios from "axios";
 import Cookie from "js-cookie";
-import Nav from "./components/Nav";
-import { useEffect, useState } from "react";
+import "./App.scss";
 import Footer from "./components/Footer";
 import LanguageSection from "./components/LanguageSection";
-import { useQuery, useQueryClient } from "react-query";
-import axios from "axios";
+import Nav from "./components/Nav";
+import { useState } from "react";
+import { useQuery } from "react-query";
 
 export interface Word {
   word_id: number;
@@ -86,14 +85,14 @@ function App() {
       // Instead it should see if item already added in there, if yes
       // then ignore it
       // Currently will only find first match, then ignore all other attempts
-      let added = false
+      let last_index: number = 0 
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
           data.data.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
-            if (lang.language === progress.language && lang.level.includes(progress.level) && !added) {
+            if (lang.language === progress.language && lang.level.includes(progress.level, last_index)) {
               lang.countUser.push(progress.userProgressTotal)
               setUserStreak(progress.streak)
-              added = true
+              last_index = lang.level.findIndex(element => {element === progress.level})
             }
           })
         })

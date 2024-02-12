@@ -26,15 +26,13 @@ react-query
     - [x] max of 30 words per day
     - [x] check which ones are already learnt, don't select these
     - [x] modal window confirmation before exiting
-    - [ ] progress bar for how many words learnt -> as gradient
+    - [x] progress bar for how many words learnt -> as gradient
 - [/] login/register page
     - [x] validate password correct in database
     - [x] signup button
     - [x] set cookie with username + userid
     - [x] register new account
     - [x] regex if password, login and email are correct
-    - [x] we're assuming there's only one user with that username
-    validate that on registering, only unique email 
     - [x] check if password == confirm password
     - [x] return error message to show above the form, below the header
     - [x] use email for login
@@ -58,14 +56,11 @@ react-query
     probably in user_progress
     --[ ] then we just need to check if that's today's date
     if yes then check the indicator, else no
-    and we'll also know if we're on streak or not
     and we can also add that timeout as we now know
         -- so how do we structure it?
         We need information on all the languages for setting the icon
         we need just last learnt for streak, which we can get from all of them
     as well as show the learn button only if we didn't learn it today
-    !! THIS NEEDS TO BE DONE SERVER SIDE, IF WE SAVE DATA FROM THEN
-    IT CAN BE EASILY OFF AND FOCKED !!
 - [ ] add 24h timeout, before next study can be done, so that you don't spam it
 - [ ] currently even if there are no words to learn we still can press the button
 - [ ] hash password
@@ -82,3 +77,4 @@ react-query
 - [x] Login
 - [x] Register
 - [ ] Error Page
+- [ ] confirm exit modal

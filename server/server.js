@@ -56,6 +56,21 @@ app.post("/api/:language&:level", (req, res) => {
   });
 });
 
+app.post("/api/:language&:level/learnt", (req, res) => {
+  if (req.body.user_id === undefined) return res.status(400)
+  if (req.params === undefined) return res.status(400)
+  const { language, level } = req.params
+  const user_id = req.body.user_id
+  const sql = 
+    "SELECT date FROM user_progress WHERE language = ? AND level = ? AND user_id = ? ORDER BY date DESC LIMIT 1;";
+  // Pretty wack query fr fr
+  db.query(sql, [language, level, user_id], (err, data) => {
+    if (err) return res.json(err)
+    console.log(data.date)
+    return res.json(data.date === moment().format('D-M-YYYY'))
+  })
+})
+
 
 // Okay this needs to either be into two queries, with 2nd one being huge
 // or some other way to not have nested queries
@@ -85,7 +100,7 @@ app.post("/api/save_progress", (req, res) => {
         resolve(data);
       });
       // This query is badly written
-      sql = "SELECT CASE WHEN EXISTS(SELECT (SELECT date dateNewer FROM user_progress SORT BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress SORT BY date DESC LIMIT 1 OFFSET 1) WHERE datediff(day, dateNewer, dateOlder) <= 1)THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END;"
+      sql = "SELECT CASE WHEN EXISTS(SELECT (SELECT date dateNewer FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1) WHERE datediff(day, dateNewer, dateOlder) <= 1)THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END;"
       db.query(sql, (err, data) => {
         if (err) {
           console.log(err);

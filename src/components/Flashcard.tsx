@@ -191,6 +191,7 @@ function Flashcard() {
     );
   }
 
+  // Needs back arrow to navigate to home
   return (
     <>
       <Nav />
