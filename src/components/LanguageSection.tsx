@@ -18,7 +18,7 @@ function LanguageSection({
   countLearnt
 }: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number> }) {
   const [fold, setFold] = useState<boolean>(false)
-  const [learnt, setLearnt] = useState<boolean>(false)
+  const [learnt, setLearnt] = useState<Array<boolean>>([false, false])
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["languages"],
@@ -30,12 +30,14 @@ function LanguageSection({
   })
 
   // It requests for level array, we need to split it into query for each level or return array of each of them
+  // Issue is that this query only works if i specifically refresh this component
+  // so i should manually refetch it or something idrk
   async function queryIsLearntToday() {
     try {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}/learnt`, { user_id: Cookies.get("user_id") });
       console.log("Test query", data)
       console.log(data.data)
-      setLearnt(data.data)
+      setLearnt([...data.data])
       return data.data;
     } catch (err) {
       console.log(err);
@@ -61,7 +63,7 @@ function LanguageSection({
           {!fold
             ? level.map((levelLevel: string, levelIndex: number) => (
               <div className="language_level">
-                {learnt ? "✅" : "❌"}
+                {learnt[levelIndex] ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
                 <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
                 <div>

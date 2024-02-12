@@ -62,12 +62,16 @@ app.post("/api/:language&:level/learnt", (req, res) => {
   const { language, level } = req.params
   const user_id = req.body.user_id
   const sql = 
-    "SELECT date FROM user_progress WHERE language = ? AND level = ? AND user_id = ? ORDER BY date DESC LIMIT 1;";
-  // Pretty wack query fr fr
-  db.query(sql, [language, level, user_id], (err, data) => {
+    "SELECT CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE language = ? AND user_id = ? GROUP BY level ORDER BY date DESC;"
+  db.query(sql, [language, user_id], (err, data) => {
     if (err) return res.json(err)
-    console.log(data.date)
-    return res.json(data.date === moment().format('D-M-YYYY'))
+
+    // Check array and return array of bools
+    const arr = []
+    for (const date of data) {
+      arr.push(date.date === moment().format('YYYY-MM-D'))
+    }
+    return res.json(arr)
   })
 })
 
