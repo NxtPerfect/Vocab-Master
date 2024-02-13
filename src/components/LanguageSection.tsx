@@ -49,7 +49,7 @@ function LanguageSection({
                   to={Cookies.get("email") ? `/flashcard/${language}/${levelLevel}` : '/login'}
                   style={{ textDecoration: "none" }}
                 >
-                  {Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
+                  {countLearnt[levelIndex] === countTotal[levelIndex] ? <p className="disabled">All words learnt</p> : (!isLearnt[levelIndex] ? (Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>) : <p className="disabled">Come back tomorrow</p>)}
                 </Link>
               </div>
             ))

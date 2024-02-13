@@ -64,21 +64,15 @@ app.post("/api/learnt", (req, res) => {
   db.query(sql, [user_id], (err, data) => {
     if (err) return res.json(err)
 
-    // Check array and return array of bools
     const arr = []
     for (const date of data) {
-      // arr.push(date.date === moment().format('YYYY-MM-D'))
-      arr.push({language: date.language, level: date.level, isLearnt: date.date === '2024-02-12'})
+      arr.push({language: date.language, level: date.level, isLearnt: date.date === moment().format('YYYY-MM-D')})
     }
     return res.json(arr)
   })
 })
 
 
-// Okay this needs to either be into two queries, with 2nd one being huge
-// or some other way to not have nested queries
-//
-// idk what is better
 /*
  * Post request
   * takes in user id, word id, language and level
@@ -102,7 +96,10 @@ app.post("/api/save_progress", (req, res) => {
         }
         resolve(data);
       });
-      // This query is badly written
+      
+
+
+      // TODO: This query is badly written
       sql = "SELECT CASE WHEN EXISTS(SELECT (SELECT date dateNewer FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1) WHERE datediff(day, dateNewer, dateOlder) <= 1)THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END;"
       db.query(sql, (err, data) => {
         if (err) {

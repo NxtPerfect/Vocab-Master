@@ -51,13 +51,15 @@ react-query
     - [x] it throws an error anyway
     - [x] don't show words if in user_progress
 - [x] show words learnt / total count of words
-- [/] show an indicator if we already lernt from that level
-    --[x] We need to store date of when we add words probably in user_progress
-    --[x] then we just need to check if that's today's date
-    --[x] if yes then check the indicator, else no
-    --[/] and we can also add that timeout as we now know, and lock the button
-    --[ ] If all words learnt, show appropriate button (user_count === total)
-
+- [x] show an indicator if we already lernt from that level
+    - [x] We need to store date of when we add words probably in user_progress
+    - [x] then we just need to check if that's today's date
+    - [x] if yes then check the indicator, else no
+    - [x] If all words learnt, show appropriate button (user_count === total)
+    - [x] and we can also add that timeout as we now know, and lock the button
+- [ ] BADLY WRITTEN UPDATE QUERY, it doesn't select anything
+- [ ] We only read last streak in home, but we should also see
+    if user has valid streak, if no then we should show that
 - [ ] hash password
 - [ ] timeout on requests to not ddos the server
 
