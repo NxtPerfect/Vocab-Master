@@ -19,6 +19,7 @@ interface Language {
   level: Array<string>;
   countTotal: Array<number>;
   countUser: Array<number>;
+  isLearnt: Array<boolean>;
 }
 
 type LanguageDataRaw = {
@@ -36,6 +37,7 @@ type UserProgressDataRaw = {
 function App() {
   const [languages, setLanguages] = useState<Array<Language>>([]);
   const [userStreak, setUserStreak] = useState<number>(0);
+  const [isLearnt, setIsLearnt] = useState<Array<{ language: string, learnt: boolean }>>([]);
 
   // Fetch all languages and user's progress if logged in
   const { isPending, isError, data, error } = useQuery({
@@ -43,7 +45,9 @@ function App() {
     queryFn: async () => {
       const langQuery = await queryLanguageData()
       if (!langQuery && !Cookie.get("user_id")) return;
-      await queryUserProgress()
+      const userQuery = await queryUserProgress()
+      if (!userQuery) return;
+      await queryIsLearntToday()
     },
     onSuccess: (data) => console.log(data),
     onError: (err) => console.log(err)
@@ -58,7 +62,8 @@ function App() {
         language: lang.language as string,
         level: lang.level.split(",") as Array<string>,
         countTotal: lang.countTotal.split(",") as Array<number>,
-        countUser: []
+        countUser: [],
+        isLearnt: []
       } as Language));
       // Add languages, levels and amount of words they have
       // To show proper LanguageSection
@@ -85,14 +90,14 @@ function App() {
       // Instead it should see if item already added in there, if yes
       // then ignore it
       // Currently will only find first match, then ignore all other attempts
-      let last_index: number = 0 
+      let last_index: number = 0
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
           data.data.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
             if (lang.language === progress.language && lang.level.includes(progress.level, last_index)) {
               lang.countUser.push(progress.userProgressTotal)
               setUserStreak(progress.streak)
-              last_index = lang.level.findIndex(element => {element === progress.level})
+              last_index = lang.level.findIndex(element => { element === progress.level })
             }
           })
         })
@@ -105,20 +110,30 @@ function App() {
     }
   }
 
-  async function queryWhenLastWord() {
+  // It requests for level array, we need to split it into query for each level or return array of each of them
+  // Issue is that this query only works if i specifically refresh this component
+  // so i should manually refetch it or something idrk
+  async function queryIsLearntToday() {
     try {
-      const data = await axios.get('http://localhost:6942/api/languages/');
-      // Process the data into array
-      // I need to win the battle with these types below
-      const temp = data.data.map((lang: LanguageDataRaw) => ({
-        language: lang.language as string,
-        level: lang.level.split(",") as Array<string>,
-        countTotal: lang.countTotal.split(",") as Array<number>,
-        countUser: []
-      } as Language));
-      // Add languages, levels and amount of words they have
-      // To show proper LanguageSection
-      setLanguages((curr: Array<Language>) => [...curr, ...temp]);
+      const data = await axios.post("http://localhost:6942/api/learnt", { user_id: Cookie.get("user_id") });
+
+      // Instead change languages state
+      // to get the isLearnt array
+      // setIsLearnt([...data.data])
+      let last_index: number = 0
+      setLanguages((curr: Array<Language>) => {
+        curr.map((lang: Language) => {
+          data.data.map((learnt: { language: string, level: string, isLearnt: boolean }) => {
+            if (lang.language === learnt.language && lang.level.includes(learnt.level, last_index)) {
+              lang.isLearnt.push(learnt.isLearnt)
+              console.log("Lang ", lang)
+              last_index = lang.level.findIndex(element => { element === learnt.level })
+            }
+          })
+        })
+        return [...curr]
+      }
+      );
       return data.data;
     } catch (err) {
       console.log(err);
@@ -142,6 +157,7 @@ function App() {
                 level={language.level}
                 countTotal={language.countTotal}
                 countLearnt={language.countUser}
+                isLearnt={language.isLearnt}
               />
             );
           },

@@ -52,18 +52,14 @@ react-query
     - [x] don't show words if in user_progress
 - [x] show words learnt / total count of words
 - [/] show an indicator if we already lernt from that level
-    --[x] We need to store date of when we add words
-    probably in user_progress
-    --[ ] then we just need to check if that's today's date
-    if yes then check the indicator, else no
-    and we can also add that timeout as we now know
-        -- so how do we structure it?
-        We need information on all the languages for setting the icon
-        we need just last learnt for streak, which we can get from all of them
-    as well as show the learn button only if we didn't learn it today
-- [ ] add 24h timeout, before next study can be done, so that you don't spam it
-- [ ] currently even if there are no words to learn we still can press the button
+    --[x] We need to store date of when we add words probably in user_progress
+    --[x] then we just need to check if that's today's date
+    --[x] if yes then check the indicator, else no
+    --[/] and we can also add that timeout as we now know, and lock the button
+    --[ ] If all words learnt, show appropriate button (user_count === total)
+
 - [ ] hash password
+- [ ] timeout on requests to not ddos the server
 
 # CSS
 - [x] Home

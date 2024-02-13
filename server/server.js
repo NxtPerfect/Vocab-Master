@@ -56,20 +56,19 @@ app.post("/api/:language&:level", (req, res) => {
   });
 });
 
-app.post("/api/:language&:level/learnt", (req, res) => {
+app.post("/api/learnt", (req, res) => {
   if (req.body.user_id === undefined) return res.status(400)
-  if (req.params === undefined) return res.status(400)
-  const { language, level } = req.params
   const user_id = req.body.user_id
   const sql = 
-    "SELECT CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE language = ? AND user_id = ? GROUP BY level ORDER BY date DESC;"
-  db.query(sql, [language, user_id], (err, data) => {
+    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = ? GROUP BY language, level ORDER BY language, level;"
+  db.query(sql, [user_id], (err, data) => {
     if (err) return res.json(err)
 
     // Check array and return array of bools
     const arr = []
     for (const date of data) {
-      arr.push(date.date === moment().format('YYYY-MM-D'))
+      // arr.push(date.date === moment().format('YYYY-MM-D'))
+      arr.push({language: date.language, level: date.level, isLearnt: date.date === '2024-02-12'})
     }
     return res.json(arr)
   })
