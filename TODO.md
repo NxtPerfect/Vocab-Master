@@ -57,17 +57,16 @@ react-query
     - [x] if yes then check the indicator, else no
     - [x] If all words learnt, show appropriate button (user_count === total)
     - [x] and we can also add that timeout as we now know, and lock the button
-- [ ] BADLY WRITTEN UPDATE QUERY, it doesn't select anything
-- [ ] We only read last streak in home, but we should also see
+- [x] BADLY WRITTEN UPDATE QUERY, it doesn't select anything
+- [x] We only read last streak in home, but we should also see
     if user has valid streak, if no then we should show that
 - [ ] hash password
-- [ ] timeout on requests to not ddos the server
 
 # CSS
 - [x] Home
     - [x] when folding, it doesn't change height
     - [x] maybe alter the colors for every 2nd item?
-    - [ ] gradient as progress bar
+    - [x] progress bar
     - [x] add visible spacing between levels
 - [x] Nav
 - [x] Footer
@@ -75,4 +74,4 @@ react-query
 - [x] Login
 - [x] Register
 - [ ] Error Page
-- [ ] confirm exit modal
+- [ ] Confirm Exit Modal

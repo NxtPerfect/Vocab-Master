@@ -10,6 +10,7 @@ dotenv.config();
 const app = express();
 const port = 6942;
 
+// TODO: Change to environment
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -96,11 +97,7 @@ app.post("/api/save_progress", (req, res) => {
         }
         resolve(data);
       });
-      
-
-
-      // TODO: This query is badly written
-      sql = "SELECT CASE WHEN EXISTS(SELECT (SELECT date dateNewer FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1) WHERE datediff(day, dateNewer, dateOlder) <= 1)THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END;"
+      sql = "SELECT CASE WHEN (SELECT datediff((SELECT date FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1))) <= 1 THEN 1 ELSE 0 END;"
       db.query(sql, (err, data) => {
         if (err) {
           console.log(err);

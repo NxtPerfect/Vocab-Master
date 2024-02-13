@@ -59,6 +59,10 @@ $border-radius: 1svw;
   flex-direction: column;
 }
 
+.disabled {
+  color: #a0a0a0;
+}
+
 main {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -174,6 +178,20 @@ main {
         p,
         h3 {
           background-color: inherit;
+        }
+
+        .progress_bar_container {
+          border-radius: $border-radius;
+          background-color: $background;
+          min-width: max(2rem, 8svw);
+          max-width: 20rem;
+          height: 0.6rem;
+
+          .progress_bar {
+            border-radius: $border-radius;
+            background-color: $text;
+            height: 100%;
+          }
         }
 
       }

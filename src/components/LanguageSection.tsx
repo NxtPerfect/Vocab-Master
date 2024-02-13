@@ -40,17 +40,17 @@ function LanguageSection({
                 {isLearnt[levelIndex] ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
                 <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
-                <div>
-                  Progress bar
+                <div className="progress_bar_container">
+                  <div className="progress_bar" style={{ width: `${countLearnt[levelIndex] === undefined ? 0 : (countLearnt[levelIndex] / countTotal[levelIndex]) * 100}%` }} />
                 </div>
-                <Link
+                {countLearnt[levelIndex] === countTotal[levelIndex] ? <p className="disabled">All words learnt</p> : (!isLearnt[levelIndex] ? (<Link
                   className="link"
                   key={levelIndex}
                   to={Cookies.get("email") ? `/flashcard/${language}/${levelLevel}` : '/login'}
                   style={{ textDecoration: "none" }}
                 >
-                  {countLearnt[levelIndex] === countTotal[levelIndex] ? <p className="disabled">All words learnt</p> : (!isLearnt[levelIndex] ? (Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>) : <p className="disabled">Come back tomorrow</p>)}
-                </Link>
+                  {Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
+                </Link>) : <p className="disabled">Come back tomorrow</p>)}
               </div>
             ))
             : "(...)"}
