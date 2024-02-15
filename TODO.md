@@ -61,6 +61,7 @@ cookie-parser
 - [ ] as cookie save secret token from database
     - [x] Nav should call auth-status instead of checking cookie
     - [ ] Implement Secure Auth
+        - [ ] Create context, to pass in auth status,
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing
 - [ ] hash password

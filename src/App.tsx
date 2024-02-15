@@ -3,9 +3,9 @@ import Cookie from "js-cookie";
 import "./App.scss";
 import Footer from "./components/Footer";
 import LanguageSection from "./components/LanguageSection";
-import Nav from "./components/Nav";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { useAuth } from "./components/AuthProvider";
 
 export interface Word {
   word_id: number;
@@ -35,19 +35,17 @@ type UserProgressDataRaw = {
 }
 
 function App() {
-  const [languages, setLanguages] = useState<Array<Language>>([]);
-  const [userStreak, setUserStreak] = useState<number>(0);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [languages, setLanguages] = useState<Array<Language>>([])
+  const isAuthenticated = useAuth()
 
   // Fetch all languages and user's progress if logged in
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
       const langQuery: { language: string, level: Array<string>, countTotal: Array<number> } = await queryLanguageData()
-      await queryAuthStatus()
-      if (!langQuery && !Cookie.get("user_id") && !isAuthenticated) return;
+      if (!langQuery && !isAuthenticated) return
       const userQuery: { language: string, level: string, userProgressTotal: Array<number>, streak: number } = await queryUserProgress()
-      if (!userQuery) return;
+      if (!userQuery) return
       await queryIsLearntToday()
     },
     onSuccess: (data) => console.log(data),
@@ -79,8 +77,7 @@ function App() {
   async function queryUserProgress() {
     try {
       const data = await axios.post("http://localhost:6942/api/user", {
-        user_id: Cookie.get("username"),
-        withCredentials: true
+        username: Cookie.get("username")
       });
       // We return the correct data, now we have to merge it
       // language, level, total words learnt
@@ -97,7 +94,6 @@ function App() {
           data.data.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
             if (lang.language === progress.language && lang.level.includes(progress.level, last_index)) {
               lang.countUser.push(progress.userProgressTotal)
-              setUserStreak(progress.streak)
               last_index = lang.level.findIndex(element => { element === progress.level })
             }
           })
@@ -127,7 +123,6 @@ function App() {
           data.data.map((learnt: { language: string, level: string, isLearnt: boolean }) => {
             if (lang.language === learnt.language && lang.level.includes(learnt.level, last_index)) {
               lang.isLearnt.push(learnt.isLearnt)
-              console.log("Lang ", lang)
               last_index = lang.level.findIndex(element => { element === learnt.level })
             }
           })
@@ -142,22 +137,8 @@ function App() {
     }
   }
 
-  // Gets current authentication status
-  async function queryAuthStatus() {
-    try {
-      const data = await axios.get("http://localhost:6942/auth-status", { withCredentials: true })
-      setIsAuthenticated(data.data.isAuthenticated)
-      console.log(Cookie.get("username"))
-      console.log(isAuthenticated)
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  }
-
   return (
     <>
-      <Nav streak={userStreak} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} queryAuthStatus={queryAuthStatus} />
       <main>
         {languages.map(
           (
@@ -177,7 +158,6 @@ function App() {
           },
         )}
       </main>
-      <Footer />
     </>
   );
 }

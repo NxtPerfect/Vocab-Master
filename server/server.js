@@ -49,7 +49,17 @@ app.post("/api/user", (req, res) => {
     if (err) return res.json(err)
     return res.json(data)
   });
-})
+});
+
+app.post("/api/user_streak", (req, res) => {
+  if (req.body.username === undefined) return res.status(400)
+  const username = req.body.username
+  const sql = "SELECT streak FROM users WHERE username = ?;"
+  db.query(sql, [username], (err, data) => {
+    if (err) return res.json(err)
+    return res.json(data)
+  });
+});
 
 app.post("/api/:language&:level", (req, res) => {
   if (req.body.user_id === undefined) return res.status(400)
@@ -78,7 +88,7 @@ app.post("/api/learnt", (req, res) => {
     }
     return res.json(arr)
   })
-})
+});
 
 
 /*
@@ -145,7 +155,7 @@ app.post("/api/date", (req, res) => {
     if (err) return res.json(err)
     return res.json(data)
   });
-})
+});
 
 app.post("/login", (req, res) => {
   if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
@@ -179,12 +189,13 @@ app.post("/register", (req, res) => {
 
 app.post("/logout", (req, res) => {
   return res.cookie("token", null, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: false, message: "Logged out successful."})
-})
+});
 
+// TODO: Temporairly always authenticates
 app.get("/auth-status", (req, res) => {
   if (req.cookies?.token === "Very secret") return res.send({isAuthenticated: true})
-  return res.send({isAuthenticated: false})
-})
+  return res.send({isAuthenticated: true})
+});
 
 app.listen(port, () => {
   console.log(`Running on port ${port}`);

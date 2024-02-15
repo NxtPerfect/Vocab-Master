@@ -10,32 +10,33 @@ import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
 import Terms from "./components/Terms.tsx";
 import PageNotFound from "./components/PageNotFound.tsx";
+import Layout from "./components/Layout.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <React.Suspense fallback={<h1>Loading...</h1>}><App /></React.Suspense>,
+    element: <Layout><App /></Layout>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/flashcard/:language/:level",
-    element: <React.Suspense fallback={<h1>Loading...</h1>}><Flashcard /></React.Suspense>,
+    element: <Layout><Flashcard /></Layout>,
     loader: flashcardLoader,
     errorElement: <ErrorPage />,
   },
   {
     path: "/login",
-    element: <React.Suspense fallback={<h1>Loading...</h1>}><Login /></React.Suspense>,
+    element: <Layout><Login /></Layout>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/register",
-    element: <React.Suspense fallback={<h1>Loading..</h1>}><Register /></React.Suspense>,
+    element: <Layout ><Register /></Layout>,
     errorElement: <ErrorPage />,
   },
   {
     path: "/terms",
-    element: <React.Suspense fallback={<h1>Loading...</h1>}><Terms /></React.Suspense>,
+    element: <Layout ><Terms /></Layout>,
     errorElement: <ErrorPage />,
   },
   {

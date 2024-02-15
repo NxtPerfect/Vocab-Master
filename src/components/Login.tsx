@@ -1,6 +1,5 @@
 import { Link, useBlocker, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
-import Nav from "./Nav";
 import { ChangeEvent, FormEventHandler, useRef, useState } from "react";
 import Modal from "./Modal";
 import Footer from "./Footer";
@@ -59,7 +58,6 @@ function Login() {
 
   return (
     <>
-      <Nav />
       <main>
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
@@ -86,7 +84,6 @@ function Login() {
         </form>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </main>
-      <Footer />
     </>
   );
 }

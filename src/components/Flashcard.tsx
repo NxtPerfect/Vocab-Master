@@ -8,7 +8,6 @@ import {
   useParams,
 } from "react-router-dom";
 import { Word } from "../App";
-import Nav from "./Nav";
 import Modal from "./Modal";
 import Footer from "./Footer";
 import axios from "axios";
@@ -149,9 +148,7 @@ function Flashcard() {
   if (words.length === 0) {
     return (
       <>
-        <Nav />
         Loading words...
-        <Footer />
       </>
     );
   }
@@ -159,9 +156,7 @@ function Flashcard() {
   if (randomIndexes.length === 0) {
     return (
       <>
-        <Nav />
         All words learnt!!!
-        <Footer />
       </>
     );
   }
@@ -169,7 +164,6 @@ function Flashcard() {
   if (show === true) {
     return (
       <>
-        <Nav />
         Flashcard
         {language}
         {level}
@@ -186,7 +180,6 @@ function Flashcard() {
           </button>
         </div>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-        <Footer />
       </>
     );
   }
@@ -194,7 +187,6 @@ function Flashcard() {
   // Needs back arrow to navigate to home
   return (
     <>
-      <Nav />
       Flashcard
       {language}
       {level}
@@ -212,7 +204,6 @@ function Flashcard() {
         </button>
       </div>
       {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-      <Footer />
     </>
   )
 }

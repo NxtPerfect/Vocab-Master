@@ -1,5 +1,4 @@
 import { useBlocker, useNavigate } from "react-router-dom";
-import Nav from "./Nav";
 import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import Modal from "./Modal";
@@ -131,7 +130,6 @@ function Register() {
 
   return (
     <>
-      <Nav />
       <main>
         <form onSubmit={handleSubmit}>
           <h1>Register</h1>
@@ -176,7 +174,6 @@ function Register() {
           {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </form>
       </main>
-      <Footer />
     </>
   );
 }
