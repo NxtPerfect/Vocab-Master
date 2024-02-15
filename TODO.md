@@ -6,6 +6,8 @@ express backend
 react frontend
 react-router
 react-query
+passport.js
+cookie-parser
 
 # Frontend
 - [x] home page
@@ -27,7 +29,7 @@ react-query
     - [x] check which ones are already learnt, don't select these
     - [x] modal window confirmation before exiting
     - [x] progress bar for how many words learnt -> as gradient
-- [/] login/register page
+- [x] login/register page
     - [x] validate password correct in database
     - [x] signup button
     - [x] set cookie with username + userid
@@ -37,7 +39,7 @@ react-query
     - [x] return error message to show above the form, below the header
     - [x] use email for login
     - [x] react query for fetches
-    - [ ] write tests
+- [ ] write tests
 
 # Backend
 - [x] read words from sql database
@@ -58,8 +60,7 @@ react-query
     if user has valid streak, if no then we should show that
 - [ ] as cookie save secret token from database
     - [x] Nav should call auth-status instead of checking cookie
-    - [ ] Backend should somehow generate auth token, and keep it
-        for authentication
+    - [ ] Implement Secure Auth
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing
 - [ ] hash password
