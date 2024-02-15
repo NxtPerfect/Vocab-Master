@@ -42,10 +42,10 @@ app.get("/api/languages/total", (req, res) => {
 // If we read the streak, we should check the last two words
 // we don't want to show streak if the user lost it
 app.post("/api/user", (req, res) => {
-  if (req.body.user_id === undefined) return res.status(400)
-  const user_id = req.body.user_id
-  const sql = "SELECT language, level, GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = ? GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
-  db.query(sql, [user_id], (err, data) => {
+  if (req.body.username === undefined) return res.status(400)
+  const username = req.body.username
+  const sql = "SELECT language, level, GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE username = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
+  db.query(sql, [username], (err, data) => {
     if (err) return res.json(err)
     return res.json(data)
   });
@@ -182,8 +182,6 @@ app.post("/logout", (req, res) => {
 })
 
 app.get("/auth-status", (req, res) => {
-  // console.log(req.cookies)
-
   if (req.cookies?.token === "Very secret") return res.send({isAuthenticated: true})
   return res.send({isAuthenticated: false})
 })

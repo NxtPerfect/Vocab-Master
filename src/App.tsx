@@ -79,9 +79,9 @@ function App() {
   async function queryUserProgress() {
     try {
       const data = await axios.post("http://localhost:6942/api/user", {
-        user_id: Cookie.get("user_id")
+        user_id: Cookie.get("username"),
+        withCredentials: true
       });
-      console.log("Got the progress with the boooyysss")
       // We return the correct data, now we have to merge it
       // language, level, total words learnt
       if (data.data === undefined || data.data.length === 0) return;
@@ -116,7 +116,7 @@ function App() {
   // so i should manually refetch it or something idrk
   async function queryIsLearntToday() {
     try {
-      const data = await axios.post("http://localhost:6942/api/learnt", { user_id: Cookie.get("user_id") });
+      const data = await axios.post("http://localhost:6942/api/learnt", { user_id: Cookie.get("user_id"), withCredentials: true });
 
       // Instead change languages state
       // to get the isLearnt array
@@ -147,6 +147,7 @@ function App() {
     try {
       const data = await axios.get("http://localhost:6942/auth-status", { withCredentials: true })
       setIsAuthenticated(data.data.isAuthenticated)
+      console.log(Cookie.get("username"))
       console.log(isAuthenticated)
     } catch (err) {
       console.log(err);

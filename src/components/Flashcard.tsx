@@ -214,6 +214,10 @@ function Flashcard() {
       {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       <Footer />
     </>
-  );
+  )
 }
-export default Flashcard;
+export default Flashcard
+
+export function flashcardLoader() {
+  return "Free sex"
+}

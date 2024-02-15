@@ -58,12 +58,10 @@ react-query
     if user has valid streak, if no then we should show that
 - [ ] as cookie save secret token from database
     - [x] Nav should call auth-status instead of checking cookie
-        Now i can't log in, it won't show the username
-        fixing types on props didn't help
+    - [ ] Backend should somehow generate auth token, and keep it
+        for authentication
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing
-    !!! - [ ] i need to migrate my site so that App is the root path, with Home etc being children
-        so that i can have Nav and Footer as static elements, with only the content changing
 - [ ] hash password
 - [ ] save words for later
 - [ ] learn again pending words

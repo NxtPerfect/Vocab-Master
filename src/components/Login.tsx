@@ -39,7 +39,8 @@ function Login() {
         //   expires: 7,
         //   samesite: "strict",
         // });
-        Cookie.set("username", data.data.username, {expires: 14, samesite: "strict", secure: true});
+        Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
+        Cookie.set("token", "Very secret", { expires: 14, samesite: "strict", secure: true, httpOnly: true })
         return data.data
       }
       alert("User doesn't exist")
