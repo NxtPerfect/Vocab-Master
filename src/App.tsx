@@ -37,15 +37,16 @@ type UserProgressDataRaw = {
 function App() {
   const [languages, setLanguages] = useState<Array<Language>>([]);
   const [userStreak, setUserStreak] = useState<number>(0);
-  const [isLearnt, setIsLearnt] = useState<Array<{ language: string, learnt: boolean }>>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   // Fetch all languages and user's progress if logged in
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
-      const langQuery = await queryLanguageData()
-      if (!langQuery && !Cookie.get("user_id")) return;
-      const userQuery = await queryUserProgress()
+      const langQuery: { language: string, level: Array<string>, countTotal: Array<number> } = await queryLanguageData()
+      await queryAuthStatus()
+      if (!langQuery && !Cookie.get("user_id") && !isAuthenticated) return;
+      const userQuery: { language: string, level: string, userProgressTotal: Array<number>, streak: number } = await queryUserProgress()
       if (!userQuery) return;
       await queryIsLearntToday()
     },
@@ -141,9 +142,21 @@ function App() {
     }
   }
 
+  // Gets current authentication status
+  async function queryAuthStatus() {
+    try {
+      const data = await axios.get("http://localhost:6942/auth-status", { withCredentials: true })
+      setIsAuthenticated(data.data.isAuthenticated)
+      console.log(isAuthenticated)
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
   return (
     <>
-      <Nav streak={userStreak} />
+      <Nav streak={userStreak} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} queryAuthStatus={queryAuthStatus} />
       <main>
         {languages.map(
           (

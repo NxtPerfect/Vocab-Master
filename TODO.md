@@ -37,10 +37,6 @@ react-query
     - [x] return error message to show above the form, below the header
     - [x] use email for login
     - [x] react query for fetches
-    - [ ] animated loading circle, rotates, changes it's width
-    - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
-    - [ ] minimal mode, where it's black/white, and has no animations
-    - [ ] as cookie save secret token from database
     - [ ] write tests
 
 # Backend
@@ -60,7 +56,19 @@ react-query
 - [x] BADLY WRITTEN UPDATE QUERY, it doesn't select anything
 - [x] We only read last streak in home, but we should also see
     if user has valid streak, if no then we should show that
+- [ ] as cookie save secret token from database
+    - [x] Nav should call auth-status instead of checking cookie
+        Now i can't log in, it won't show the username
+        fixing types on props didn't help
+    - [ ] home page should call in auth as well, and then call for user_progress
+    - [ ] flashcards should call auth before showing
+    !!! - [ ] i need to migrate my site so that App is the root path, with Home etc being children
+        so that i can have Nav and Footer as static elements, with only the content changing
 - [ ] hash password
+- [ ] save words for later
+- [ ] learn again pending words
+- [ ] cleanup ternary operators
+- [ ] count of how many words left on the bottom of flashcard
 
 # CSS
 - [x] Home
@@ -68,10 +76,14 @@ react-query
     - [x] maybe alter the colors for every 2nd item?
     - [x] progress bar
     - [x] add visible spacing between levels
+    - [ ] minimal mode, where it's black/white, and has no animations
 - [x] Nav
 - [x] Footer
 - [ ] Flashcard
+    - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
 - [x] Login
 - [x] Register
 - [ ] Error Page
 - [ ] Confirm Exit Modal
+- [ ] Loading website placeholder
+    - [ ] Animated loading circle, rotates, changes it's width

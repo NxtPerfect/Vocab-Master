@@ -1,8 +1,9 @@
 {
   "name": "vocab-master",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "proxy": "http://localhost:6942",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import moment from "moment";
 import mysql from "mysql";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -18,10 +19,16 @@ const db = mysql.createConnection({
   database: "vocab-master",
 });
 
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors( corsOptions ));
 app.use(express.json());
+app.use(cookieParser())
 
 app.get("/api/languages/total", (req, res) => {
   const sql =
@@ -97,7 +104,7 @@ app.post("/api/save_progress", (req, res) => {
         }
         resolve(data);
       });
-      sql = "SELECT CASE WHEN (SELECT datediff((SELECT date FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1))) <= 1 THEN 1 ELSE 0 END;"
+      sql = "SELECT CASE WHEN (SELECT datediff((SELECT date FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1))) <= 1 THEN 1 WHEN EXISTS((SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1)) THEN 1 ELSE 0 END;"
       db.query(sql, (err, data) => {
         if (err) {
           console.log(err);
@@ -141,13 +148,14 @@ app.post("/api/date", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  if (req.body.email === undefined) return res.status(400)
-  const sql = "SELECT * FROM users WHERE email LIKE ?;"
-  const values = [req.body.email]
-  db.query(sql, [values], (err, data) => {
+  if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
+  const sql = "SELECT username FROM users WHERE email LIKE ? AND password LIKE ?;"
+  const values = [req.body.email, req.body.password]
+  db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json("Login failed")
     if (data.length === 0) return res.status(409).json("User doesn't exist")
-    return res.status(200).json({ message: "Success", user_id: data })
+    return res.cookie("auth_token", "Very secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
+    // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
   });
 });
 
@@ -168,6 +176,17 @@ app.post("/register", (req, res) => {
     });
   });
 });
+
+app.post("/logout", (req, res) => {
+  return res.cookie("token", null, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: false, message: "Logged out successful."})
+})
+
+app.get("/auth-status", (req, res) => {
+  // console.log(req.cookies)
+
+  if (req.cookies?.token === "Very secret") return res.send({isAuthenticated: true})
+  return res.send({isAuthenticated: false})
+})
 
 app.listen(port, () => {
   console.log(`Running on port ${port}`);
