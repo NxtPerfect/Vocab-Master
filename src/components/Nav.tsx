@@ -4,27 +4,33 @@ import axios from "axios";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useQuery } from "react-query";
 
-function Nav({ streak, isAuthenticated, setIsAuthenticated, queryAuthStatus }: { streak: number, isAuthenticated: boolean, setIsAuthenticated: Dispatch<SetStateAction<boolean>>, queryAuthStatus: () => Promise<void> }) {
+function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, queryAuthStatus }: { streak: number, queryUserStreak: () => Promise<void>, isAuthenticated: boolean, setIsAuthenticated: Dispatch<SetStateAction<boolean>>, queryAuthStatus: () => Promise<void> }) {
   const navigate = useNavigate();
   async function unsetCookies() {
     Cookie.remove("username");
     try {
-      await axios.get('http://localhost:6942/logout', { withCredentials: true })
-      setIsAuthenticated(false)
+      await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).finally(navigate("/"))
     }
     catch (err) {
       console.log(err)
       throw (err)
     }
-    navigate("/");
   }
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
       await queryAuthStatus()
+      await queryUserStreak()
     },
   })
+
+  // const { isPend, isErr, dat, err } = useQuery({
+  //   queryKey: ["streak"],
+  //   queryFn: async () => {
+  //     await queryUserStreak()
+  //   },
+  // })
 
   // async function queryAuthStatus() {
   //   try {
@@ -48,7 +54,7 @@ function Nav({ streak, isAuthenticated, setIsAuthenticated, queryAuthStatus }: {
             <Link className="link" to="/">
               Home
             </Link>
-            <p>{streak !== 0 ? "🔥" : "❌"} days</p>
+            <span>{streak !== 0 ? `🔥 ${streak} days` : "❌fail"}</span>
             {Cookie.get("username")}
             <button type="button" onClick={unsetCookies}>
               Log out

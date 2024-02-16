@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
+import Cookie from "js-cookie";
 import { useQuery } from "react-query";
 import axios from "axios";
 
@@ -46,10 +46,10 @@ function LanguageSection({
                 {countLearnt[levelIndex] === countTotal[levelIndex] ? <p className="disabled">All words learnt</p> : (!isLearnt[levelIndex] ? (<Link
                   className="link"
                   key={levelIndex}
-                  to={Cookies.get("email") ? `/flashcard/${language}/${levelLevel}` : '/login'}
+                  to={Cookie.get("username") ? `/flashcard/${language}/${levelLevel}` : '/login'}
                   style={{ textDecoration: "none" }}
                 >
-                  {Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
+                  {Cookie.get("username") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
                 </Link>) : <p className="disabled">Come back tomorrow</p>)}
               </div>
             ))

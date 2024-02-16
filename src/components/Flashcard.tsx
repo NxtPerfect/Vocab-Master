@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+import Cookie from "js-cookie";
 import { useEffect, useState } from "react";
 import {
   NavigateFunction,
@@ -7,9 +7,8 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { Word } from "../App";
+import { Word } from "./Home";
 import Modal from "./Modal";
-import Footer from "./Footer";
 import axios from "axios";
 import { useQuery } from "react-query";
 
@@ -37,14 +36,13 @@ function Flashcard() {
     queryFn: async () => {
       await queryWords()
     },
-    onSuccess: (data: { language: string, level: string, word_id: number, sideA: string, sideB: string }) => console.log(data),
     onError: (err: Error) => console.log(err)
   })
 
   async function queryWords() {
     try {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
-        user_id: Cookies.get("user_id")
+        username: Cookie.get("username")
       });
       setWords(data.data);
       setChangedWords(true);
@@ -78,28 +76,27 @@ function Flashcard() {
    */
   useEffect(() => {
     if (randomIndexes.length === 0 && changedWords) {
-      const progressData: Array<object> = [];
+      const progressData: Array<{ username: string, word_id: number, language: string, level: string }> = [];
       for (const word of words) {
         progressData.push({
-          user_id: Cookies.get("user_id"),
+          username: Cookie.get("username"),
           word_id: word.word_id,
-          language: language,
-          level: level,
+          language: language as string,
+          level: level as string,
         });
       }
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ progressData }),
-      };
-      fetch("http://localhost:6942/api/save_progress", requestOptions).then(
-        () => {
-          console.log("All words lernt");
-          navigate("/");
-        },
-      );
+      querySaveProgress(progressData)
     }
   }, [randomIndexes]);
+
+  async function querySaveProgress(progressData: Array<{ username: string, word_id: number, language: string, level: string }>) {
+    try {
+      const data = await axios.post("http://localhost:6942/api/save_progress", { progressData }).finally(navigate("/"))
+    } catch (err) {
+      console.log(err)
+      throw (err)
+    }
+  }
 
   function incrementIndex() {
     if (currentIndex + 1 >= randomIndexes.length) {
@@ -118,6 +115,7 @@ function Flashcard() {
         curr.filter((index) => index !== randomIndexes[currentIndex]),
       );
       setShow(false);
+      // If randomindexes length 0 then save progress
       return;
     }
     setWords((words) => {

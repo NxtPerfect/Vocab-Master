@@ -1,11 +1,10 @@
 import axios from "axios";
 import Cookie from "js-cookie";
-import "./App.scss";
-import Footer from "./components/Footer";
-import LanguageSection from "./components/LanguageSection";
+import "../App.scss";
+import LanguageSection from "./LanguageSection";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { useAuth } from "./components/AuthProvider";
+import { useAuth } from "./AuthProvider";
 
 export interface Word {
   word_id: number;
@@ -34,7 +33,7 @@ type UserProgressDataRaw = {
   countUser: number;
 }
 
-function App() {
+function Home() {
   const [languages, setLanguages] = useState<Array<Language>>([])
   const isAuthenticated = useAuth()
 
@@ -112,7 +111,7 @@ function App() {
   // so i should manually refetch it or something idrk
   async function queryIsLearntToday() {
     try {
-      const data = await axios.post("http://localhost:6942/api/learnt", { user_id: Cookie.get("user_id"), withCredentials: true });
+      const data = await axios.post("http://localhost:6942/api/learnt", { username: Cookie.get("username") });
 
       // Instead change languages state
       // to get the isLearnt array
@@ -162,4 +161,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

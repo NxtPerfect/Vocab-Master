@@ -2,6 +2,7 @@ import React, { ReactElement, useState } from 'react'
 import Nav from './Nav'
 import Footer from './Footer'
 import axios from 'axios'
+import Cookie from "js-cookie"
 import { useQuery } from 'react-query';
 
 function Layout({ children }: { children: ReactElement }) {
@@ -13,12 +14,11 @@ function Layout({ children }: { children: ReactElement }) {
     queryKey: ["languages"],
     queryFn: async () => {
       await queryAuthStatus()
-      if (!isAuthenticated) return;
+      if (isAuthenticated) return;
       const userQuery: { language: string, level: string, userProgressTotal: Array<number>, streak: number } = await queryUserProgress()
       if (!userQuery) return;
       await queryUserStreak()
     },
-    onSuccess: (data) => console.log(data),
     onError: (err) => console.log(err)
   })
 
@@ -36,7 +36,7 @@ function Layout({ children }: { children: ReactElement }) {
 
   async function queryUserStreak() {
     try {
-      const data = await axios.get("http://localhost:6942/api/user_streak")
+      const data = await axios.post("http://localhost:6942/api/user_streak", { username: Cookie.get("username") })
       setUserStreak(data.data.userStreak)
       console.log(userStreak)
     } catch (err) {
@@ -47,7 +47,7 @@ function Layout({ children }: { children: ReactElement }) {
 
   return (
     <>
-      <Nav streak={userStreak} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} queryAuthStatus={queryAuthStatus} />
+      <Nav streak={userStreak} queryUserStreak={queryUserStreak} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} queryAuthStatus={queryAuthStatus} />
       {children}
       <Footer />
     </>

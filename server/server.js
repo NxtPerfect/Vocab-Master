@@ -54,32 +54,32 @@ app.post("/api/user", (req, res) => {
 app.post("/api/user_streak", (req, res) => {
   if (req.body.username === undefined) return res.status(400)
   const username = req.body.username
-  const sql = "SELECT streak FROM users WHERE username = ?;"
+  const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
   db.query(sql, [username], (err, data) => {
     if (err) return res.json(err)
-    return res.json(data)
+    return res.json(data[0])
   });
 });
 
 app.post("/api/:language&:level", (req, res) => {
-  if (req.body.user_id === undefined) return res.status(400)
+  if (req.body.username === undefined) return res.status(400)
   if (req.params === undefined) return res.status(400)
   const { language, level } = req.params
-  const user_id = req.body.user_id
+  const username = req.body.username
   const sql =
-    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = ?) LIMIT 30;";
-  db.query(sql, [language, level, user_id], (err, data) => {
+    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE username = ?)) LIMIT 30;";
+  db.query(sql, [language, level, username], (err, data) => {
     if (err) return res.json(err)
     return res.json(data)
   });
 });
 
 app.post("/api/learnt", (req, res) => {
-  if (req.body.user_id === undefined) return res.status(400)
-  const user_id = req.body.user_id
+  if (req.body.username === undefined) return res.status(400)
+  const username = req.body.username
   const sql = 
-    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = ? GROUP BY language, level ORDER BY language, level;"
-  db.query(sql, [user_id], (err, data) => {
+    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE username = ?) GROUP BY language, level ORDER BY language, level;"
+  db.query(sql, [username], (err, data) => {
     if (err) return res.json(err)
 
     const arr = []
@@ -103,11 +103,11 @@ app.post("/api/save_progress", (req, res) => {
   if (req.body.progressData === undefined) return res.status(400)
   const progressData = req.body.progressData;
   const queries = progressData.map((progressItem) => {
-    const { user_id, word_id, language, level } = progressItem;
+    const { username, word_id, language, level } = progressItem;
     let sql =
-      "INSERT INTO user_progress (user_id, word_id, language, level, date) VALUES (?, ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'));";
+      "INSERT INTO user_progress (user_id, word_id, language, level, date) VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'));";
     return new Promise((resolve, reject) => {
-      db.query(sql, [user_id, word_id, language, level, moment().format('D-M-YYYY')], (err, data) => {
+      db.query(sql, [username, word_id, language, level, moment().format('D-M-YYYY')], (err, data) => {
         if (err) {
           console.log(err);
           return reject(err);
@@ -146,12 +146,12 @@ app.post("/api/save_progress", (req, res) => {
 // only get the last date from each language/level
 // but then for streak we need all of it
 app.post("/api/date", (req, res) => {
-  if (req.body.user_id === undefined) return res.status(400)
+  if (req.body.username === undefined) return res.status(400)
   if (req.params === undefined) return res.status(400)
-  const user_id = req.body.user_id
+  const username = req.body.username
   const sql =
-    "SELECT * FROM user_progress WHERE user_id = ?;";
-  db.query(sql, [user_id], (err, data) => {
+    "SELECT * FROM user_progress WHERE user_id = (SELECT id FROM users WHERE username = ?);";
+  db.query(sql, [username], (err, data) => {
     if (err) return res.json(err)
     return res.json(data)
   });
@@ -164,7 +164,7 @@ app.post("/login", (req, res) => {
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json("Login failed")
     if (data.length === 0) return res.status(409).json("User doesn't exist")
-    return res.cookie("auth_token", "Very secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
+    return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
     // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
   });
 });

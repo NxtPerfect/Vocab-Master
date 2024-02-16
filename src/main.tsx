@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import App from "./App.tsx";
-import ErrorPage from "./ErrorPage.tsx";
+import Home from "./components/Home.tsx";
+import ErrorPage from "./components/ErrorPage.tsx";
 import Flashcard, { flashcardLoader } from "./components/Flashcard.tsx";
 import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
@@ -15,7 +15,7 @@ import Layout from "./components/Layout.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout><App /></Layout>,
+    element: <Layout><Home /></Layout>,
     errorElement: <ErrorPage />,
   },
   {
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <PageNotFound />,
+    element: <Layout><PageNotFound /></Layout>,
   }
 ]);
 
