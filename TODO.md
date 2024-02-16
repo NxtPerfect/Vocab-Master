@@ -58,11 +58,12 @@ cookie-parser
     - [x] Nav should call auth-status instead of checking cookie
     - [x] Fix userStreak not updating
     - [x] currently language sections don't update either
-    - [/] and we're unable to logout
-        - [ ] The language section data stays
-        - [ ] On login the home page doesn't refresh
+        !!!- [ ] The language section data doesn't refresh
+        !!!- [ ] On login the home page doesn't refresh
+        Both of them fetch to infinity
     - [ ] Implement Secure Auth
-        - [ ] Create context, to pass in auth status, but where
+        - [x] Create context, to pass in auth status
+        - [ ] Create JWT - json web token, to authenticate
 
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing

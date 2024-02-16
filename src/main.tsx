@@ -11,6 +11,7 @@ import Register from "./components/Register.tsx";
 import Terms from "./components/Terms.tsx";
 import PageNotFound from "./components/PageNotFound.tsx";
 import Layout from "./components/Layout.tsx";
+import AuthProvider from "./components/AuthProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -51,7 +52,9 @@ const queryClient = new QueryClient()
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
       <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>
   </React.StrictMode>

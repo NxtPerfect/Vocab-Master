@@ -159,13 +159,14 @@ app.post("/api/date", (req, res) => {
 
 app.post("/login", (req, res) => {
   if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
-  const sql = "SELECT username FROM users WHERE email LIKE ? AND password LIKE ?;"
+  const sql = "SELECT username FROM users WHERE email = ? AND password = ?;"
   const values = [req.body.email, req.body.password]
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json("Login failed")
     if (data.length === 0) return res.status(409).json("User doesn't exist")
-    return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
+    // return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
     // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
+    return res.status(200).json({ message: "Success", username: data[0].username })
   });
 });
 
@@ -193,8 +194,8 @@ app.post("/logout", (req, res) => {
 
 // TODO: Temporairly always authenticates
 app.get("/auth-status", (req, res) => {
-  if (req.cookies?.token === "Very secret") return res.send({isAuthenticated: true})
-  return res.send({isAuthenticated: true})
+  if (req.cookies?.token === "Very_secret") return res.send({isAuthenticated: true})
+  return res.send({isAuthenticated: false})
 });
 
 app.listen(port, () => {

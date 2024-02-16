@@ -8,21 +8,25 @@ function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, que
   const navigate = useNavigate();
   async function unsetCookies() {
     Cookie.remove("username");
-    try {
-      await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).finally(navigate("/"))
-    }
-    catch (err) {
-      console.log(err)
-      throw (err)
-    }
+    setIsAuthenticated(false)
+    navigate(0)
+    // try {
+    //   await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).then(navigate(0))
+    // }
+    // catch (err) {
+    //   console.log(err)
+    //   throw (err)
+    // }
   }
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isLoading, isError, isFetching, data, error } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
-      await queryAuthStatus()
+      // await queryAuthStatus()
       await queryUserStreak()
     },
+    onError: (err) => console.log(err),
+    enabled: true
   })
 
   // const { isPend, isErr, dat, err } = useQuery({
@@ -45,16 +49,18 @@ function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, que
 
 
   // this if statement should instead call the auth-status
-  if (isAuthenticated) {
+  if (isAuthenticated || Cookie.get("username")) {
     return (
       <>
         <nav>
-          <h1>Vocab Master</h1>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <h1>Vocab Master</h1>
+          </Link>
           <div className="nav_buttons">
             <Link className="link" to="/">
               Home
             </Link>
-            <span>{streak !== 0 ? `🔥 ${streak} days` : "❌fail"}</span>
+            <span>{isFetching ? "Loading..." : (streak !== 0 ? `🔥 ${streak} days` : "❌fail")}</span>
             {Cookie.get("username")}
             <button type="button" onClick={unsetCookies}>
               Log out

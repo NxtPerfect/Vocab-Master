@@ -1,11 +1,27 @@
-import React, { ReactElement, createContext, useContext, useState } from 'react'
+import React, { ReactElement, createContext, useContext, useMemo, useState } from 'react'
 
 const AuthContext = createContext(false);
 
 function AuthProvider({ children }: { children: ReactElement }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+
+  const login = () => {
+    setIsAuthenticated(true)
+  }
+
+  const logout = () => {
+    setIsAuthenticated(false)
+  }
+
+  const contextValue = useMemo(() => ({
+    isAuthenticated,
+    setIsAuthenticated,
+    login,
+    logout
+  }), [isAuthenticated])
+
   return (
-    <AuthContext.Provider value={isAuthenticated}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

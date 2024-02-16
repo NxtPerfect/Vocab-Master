@@ -14,9 +14,7 @@ function Layout({ children }: { children: ReactElement }) {
     queryKey: ["languages"],
     queryFn: async () => {
       await queryAuthStatus()
-      if (isAuthenticated) return;
-      const userQuery: { language: string, level: string, userProgressTotal: Array<number>, streak: number } = await queryUserProgress()
-      if (!userQuery) return;
+      if (!isAuthenticated) return;
       await queryUserStreak()
     },
     onError: (err) => console.log(err)

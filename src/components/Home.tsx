@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookie from "js-cookie";
 import "../App.scss";
 import LanguageSection from "./LanguageSection";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useAuth } from "./AuthProvider";
 
@@ -38,7 +38,7 @@ function Home() {
   const isAuthenticated = useAuth()
 
   // Fetch all languages and user's progress if logged in
-  const { isPending, isError, data, error } = useQuery({
+  const { isLoading, isError, isFetching, data, error } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
       const langQuery: { language: string, level: Array<string>, countTotal: Array<number> } = await queryLanguageData()
@@ -47,8 +47,8 @@ function Home() {
       if (!userQuery) return
       await queryIsLearntToday()
     },
-    onSuccess: (data) => console.log(data),
-    onError: (err) => console.log(err)
+    onError: (err) => console.log(err),
+    enabled: true
   })
 
   async function queryLanguageData() {
@@ -139,6 +139,7 @@ function Home() {
   return (
     <>
       <main>
+        {isError ? "Failed to fetch" : error}
         {languages.map(
           (
             language: Language,

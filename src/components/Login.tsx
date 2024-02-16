@@ -1,14 +1,18 @@
 import { Link, useBlocker, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
-import { ChangeEvent, FormEventHandler, useRef, useState } from "react";
+import { ChangeEvent, FormEventHandler, useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
-import Footer from "./Footer";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
+import { useAuth } from "./AuthProvider";
 
 function Login() {
-  const email = useRef();
-  const password = useRef();
+  const email = useRef()
+  const password = useRef()
+  const { isAuthenticated, setIsAuthenticated, login, logout } = useAuth()
+  const queryClient = useQueryClient()
+  // TODO: This blocker runs even if we press login button
+  // set state to not show this blocker if we pressed login
   let blocker: Blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       (email.current.value !== "" || password.current.value !== "") &&
@@ -22,7 +26,6 @@ function Login() {
     queryFn: async () => {
       await queryLogin()
     },
-    onSuccess: (data) => console.log(data),
     onError: (err) => console.log(err),
     refetchOnWindowFocus: false,
     enabled: false
@@ -30,25 +33,26 @@ function Login() {
 
   async function queryLogin() {
     try {
-      const data = await axios.post('http://localhost:6942/login', { email: email.current.value, password: password.current.value, withCredentials: true });
-      if (data.data.message === "Login successful.") {
-        navigate("/");
-        // Cookie.set("email", email, { expires: 7, samesite: "none", secure: true });
-        // Cookie.set("user_id", data.data.user_id[0].id, {
-        //   expires: 7,
-        //   samesite: "strict",
-        // });
-        Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
-        Cookie.set("token", "Very secret", { expires: 14, samesite: "strict", secure: true, httpOnly: true })
+      const data = await axios.post('http://localhost:6942/login', { email: email.current.value, password: password.current.value });
+      if (data.data.message !== "Success") {
+        alert("User doesn't exist")
         return data.data
       }
-      alert("User doesn't exist")
+      Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
+      await setIsAuthenticated(true)
+      console.log(isAuthenticated)
+      navigate('/')
       return data.data
     } catch (err) {
       console.log(err)
       throw err
     }
   }
+
+  useEffect(() => {
+    queryClient.invalidateQueries("languages")
+    queryClient.invalidateQueries("auth")
+  }, [queryClient])
 
   function handleSubmit(e: FormEventHandler<HTMLFormElement>) {
     e.preventDefault();
