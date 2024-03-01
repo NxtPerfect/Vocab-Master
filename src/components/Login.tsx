@@ -1,16 +1,17 @@
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
-import { FormEventHandler, useEffect, useRef } from "react";
+import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useAuth } from "./AuthProvider";
+import IconSpinner from "./IconSpinner";
 
 function Login() {
   const email = useRef()
   const password = useRef()
   const { isAuthenticated, setIsAuthenticated, login, logout } = useAuth()
   const queryClient = useQueryClient()
-
+  const [errorMessage, setErrorMessage] = useState<string>("")
   const navigate = useNavigate();
 
   const { isLoading, isError, error, data, refetch } = useQuery({
@@ -18,18 +19,24 @@ function Login() {
     queryFn: async () => {
       await queryLogin()
     },
-    onError: (err) => console.log(err),
-    onSuccess: () => console.log("Successful Login"),
+    onError: (err) => setErrorMessage(err.response.data),
+    onSuccess: () => {
+      // reload website to get language sections
+      console.log("Successful Login")
+      window.location.assign("/")
+    },
     refetchOnWindowFocus: false,
     enabled: false,
   })
 
   async function queryLogin() {
     try {
+      setErrorMessage("")
       const data = await axios.post('http://localhost:6942/login', { email: email.current.value, password: password.current.value });
       if (data.data.message !== "Success") {
-        alert("User doesn't exist")
-        return data.data
+        console.log(data.status)
+        setErrorMessage(data.status.toString())
+        return
       }
       Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
       await setIsAuthenticated(true)
@@ -41,11 +48,11 @@ function Login() {
       throw err
     }
   }
-
-  useEffect(() => {
-    queryClient.invalidateQueries("languages")
-    queryClient.invalidateQueries("auth")
-  }, [queryClient])
+  //
+  // useEffect(() => {
+  //   queryClient.invalidateQueries("languages")
+  //   queryClient.invalidateQueries("auth")
+  // }, [queryClient])
 
   function handleSubmit(e: FormEventHandler<HTMLFormElement>) {
     e.preventDefault();
@@ -76,11 +83,11 @@ function Login() {
             maxLength={128}
             required
           />
-          <button type="submit">Login</button>
+          <p className="error-msg">{errorMessage}</p>
+          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner/> : null}Login</button>
           <Link to={"/register"} style={{ textDecoration: "none" }}>
             <button type="button">Create new account</button>
           </Link>
-          {isError ? error : null}
         </form>
       </main>
     </>

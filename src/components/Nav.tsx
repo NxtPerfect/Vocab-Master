@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
 import axios from "axios";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, Suspense, useEffect } from "react";
 import { useQuery } from "react-query";
 
 function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, queryAuthStatus }: { streak: number, queryUserStreak: () => Promise<void>, isAuthenticated: boolean, setIsAuthenticated: Dispatch<SetStateAction<boolean>>, queryAuthStatus: () => Promise<void> }) {
@@ -60,8 +60,10 @@ function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, que
             <Link className="link" to="/">
               Home
             </Link>
-            <span>{streak !== 0 ? `🔥 ${streak} days ` : "❌fail "}
-              {Cookie.get("username")}</span>
+            <Suspense fallback={"Loading..."}>
+              <span>{streak !== 0 ? `🔥 ${streak} days ` : "❌fail "}
+                {Cookie.get("username")}</span>
+            </Suspense>
             <button type="button" onClick={unsetCookies}>
               Log out
             </button>

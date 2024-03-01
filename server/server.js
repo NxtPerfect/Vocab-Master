@@ -5,18 +5,17 @@ import express from "express";
 import moment from "moment";
 import mysql from "mysql";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 
-dotenv.config();
-
+const config = dotenv.config()
 const app = express();
-const port = 6942;
+const port = process.env.PORT;
 
-// TODO: Change to environment
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "vocab-master",
+  host: process.env.HOST, // localhost
+  user: process.env.DBUSER, // root
+  password: process.env.DBPASSWORD,// ""
+  database: process.env.DBNAME // vocab-master
 });
 
 const corsOptions = {
@@ -24,11 +23,17 @@ const corsOptions = {
   credentials: true,
 }
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 10000, // 15 minutes
+  limit: 100,
+})
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors( corsOptions ));
 app.use(express.json());
 app.use(cookieParser())
+app.use(limiter)
 
 app.get("/api/languages/total", (req, res) => {
   const sql =
@@ -163,7 +168,7 @@ app.post("/login", (req, res) => {
   const values = [req.body.email, req.body.password]
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json("Login failed")
-    if (data.length === 0) return res.status(409).json("User doesn't exist")
+    if (data.length === 0) return res.status(401).json("User doesn't exist")
     // return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
     // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
     // return res.redirect(200, "/")
@@ -180,7 +185,7 @@ app.post("/register", (req, res) => {
   db.query(valid, [values[1]], (err, data) => {
     if (err) return res.status(500).json("Error validating");
     if (data.length !== 0)
-      return res.status(409).json("Email address already exists");
+      return res.status(401).json("Email address already exists");
     const sql = "INSERT INTO users (id, email, username, password) VALUES (?);";
     db.query(sql, [values], (err, _data) => {
       if (err) return res.status(500).json("Error registering");
@@ -200,5 +205,5 @@ app.get("/auth-status", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Running on port ${port}`);
+  console.log(`Running on ${process.env.HOST}:${port}`);
 });

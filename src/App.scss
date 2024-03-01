@@ -35,14 +35,19 @@ $border-radius: 1svw;
   &:hover {
     background-color: $bg-alt;
     color: $color-alt;
-    // transition: color 0.1s linear, background-color 0.1s linear;
     cursor: pointer;
   }
 
   &:active {
     background-color: color.scale($bg-alt, $lightness: 20%);
     color: color.scale($color-alt, $lightness: 20%);
-    // transition: color 0.1s linear, background-color 0.1s linear;
+  }
+  &:disabled {
+    background-color: color.scale($bg, $blackness: 30%);
+    cursor: wait;
+    &:hover {
+      color: $color;
+    }
   }
 }
 
@@ -294,6 +299,13 @@ form {
     font-size: 1rem;
     font-weight: bold;
   }
+
+  .error-msg {
+    color: #f00000;
+    background-color: $accent;
+    font-weight: 700;
+    font-size: 14pt;
+  }
 }
 
 nav {
@@ -425,6 +437,22 @@ footer {
       }
     }
   }
+}
+
+@keyframes spin {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+.spinner {
+  position: relative;
+  left: -0.5rem;
+  background-color: transparent;
+  animation: spin ease-in-out infinite 1.5s;
 }
 
 // Mobile CSS
