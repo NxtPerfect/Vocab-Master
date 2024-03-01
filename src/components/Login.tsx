@@ -1,7 +1,6 @@
-import { Link, useBlocker, useNavigate } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
-import { ChangeEvent, FormEventHandler, useEffect, useRef, useState } from "react";
-import Modal from "./Modal";
+import { FormEventHandler, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useAuth } from "./AuthProvider";
@@ -11,24 +10,18 @@ function Login() {
   const password = useRef()
   const { isAuthenticated, setIsAuthenticated, login, logout } = useAuth()
   const queryClient = useQueryClient()
-  // TODO: This blocker runs even if we press login button
-  // set state to not show this blocker if we pressed login
-  let blocker: Blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      (email.current.value !== "" || password.current.value !== "") &&
-      currentLocation.pathname !== nextLocation.pathname,
-  );
 
   const navigate = useNavigate();
 
-  const { data, refetch } = useQuery({
+  const { isLoading, isError, error, data, refetch } = useQuery({
     queryKey: ["login"],
     queryFn: async () => {
       await queryLogin()
     },
     onError: (err) => console.log(err),
+    onSuccess: () => console.log("Successful Login"),
     refetchOnWindowFocus: false,
-    enabled: false
+    enabled: false,
   })
 
   async function queryLogin() {
@@ -41,7 +34,7 @@ function Login() {
       Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
       await setIsAuthenticated(true)
       console.log(isAuthenticated)
-      navigate('/')
+      navigate("/")
       return data.data
     } catch (err) {
       console.log(err)
@@ -79,14 +72,16 @@ function Login() {
             name="password"
             placeholder="********"
             ref={password}
+            minLength={5}
+            maxLength={128}
             required
           />
           <button type="submit">Login</button>
           <Link to={"/register"} style={{ textDecoration: "none" }}>
             <button type="button">Create new account</button>
           </Link>
+          {isError ? error : null}
         </form>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </main>
     </>
   );

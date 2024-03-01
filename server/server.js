@@ -166,6 +166,7 @@ app.post("/login", (req, res) => {
     if (data.length === 0) return res.status(409).json("User doesn't exist")
     // return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
     // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
+    // return res.redirect(200, "/")
     return res.status(200).json({ message: "Success", username: data[0].username })
   });
 });

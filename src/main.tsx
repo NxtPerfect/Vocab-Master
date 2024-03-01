@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query-devtools";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Home from "./components/Home.tsx";
+import Home, { languageLoader } from "./components/Home.tsx";
 import ErrorPage from "./components/ErrorPage.tsx";
 import Flashcard, { flashcardLoader } from "./components/Flashcard.tsx";
 import Login from "./components/Login.tsx";
@@ -17,6 +16,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout><Home /></Layout>,
+    loader: languageLoader,
     errorElement: <ErrorPage />,
   },
   {
@@ -55,7 +55,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <RouterProvider router={router} />
       </AuthProvider>
-      <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>
   </React.StrictMode>
 );

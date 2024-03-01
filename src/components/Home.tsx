@@ -27,12 +27,6 @@ type LanguageDataRaw = {
   countTotal: string;
 }
 
-type UserProgressDataRaw = {
-  language: string;
-  level: string;
-  countUser: number;
-}
-
 function Home() {
   const [languages, setLanguages] = useState<Array<Language>>([])
   const isAuthenticated = useAuth()
@@ -163,3 +157,7 @@ function Home() {
 }
 
 export default Home;
+
+export function languageLoader() {
+  return "Gamers"
+}

@@ -6,70 +6,27 @@ react-query
 cookie-parser
 
 # Frontend
-- [x] home page
-    - [x] more language sections
-    - [x] footer
-    - [x] folding language sections
-- [x] top nav bar with name, home, login, signup, logout
-- [x] flashcard page
-    - [x] correct/wrong button
-    - [x] reveal button
-    - [x] pick randomly words
-    - [x] randomly pick numbers from 0 to n
-    - [x] use that list of numbers to go through with index, to show that word
-    - [x] words type, with english/translated field, as well as "guessed" bool
-        - [x] if guessed once, set it to true, if already true, remove that number from list and go index -1
-        - [x] if guessed wrong, reset that atribute
-        - [x] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
-    - [x] max of 30 words per day
-    - [x] check which ones are already learnt, don't select these
-    - [x] modal window confirmation before exiting
-    - [x] progress bar for how many words learnt -> as gradient
-- [x] login/register page
-    - [x] validate password correct in database
-    - [x] signup button
-    - [x] set cookie with username + userid
-    - [x] register new account
-    - [x] regex if password, login and email are correct
-    - [x] check if password == confirm password
-    - [x] return error message to show above the form, below the header
-    - [x] use email for login
-    - [x] react query for fetches
+- [x] max of 30 words per day
 - [ ] write tests
 
 # Backend
-- [x] read words from sql database
-- [x] login/register backend
-- [x] save user progress
-    - [x] currently the fetch runs instantly after render
-    - [x] it throws an error anyway
-    - [x] don't show words if in user_progress
-- [x] show words learnt / total count of words
-- [x] show an indicator if we already lernt from that level
-    - [x] We need to store date of when we add words probably in user_progress
-    - [x] then we just need to check if that's today's date
-    - [x] if yes then check the indicator, else no
-    - [x] If all words learnt, show appropriate button (user_count === total)
-    - [x] and we can also add that timeout as we now know, and lock the button
-- [x] BADLY WRITTEN UPDATE QUERY, it doesn't select anything
 - [x] We only read last streak in home, but we should also see
     if user has valid streak, if no then we should show that
 - [ ] as cookie save secret token from database
     - [x] Nav should call auth-status instead of checking cookie
     - [x] Fix userStreak not updating
     - [x] currently language sections don't update either
-        !!!- [ ] The language section data doesn't refresh
-        !!!- [ ] On login the home page doesn't refresh
-        Both of them fetch to infinity
+        !- [ ] The language section data doesn't refresh
+        - [x] On login the home page doesn't refresh
     - [ ] Implement Secure Auth
         - [x] Create context, to pass in auth status
         - [ ] Create JWT - json web token, to authenticate
-
+    - [ ] Use .env
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing
 - [ ] hash password
 - [ ] save words for later
-- [ ] learn again pending words
+    - [ ] learn again pending words
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 
@@ -80,12 +37,8 @@ cookie-parser
     - [x] progress bar
     - [x] add visible spacing between levels
     - [ ] minimal mode, where it's black/white, and has no animations
-- [x] Nav
-- [x] Footer
 - [ ] Flashcard
     - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
-- [x] Login
-- [x] Register
 - [ ] Error Page
 - [ ] Confirm Exit Modal
 - [ ] Loading website placeholder

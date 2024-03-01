@@ -60,8 +60,8 @@ function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, que
             <Link className="link" to="/">
               Home
             </Link>
-            <span>{isFetching ? "Loading..." : (streak !== 0 ? `🔥 ${streak} days` : "❌fail")}</span>
-            {Cookie.get("username")}
+            <span>{streak !== 0 ? `🔥 ${streak} days ` : "❌fail "}
+              {Cookie.get("username")}</span>
             <button type="button" onClick={unsetCookies}>
               Log out
             </button>
