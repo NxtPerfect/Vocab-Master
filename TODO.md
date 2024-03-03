@@ -1,5 +1,6 @@
 # Focus on Minimum Viable Product
 express backend
+express-session
 react frontend
 react-router
 react-query
@@ -16,9 +17,9 @@ cookie-parser
 - [ ] as cookie save secret token from database
     - [ ] Implement Secure Auth
         - [x] Create context, to pass in auth status
-        - [ ] Send jwt token to user
-            or session cookie
-            think which is better
+        - [ ] Send session cookie
+            - [ ] generate unique uuid for user
+            save into session
         - [ ] authenticate actions on frontend
         - [ ] handle errors on query
         - [ ] using express-session, store it in session

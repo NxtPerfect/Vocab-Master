@@ -7,6 +7,7 @@ import mysql from "mysql";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
+import session from "express-session";
 
 const config = dotenv.config()
 const app = express();
@@ -21,20 +22,27 @@ const db = mysql.createConnection({
 
 const corsOptions = {
   origin: "http://localhost:5173",
-  credentials: true,
+  credentials: true
 }
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 10000, // 15 minutes
-  limit: 100,
+  limit: 100
 })
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors(corsOptions));
-app.use(express.json());
+const sess = {
+  secret: process.env.ACCESS_TOKEN_SECRET,
+  resave: false,
+  saveUninitialized: true
+}
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors(corsOptions))
+app.use(express.json())
 app.use(cookieParser())
 app.use(limiter)
+app.use(session(sess))
 
 app.get("/api/languages/total", (req, res) => {
   const sql =
@@ -57,9 +65,12 @@ app.post("/api/user", (req, res) => {
   });
 });
 
+// TODO: session isn't recognized
 app.post("/api/user_streak", (req, res) => {
-  if (req.body.username === undefined) return res.status(400)
+  if (req.body.username === undefined)
+    return res.status(400).json({ message: "No session/username set", type: "error" })
   const username = req.body.username
+  console.log("Username:", username)
   const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
   db.query(sql, [username], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
@@ -163,6 +174,8 @@ app.post("/api/date", (req, res) => {
   });
 });
 
+
+// Creates session correctly
 app.post("/login", (req, res) => {
   if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
   const sql = "SELECT username FROM users WHERE email = ? AND password = ?;"
@@ -170,16 +183,14 @@ app.post("/login", (req, res) => {
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json({ message: "Login failed", type: "error" })
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
-    // return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
-    // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
-    const token = createToken(data[0].username)
-    console.log("Token:", token)
-    return res.cookie("auth_token", createToken(data[0].username), { httpOnly: true, domain: "localhost", samesite: "Lax" }).status(200).json({ message: "Success", username: data[0].username, isAuthenticated: true, type: "success" })
+    const user = { email: req.body.email, username: data[0].username, password: req.body.password }
+    return res.status(200).json({ message: "Success", username: req.session.user.username, isAuthenticated: true, type: "success" })
   });
 });
 
 // Check if email in there already, if not add
 // validate email, username and password again
+// TODO: Add session
 app.post("/register", (req, res) => {
   if (req.body === undefined) return res.status(400)
   const values = [null, req.body.email, req.body.username, req.body.password];
@@ -187,24 +198,25 @@ app.post("/register", (req, res) => {
   db.query(valid, [values[1]], (err, data) => {
     if (err) return res.status(500).json({ message: "Error validating", type: "error" });
     if (data.length !== 0)
-      return res.status(401).json("Email address already exists");
+      return res.status(401).json({ message: "Email address already exists", type: "error" });
     const sql = "INSERT INTO users (id, email, username, password) VALUES (?);";
     db.query(sql, [values], (err, _data) => {
       if (err) return res.status(500).json({ message: "Error registering", type: "error" });
-      return res.status(200).json("Success");
+      console.log("User user created")
+      return res.status(200).json({ message: "Success", type: "success" });
     });
   });
 });
 
-app.post("/logout", (req, res) => {
-  return res.cookie("auth_token", null, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax" }).status(200).send({ authenticated: false, message: "Logged out successful.", type: "success" })
+app.post("/logout", (req, res, next) => {
+  return res.cookie("")
 });
 
 // TODO: Temporairly always authenticates
 // Check if token is same as session
 app.get("/auth-status", (req, res) => {
-  if (req.cookies?.token === "Very_secret") return res.send({ isAuthenticated: true })
-  return res.send({ isAuthenticated: false, type: "success" })
+  if (req.session.user) return res.send({ isAuthenticated: true })
+  return res.send({ isAuthenticated: false, type: "error" })
 });
 
 // Creates jwt token for 14 days
