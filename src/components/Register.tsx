@@ -2,9 +2,9 @@ import { useBlocker, useNavigate } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import Modal from "./Modal";
-import Footer from "./Footer";
 import { useQuery } from "react-query";
 import axios from "axios";
+import IconSpinner from "./IconSpinner";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -23,13 +23,13 @@ function Register() {
       currentLocation.pathname !== nextLocation.pathname,
   );
 
-  const { data, refetch } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ["register"],
     queryFn: async () => {
       await queryRegister()
     },
     onSuccess: (data) => console.log(data),
-    onError: (err) => console.log(err),
+    onError: (err) => setErrorMessage(err.response.data),
     refetchOnWindowFocus: false,
     enabled: false
   })
@@ -38,12 +38,13 @@ function Register() {
     try {
       const data = await axios.post("http://localhost:6942/register", { email: email, username: username, password: password })
       console.log("Before check", data)
-      if (data.data === "Success") {
+      if (data.data.type === "success") {
         navigate("/");
         Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
-        return data;
+        return data.data;
       }
       console.log("After check", data);
+      setErrorMessage(data.status.toString())
       alert("User exists");
     } catch (err) {
       console.log(err)
@@ -57,35 +58,8 @@ function Register() {
       validateRegister(email, username, password, confirmPassword),
     );
     if (errorMessage !== "Success") return "Failed";
+    setErrorMessage("")
     refetch()
-    // setErrorMessage(
-    //   validateRegister(email, username, password, confirmPassword),
-    // );
-    // if (errorMessage !== "Success") return "Failed";
-    // const requestOptions = {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   mode: "cors",
-    //   body: JSON.stringify({
-    //     email: email,
-    //     username: username,
-    //     password: password,
-    //   }),
-    // };
-    // fetch("http://localhost:6942/register", requestOptions)
-    //   .then((res) => {
-    //     return res.json();
-    //   })
-    //   .then((data) => {
-    //     if (data === "Success") {
-    //       navigate("/");
-    //       Cookies.set("username", username, { expires: 7, samesite: "none", secure: true });
-    //       return data;
-    //     }
-    //     console.log(data);
-    //     alert("User exists");
-    //   })
-    //   .catch((err) => console.log(err));
   }
 
   function updateEmail(e: ChangeEvent<HTMLInputElement>) {
@@ -133,7 +107,6 @@ function Register() {
       <main>
         <form onSubmit={handleSubmit}>
           <h1>Register</h1>
-          {errorMessage !== "Success" ? errorMessage : null}
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -141,6 +114,7 @@ function Register() {
             placeholder="email@proton.com"
             value={email}
             onChange={updateEmail}
+            minLength={5}
             required
           />
           <label htmlFor="username">Username</label>
@@ -150,6 +124,7 @@ function Register() {
             placeholder="username"
             value={username}
             onChange={updateUsername}
+            minLength={2}
             required
           />
           <label htmlFor="password">Password</label>
@@ -159,6 +134,7 @@ function Register() {
             placeholder="********"
             value={password}
             onChange={updatePassword}
+            minLength={8}
             required
           />
           <label htmlFor="password">Confirm Password</label>
@@ -168,11 +144,13 @@ function Register() {
             placeholder="********"
             value={confirmPassword}
             onChange={updateConfirmPassword}
+            minLength={8}
             required
           />
-          <button type="submit">Register</button>
-          {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+          {errorMessage ? <p className="error-msg">{errorMessage}</p> : null}
+          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner/> : null}Register</button>
         </form>
+        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </main>
     </>
   );

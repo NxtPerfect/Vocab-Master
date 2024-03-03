@@ -16,13 +16,20 @@ cookie-parser
 - [ ] as cookie save secret token from database
     - [ ] Implement Secure Auth
         - [x] Create context, to pass in auth status
-        - [ ] Create JWT - json web token, to authenticate
-            from user id create hash
-        - [ ] use token to know if user is logged in
-            and use it to know which user is logged in
+        - [ ] Send jwt token to user
+            or session cookie
+            think which is better
+        - [ ] authenticate actions on frontend
+        - [ ] handle errors on query
+        - [ ] using express-session, store it in session
+        - [ ] check if provided token matches session
+            if yes, authorize
+            else go to login screen and log user out
+            with appropriate message
     - [x] Use .env
     - [ ] home page should call in auth as well, and then call for user_progress
     - [ ] flashcards should call auth before showing
+- [ ] nav home page doesn't refetch
 - [ ] hash password
 - [ ] save words for later
     - [ ] learn again pending words

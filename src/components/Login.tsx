@@ -33,12 +33,12 @@ function Login() {
     try {
       setErrorMessage("")
       const data = await axios.post('http://localhost:6942/login', { email: email.current.value, password: password.current.value });
-      if (data.data.message !== "Success") {
+      if (data.data.type !== "success") {
         console.log(data.status)
         setErrorMessage(data.status.toString())
         return
       }
-      Cookie.set("username", data.data.username, { expires: 14, samesite: "strict", secure: true })
+      Cookie.set("username", data.data.username, { expires: 14, samesite: "Lax" })
       await setIsAuthenticated(true)
       console.log(isAuthenticated)
       navigate("/")

@@ -50,7 +50,7 @@ function Home() {
       const data = await axios.get('http://localhost:6942/api/languages/total');
       // Process the data into array
       // I need to win the battle with these types below
-      const temp = data.data.map((lang: LanguageDataRaw) => ({
+      const temp = data.data.message.map((lang: LanguageDataRaw) => ({
         language: lang.language as string,
         level: lang.level.split(",") as Array<string>,
         countTotal: lang.countTotal.split(",") as Array<number>,
@@ -74,7 +74,7 @@ function Home() {
       });
       // We return the correct data, now we have to merge it
       // language, level, total words learnt
-      if (data.data === undefined || data.data.length === 0) return;
+      if (data.data.message === undefined || data.data.message.length === 0) return;
 
       // Modify languages array to add user's word learnt
       // Currently .includes will always return true if item in array
@@ -84,7 +84,7 @@ function Home() {
       let last_index: number = 0
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
-          data.data.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
+          data.data.message.map((progress: { language: string, level: string, userProgressTotal: number, streak: number }) => {
             if (lang.language === progress.language && lang.level.includes(progress.level, last_index)) {
               lang.countUser.push(progress.userProgressTotal)
               last_index = lang.level.findIndex(element => { element === progress.level })
@@ -113,7 +113,7 @@ function Home() {
       let last_index: number = 0
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
-          data.data.map((learnt: { language: string, level: string, isLearnt: boolean }) => {
+          data.data.message.map((learnt: { language: string, level: string, isLearnt: boolean }) => {
             if (lang.language === learnt.language && lang.level.includes(learnt.level, last_index)) {
               lang.isLearnt.push(learnt.isLearnt)
               last_index = lang.level.findIndex(element => { element === learnt.level })

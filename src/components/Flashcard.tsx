@@ -44,7 +44,7 @@ function Flashcard() {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
         username: Cookie.get("username")
       });
-      setWords(data.data);
+      setWords(data.data.message);
       setChangedWords(true);
       return data.data;
     } catch (err) {

@@ -35,7 +35,7 @@ function Layout({ children }: { children: ReactElement }) {
   async function queryUserStreak() {
     try {
       const data = await axios.post("http://localhost:6942/api/user_streak", { username: Cookie.get("username") })
-      setUserStreak(data.data.userStreak)
+      setUserStreak(data.data.message.userStreak)
       console.log(userStreak)
     } catch (err) {
       console.log(err)

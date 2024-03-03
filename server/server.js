@@ -6,16 +6,17 @@ import moment from "moment";
 import mysql from "mysql";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import jwt from "jsonwebtoken";
 
 const config = dotenv.config()
 const app = express();
 const port = process.env.PORT;
 
 const db = mysql.createConnection({
-  host: process.env.HOST, // localhost
-  user: process.env.DBUSER, // root
-  password: process.env.DBPASSWORD,// ""
-  database: process.env.DBNAME // vocab-master
+  host: process.env.HOST,
+  user: process.env.DBUSER,
+  password: process.env.DBPASSWORD,
+  database: process.env.DBNAME
 });
 
 const corsOptions = {
@@ -30,7 +31,7 @@ const limiter = rateLimit({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors( corsOptions ));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser())
 app.use(limiter)
@@ -39,8 +40,8 @@ app.get("/api/languages/total", (req, res) => {
   const sql =
     "SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level, GROUP_CONCAT(COUNT ORDER BY level) as countTotal FROM (SELECT language, level, COUNT(*) as COUNT FROM words GROUP BY language, level) AS subquery GROUP BY language ORDER BY language;"
   db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+    if (err) return res.json({ message: err, type: "error" });
+    return res.json({ message: data, type: "error" });
   });
 });
 
@@ -51,8 +52,8 @@ app.post("/api/user", (req, res) => {
   const username = req.body.username
   const sql = "SELECT language, level, GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE username = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
   db.query(sql, [username], (err, data) => {
-    if (err) return res.json(err)
-    return res.json(data)
+    if (err) return res.json({ message: err, type: "error" })
+    return res.json({ message: data, type: "success" })
   });
 });
 
@@ -61,8 +62,8 @@ app.post("/api/user_streak", (req, res) => {
   const username = req.body.username
   const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
   db.query(sql, [username], (err, data) => {
-    if (err) return res.json(err)
-    return res.json(data[0])
+    if (err) return res.json({ message: err, type: "error" })
+    return res.json({ message: data[0], type: "success" })
   });
 });
 
@@ -74,24 +75,24 @@ app.post("/api/:language&:level", (req, res) => {
   const sql =
     "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE username = ?)) LIMIT 30;";
   db.query(sql, [language, level, username], (err, data) => {
-    if (err) return res.json(err)
-    return res.json(data)
+    if (err) return res.json({ message: err, type: "success" })
+    return res.json({ message: data, type: "success" })
   });
 });
 
 app.post("/api/learnt", (req, res) => {
   if (req.body.username === undefined) return res.status(400)
   const username = req.body.username
-  const sql = 
+  const sql =
     "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE username = ?) GROUP BY language, level ORDER BY language, level;"
   db.query(sql, [username], (err, data) => {
-    if (err) return res.json(err)
+    if (err) return res.json({ message: err, type: "error" })
 
     const arr = []
     for (const date of data) {
-      arr.push({language: date.language, level: date.level, isLearnt: date.date === moment().format('YYYY-MM-D')})
+      arr.push({ language: date.language, level: date.level, isLearnt: date.date === moment().format('YYYY-MM-D') })
     }
-    return res.json(arr)
+    return res.json({ message: arr, type: "error" })
   })
 });
 
@@ -140,10 +141,10 @@ app.post("/api/save_progress", (req, res) => {
   });
   Promise.all(queries)
     .then(() => {
-      res.status(200).json("Success");
+      res.status(200).json({ message: "Success", type: "success" });
     })
     .catch((err) => {
-      res.status(500).json(err);
+      res.status(500).json({ message: err, type: "error" });
     });
 });
 
@@ -167,12 +168,13 @@ app.post("/login", (req, res) => {
   const sql = "SELECT username FROM users WHERE email = ? AND password = ?;"
   const values = [req.body.email, req.body.password]
   db.query(sql, [...values], (err, data) => {
-    if (err) return res.status(500).json("Login failed")
-    if (data.length === 0) return res.status(401).json("User doesn't exist")
+    if (err) return res.status(500).json({ message: "Login failed", type: "error" })
+    if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
     // return res.cookie("auth_token", "Very_secret", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: true, message: "Login successful.", username: data[0].username})
     // return res.status(200).json({ message: "Success", user_id: data }).send({authenticated: true, message: "Login successful."})
-    // return res.redirect(200, "/")
-    return res.status(200).json({ message: "Success", username: data[0].username })
+    const token = createToken(data[0].username)
+    console.log("Token:", token)
+    return res.cookie("auth_token", createToken(data[0].username), { httpOnly: true, domain: "localhost", samesite: "Lax" }).status(200).json({ message: "Success", username: data[0].username, isAuthenticated: true, type: "success" })
   });
 });
 
@@ -183,27 +185,36 @@ app.post("/register", (req, res) => {
   const values = [null, req.body.email, req.body.username, req.body.password];
   const valid = "SELECT email FROM users WHERE email LIKE ?;";
   db.query(valid, [values[1]], (err, data) => {
-    if (err) return res.status(500).json("Error validating");
+    if (err) return res.status(500).json({ message: "Error validating", type: "error" });
     if (data.length !== 0)
       return res.status(401).json("Email address already exists");
     const sql = "INSERT INTO users (id, email, username, password) VALUES (?);";
     db.query(sql, [values], (err, _data) => {
-      if (err) return res.status(500).json("Error registering");
+      if (err) return res.status(500).json({ message: "Error registering", type: "error" });
       return res.status(200).json("Success");
     });
   });
 });
 
 app.post("/logout", (req, res) => {
-  return res.cookie("token", null, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax"}).status(200).send({authenticated: false, message: "Logged out successful."})
+  return res.cookie("auth_token", null, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14, domain: "localhost", sameSite: "Lax" }).status(200).send({ authenticated: false, message: "Logged out successful.", type: "success" })
 });
 
 // TODO: Temporairly always authenticates
+// Check if token is same as session
 app.get("/auth-status", (req, res) => {
-  if (req.cookies?.token === "Very_secret") return res.send({isAuthenticated: true})
-  return res.send({isAuthenticated: false})
+  if (req.cookies?.token === "Very_secret") return res.send({ isAuthenticated: true })
+  return res.send({ isAuthenticated: false, type: "success" })
 });
 
+// Creates jwt token for 14 days
+function createToken(username) {
+  console.log(`Creating token for user ${username}...`)
+  return jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: 60 * 60 * 24 * 14,
+  })
+}
+
 app.listen(port, () => {
-  console.log(`Running on ${process.env.HOST}:${port}`);
+  console.log(`🔥Running on ${process.env.HOST}:${port}`);
 });

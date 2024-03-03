@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Cookie from "js-cookie";
-import { useQuery } from "react-query";
-import axios from "axios";
 
 
 /*
