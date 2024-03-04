@@ -7,7 +7,7 @@ import mysql from "mysql";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
-import session from "express-session";
+import { v1 as uuidv1 } from "uuid";
 
 const config = dotenv.config()
 const app = express();
@@ -30,19 +30,12 @@ const limiter = rateLimit({
   limit: 100
 })
 
-const sess = {
-  secret: process.env.ACCESS_TOKEN_SECRET,
-  resave: false,
-  saveUninitialized: true
-}
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 app.use(limiter)
-app.use(session(sess))
 
 app.get("/api/languages/total", (req, res) => {
   const sql =
@@ -116,7 +109,7 @@ app.post("/api/learnt", (req, res) => {
   *
   * Should also save in streak into users
   */
-app.post("/api/save_progress", (req, res) => {
+app.post("/api/save_progress", authenticateToken, (req, res) => {
   if (req.body.progressData === undefined) return res.status(400)
   const progressData = req.body.progressData;
   const queries = progressData.map((progressItem) => {
@@ -175,25 +168,25 @@ app.post("/api/date", (req, res) => {
 });
 
 
-// Creates session correctly
 app.post("/login", (req, res) => {
   if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
-  const sql = "SELECT username FROM users WHERE email = ? AND password = ?;"
+  const sql = "SELECT username, id FROM users WHERE email = ? AND password = ?;"
   const values = [req.body.email, req.body.password]
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json({ message: "Login failed", type: "error" })
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
-    const user = { email: req.body.email, username: data[0].username, password: req.body.password }
-    return res.status(200).json({ message: "Success", username: req.session.user.username, isAuthenticated: true, type: "success" })
+    const user = { id: data[0].id, email: req.body.email, username: data[0].username, password: req.body.password }
+    const token = createToken({ id: user.id, email: user.email })
+    res.cookie("token", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14 }) // expire after 14d
+    return res.status(200).json({ message: "Success", username: user.username, isAuthenticated: true, type: "success" }).send()
   });
 });
 
 // Check if email in there already, if not add
 // validate email, username and password again
-// TODO: Add session
 app.post("/register", (req, res) => {
   if (req.body === undefined) return res.status(400)
-  const values = [null, req.body.email, req.body.username, req.body.password];
+  const values = [uuidv1(), req.body.email, req.body.username, req.body.password];
   const valid = "SELECT email FROM users WHERE email LIKE ?;";
   db.query(valid, [values[1]], (err, data) => {
     if (err) return res.status(500).json({ message: "Error validating", type: "error" });
@@ -202,12 +195,15 @@ app.post("/register", (req, res) => {
     const sql = "INSERT INTO users (id, email, username, password) VALUES (?);";
     db.query(sql, [values], (err, _data) => {
       if (err) return res.status(500).json({ message: "Error registering", type: "error" });
-      console.log("User user created")
-      return res.status(200).json({ message: "Success", type: "success" });
+      const token = createToken({ id: values[0], email: values[1] })
+      res.cookie("token", token, { httpOnly: true, expiresIn: 14 })
+      console.log("User created")
+      return res.status(200).json({ message: "Success", token: token, type: "success" });
     });
   });
 });
 
+// TODO: Clear out jwt?
 app.post("/logout", (req, res, next) => {
   return res.cookie("")
 });
@@ -215,15 +211,36 @@ app.post("/logout", (req, res, next) => {
 // TODO: Temporairly always authenticates
 // Check if token is same as session
 app.get("/auth-status", (req, res) => {
-  if (req.session.user) return res.send({ isAuthenticated: true })
+  // if (req.session.user) return res.send({ isAuthenticated: true })
   return res.send({ isAuthenticated: false, type: "error" })
 });
 
-// Creates jwt token for 14 days
-function createToken(username) {
-  console.log(`Creating token for user ${username}...`)
-  return jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: 60 * 60 * 24 * 14,
+function createToken(user) {
+  return jwt.sign(
+    {
+      userId: user.id,
+      email: user.email
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "14d" }
+  )
+}
+
+// TODO: doesn't get the token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (token === null) return res.status(401)
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(err)
+
+    if (err) return res.sendStatus(403)
+
+    req.user = user
+
+    next()
   })
 }
 

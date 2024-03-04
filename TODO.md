@@ -9,6 +9,8 @@ cookie-parser
 # Frontend
 - [x] max of 30 words per day
 - [ ] write tests
+---
+`Total tasks: 1/2`
 
 # Backend
 - [x] We only read last streak in home, but we should also see
@@ -17,19 +19,14 @@ cookie-parser
 - [ ] as cookie save secret token from database
     - [ ] Implement Secure Auth
         - [x] Create context, to pass in auth status
-        - [ ] Send session cookie
-            - [ ] generate unique uuid for user
-            save into session
+        - [ ] Send jwt
+            - [x] generate unique uuid for user
+            !!! - [/] send token to backend when user_progress
         - [ ] authenticate actions on frontend
-        - [ ] handle errors on query
-        - [ ] using express-session, store it in session
-        - [ ] check if provided token matches session
-            if yes, authorize
-            else go to login screen and log user out
-            with appropriate message
-    - [x] Use .env
-    - [ ] home page should call in auth as well, and then call for user_progress
-    - [ ] flashcards should call auth before showing
+- [ ] handle errors on query
+- [x] Use .env
+- [ ] home page should call in auth as well, and then call for user_progress
+- [ ] flashcards should call auth before showing
 - [ ] nav home page doesn't refetch
 - [ ] hash password
 - [ ] save words for later
@@ -37,6 +34,8 @@ cookie-parser
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 - [x] rate limiting
+---
+`Total tasks: 4/13`
 
 # CSS
 - [x] Home
@@ -51,3 +50,6 @@ cookie-parser
 - [ ] Confirm Exit Modal
 - [ ] Loading website placeholder
     - [x] Animated loading circle, rotates, changes it's width
+    - [ ] suspense
+---
+`Total tasks: 1/5`

@@ -89,9 +89,10 @@ function Flashcard() {
     }
   }, [randomIndexes]);
 
+  // Doesn't send the jwt token
   async function querySaveProgress(progressData: Array<{ username: string, word_id: number, language: string, level: string }>) {
     try {
-      const data = await axios.post("http://localhost:6942/api/save_progress", { progressData }).finally(navigate("/"))
+      const data = await axios.post("http://localhost:6942/api/save_progress", { progressData }, { withCredentials: true }).finally(navigate("/"))
     } catch (err) {
       console.log(err)
       throw (err)
