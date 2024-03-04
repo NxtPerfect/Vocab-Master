@@ -8,21 +8,23 @@ function Nav({ streak, queryUserStreak, isAuthenticated, setIsAuthenticated, que
   const navigate = useNavigate();
   async function unsetCookies() {
     Cookie.remove("username");
+    Cookie.remove("token")
     setIsAuthenticated(false)
     navigate(0)
-    // try {
-    //   await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).then(navigate(0))
-    // }
-    // catch (err) {
-    //   console.log(err)
-    //   throw (err)
-    // }
+    try {
+      await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).then(navigate(0))
+    }
+    catch (err) {
+      console.log(err)
+      throw (err)
+    }
   }
 
   const { isLoading, isError, isFetching, data, error } = useQuery({
     queryKey: ["auth"],
     queryFn: async () => {
       // await queryAuthStatus()
+      if (!isAuthenticated) return
       await queryUserStreak()
     },
     onError: (err) => console.log(err),

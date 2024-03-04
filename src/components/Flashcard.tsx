@@ -18,6 +18,7 @@ function Flashcard() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [show, setShow] = useState<boolean>(false);
   const [changedWords, setChangedWords] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const params: Params = useParams();
   const language: string | undefined = params.language;
   const level: string | undefined = params.level;
@@ -25,7 +26,8 @@ function Flashcard() {
   let blocker: Blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       randomIndexes.length !== 0 &&
-      currentLocation.pathname !== nextLocation.pathname,
+      currentLocation.pathname !== nextLocation.pathname &&
+      errorMessage !== null,
   );
 
   /** Access api
@@ -42,8 +44,12 @@ function Flashcard() {
   async function queryWords() {
     try {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
-        username: Cookie.get("username")
+        username: Cookie.get("username"),
+        token: Cookie.get("token")
       });
+      if (data.data.type !== "success") {
+        setErrorMessage(data.data.message)
+      }
       setWords(data.data.message);
       setChangedWords(true);
       return data.data;

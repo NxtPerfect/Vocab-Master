@@ -70,7 +70,8 @@ function Home() {
   async function queryUserProgress() {
     try {
       const data = await axios.post("http://localhost:6942/api/user", {
-        username: Cookie.get("username")
+        username: Cookie.get("username"),
+        token: Cookie.get("token")
       });
       // We return the correct data, now we have to merge it
       // language, level, total words learnt

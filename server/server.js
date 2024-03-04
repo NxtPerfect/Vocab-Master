@@ -42,7 +42,7 @@ app.get("/api/languages/total", (req, res) => {
     "SELECT language, GROUP_CONCAT(DISTINCT level ORDER BY level) as level, GROUP_CONCAT(COUNT ORDER BY level) as countTotal FROM (SELECT language, level, COUNT(*) as COUNT FROM words GROUP BY language, level) AS subquery GROUP BY language ORDER BY language;"
   db.query(sql, (err, data) => {
     if (err) return res.json({ message: err, type: "error" });
-    return res.json({ message: data, type: "error" });
+    return res.json({ message: data, type: "success" });
   });
 });
 
@@ -63,7 +63,7 @@ app.post("/api/user_streak", (req, res) => {
   if (req.body.username === undefined)
     return res.status(400).json({ message: "No session/username set", type: "error" })
   const username = req.body.username
-  console.log("Username:", username)
+  console.log("User streak")
   const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
   db.query(sql, [username], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
@@ -79,7 +79,7 @@ app.post("/api/:language&:level", (req, res) => {
   const sql =
     "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE username = ?)) LIMIT 30;";
   db.query(sql, [language, level, username], (err, data) => {
-    if (err) return res.json({ message: err, type: "success" })
+    if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
   });
 });
@@ -96,7 +96,7 @@ app.post("/api/learnt", (req, res) => {
     for (const date of data) {
       arr.push({ language: date.language, level: date.level, isLearnt: date.date === moment().format('YYYY-MM-D') })
     }
-    return res.json({ message: arr, type: "error" })
+    return res.json({ message: arr, type: "success" })
   })
 });
 
@@ -162,8 +162,8 @@ app.post("/api/date", (req, res) => {
   const sql =
     "SELECT * FROM user_progress WHERE user_id = (SELECT id FROM users WHERE username = ?);";
   db.query(sql, [username], (err, data) => {
-    if (err) return res.json(err)
-    return res.json(data)
+    if (err) return res.json({ message: err, type: "error" })
+    return res.json({ message: data, type: "success" })
   });
 });
 
@@ -177,8 +177,7 @@ app.post("/login", (req, res) => {
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
     const user = { id: data[0].id, email: req.body.email, username: data[0].username, password: req.body.password }
     const token = createToken({ id: user.id, email: user.email })
-    res.cookie("token", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 14 }) // expire after 14d
-    return res.status(200).json({ message: "Success", username: user.username, isAuthenticated: true, type: "success" }).send()
+    return res.status(200).json({ message: "Success", username: user.username, token: token, isAuthenticated: true, type: "success" })
   });
 });
 
@@ -196,8 +195,6 @@ app.post("/register", (req, res) => {
     db.query(sql, [values], (err, _data) => {
       if (err) return res.status(500).json({ message: "Error registering", type: "error" });
       const token = createToken({ id: values[0], email: values[1] })
-      res.cookie("token", token, { httpOnly: true, expiresIn: 14 })
-      console.log("User created")
       return res.status(200).json({ message: "Success", token: token, type: "success" });
     });
   });
@@ -205,14 +202,13 @@ app.post("/register", (req, res) => {
 
 // TODO: Clear out jwt?
 app.post("/logout", (req, res, next) => {
-  return res.cookie("")
+  return res.cookie("token", null)
 });
 
-// TODO: Temporairly always authenticates
-// Check if token is same as session
+// Check if token is same as generated
 app.get("/auth-status", (req, res) => {
-  // if (req.session.user) return res.send({ isAuthenticated: true })
-  return res.send({ isAuthenticated: false, type: "error" })
+  console.log("Authentication")
+  return res.send({ isAuthenticated: true })
 });
 
 function createToken(user) {
@@ -228,8 +224,7 @@ function createToken(user) {
 
 // TODO: doesn't get the token
 function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+  const token = req.cookies["token"];
 
   if (token === null) return res.status(401)
 
@@ -237,8 +232,6 @@ function authenticateToken(req, res, next) {
     console.log(err)
 
     if (err) return res.sendStatus(403)
-
-    req.user = user
 
     next()
   })

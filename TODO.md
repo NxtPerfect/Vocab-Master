@@ -16,15 +16,16 @@ cookie-parser
 - [x] We only read last streak in home, but we should also see
     if user has valid streak, if no then we should show that
 - [x] error message on login
-- [ ] as cookie save secret token from database
-    - [ ] Implement Secure Auth
+- [x] as cookie save secret token from database
+    - [x] Implement Secure Auth
         - [x] Create context, to pass in auth status
-        - [ ] Send jwt
+        - [x] Send jwt
             - [x] generate unique uuid for user
-            !!! - [/] send token to backend when user_progress
-        - [ ] authenticate actions on frontend
-- [ ] handle errors on query
+            - [x] send token to backend when user_progress
+        - [x] authenticate actions on frontend
+- [x] handle errors on query
 - [x] Use .env
+- [ ] nav stopped showing user streak
 - [ ] home page should call in auth as well, and then call for user_progress
 - [ ] flashcards should call auth before showing
 - [ ] nav home page doesn't refetch
@@ -35,7 +36,7 @@ cookie-parser
 - [ ] count of how many words left on the bottom of flashcard
 - [x] rate limiting
 ---
-`Total tasks: 4/13`
+`Total tasks: 6/14`
 
 # CSS
 - [x] Home

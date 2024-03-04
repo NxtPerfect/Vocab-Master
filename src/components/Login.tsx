@@ -38,7 +38,9 @@ function Login() {
         setErrorMessage(data.status.toString())
         return
       }
+      console.log(data.data)
       Cookie.set("username", data.data.username, { expires: 14, samesite: "Lax" })
+      Cookie.set("token", data.data.token, { expires: 14, samesite:"Lax"})
       await setIsAuthenticated(true)
       console.log(isAuthenticated)
       navigate("/")

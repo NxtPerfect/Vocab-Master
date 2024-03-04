@@ -23,7 +23,7 @@ function Layout({ children }: { children: ReactElement }) {
   // Gets current authentication status
   async function queryAuthStatus() {
     try {
-      const data = await axios.get("http://localhost:6942/auth-status")
+      const data = await axios.get("http://localhost:6942/auth-status", { token: Cookie.get("token") })
       setIsAuthenticated(data.data.isAuthenticated)
       console.log(isAuthenticated)
     } catch (err) {

@@ -39,8 +39,9 @@ function Register() {
       const data = await axios.post("http://localhost:6942/register", { email: email, username: username, password: password })
       console.log("Before check", data)
       if (data.data.type === "success") {
-        navigate("/");
         Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
+        Cookies.set("token", data.data.token, { expires: 14, samesite:"Lax"})
+        navigate("/");
         return data.data;
       }
       console.log("After check", data);
@@ -60,22 +61,6 @@ function Register() {
     if (errorMessage !== "Success") return "Failed";
     setErrorMessage("")
     refetch()
-  }
-
-  function updateEmail(e: ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value);
-  }
-
-  function updateUsername(e: ChangeEvent<HTMLInputElement>) {
-    setUsername(e.target.value);
-  }
-
-  function updatePassword(e: ChangeEvent<HTMLInputElement>) {
-    setPassword(e.target.value);
-  }
-
-  function updateConfirmPassword(e: ChangeEvent<HTMLInputElement>) {
-    setConfirmPassword(e.target.value);
   }
 
   function validateRegister(
@@ -113,7 +98,7 @@ function Register() {
             name="email"
             placeholder="email@proton.com"
             value={email}
-            onChange={updateEmail}
+            onChange={(e) => setEmail(e.target.value)}
             minLength={5}
             required
           />
@@ -123,7 +108,7 @@ function Register() {
             name="username"
             placeholder="username"
             value={username}
-            onChange={updateUsername}
+            onChange={(e) => setUsername(e.target.value)}
             minLength={2}
             required
           />
@@ -133,7 +118,7 @@ function Register() {
             name="password"
             placeholder="********"
             value={password}
-            onChange={updatePassword}
+            onChange={(e) => setPassword(e.target.value)}
             minLength={8}
             required
           />
@@ -143,7 +128,7 @@ function Register() {
             name="confirm_password"
             placeholder="********"
             value={confirmPassword}
-            onChange={updateConfirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             minLength={8}
             required
           />
