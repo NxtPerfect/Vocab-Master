@@ -29,7 +29,7 @@ type LanguageDataRaw = {
 
 function Home() {
   const [languages, setLanguages] = useState<Array<Language>>([])
-  const isAuthenticated = useAuth()
+  const { isAuthenticated } = useAuth()
 
   // Fetch all languages and user's progress if logged in
   const { isLoading, isError, isFetching, data, error } = useQuery({

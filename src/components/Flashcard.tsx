@@ -11,6 +11,7 @@ import { Word } from "./Home";
 import Modal from "./Modal";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { useAuth } from "./AuthProvider";
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]);
@@ -19,6 +20,7 @@ function Flashcard() {
   const [show, setShow] = useState<boolean>(false);
   const [changedWords, setChangedWords] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const { isAuthenticated } = useAuth();
   const params: Params = useParams();
   const language: string | undefined = params.language;
   const level: string | undefined = params.level;
@@ -36,9 +38,13 @@ function Flashcard() {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
+      if (!isAuthenticated) {
+        setErrorMessage("Not authenticated")
+        return
+      }
       await queryWords()
     },
-    onError: (err: Error) => console.log(err)
+    onError: (err: Error) => setErrorMessage(err.toString())
   })
 
   async function queryWords() {
@@ -150,7 +156,15 @@ function Flashcard() {
     incrementIndex();
   }
 
-  if (words.length === 0) {
+  if (!isAuthenticated) {
+    return (
+      <>
+        {errorMessage}
+      </>
+    );
+  }
+
+  if (isPending || words.length === 0) {
     return (
       <>
         Loading words...

@@ -19,10 +19,11 @@ function Login() {
     queryFn: async () => {
       await queryLogin()
     },
-    onError: (err) => setErrorMessage(err.response.data),
-    onSuccess: () => {
+    onError: (err: Error) => setErrorMessage(err.toString()),
+    onSettled: () => {
       // reload website to get language sections
       console.log("Successful Login")
+      setIsAuthenticated(true)
       window.location.assign("/")
     },
     refetchOnWindowFocus: false,
@@ -40,8 +41,8 @@ function Login() {
       }
       console.log(data.data)
       Cookie.set("username", data.data.username, { expires: 14, samesite: "Lax" })
-      Cookie.set("token", data.data.token, { expires: 14, samesite:"Lax"})
-      await setIsAuthenticated(true)
+      Cookie.set("token", data.data.token, { expires: 14, samesite: "Lax" })
+      login()
       console.log(isAuthenticated)
       navigate("/")
       return data.data
@@ -86,7 +87,7 @@ function Login() {
             required
           />
           <p className="error-msg">{errorMessage}</p>
-          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner/> : null}Login</button>
+          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner /> : null}Login</button>
           <Link to={"/register"} style={{ textDecoration: "none" }}>
             <button type="button">Create new account</button>
           </Link>

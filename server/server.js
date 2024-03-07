@@ -27,7 +27,7 @@ const corsOptions = {
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 10000, // 15 minutes
-  limit: 100
+  limit: 200
 })
 
 app.use(bodyParser.json())
@@ -61,12 +61,13 @@ app.post("/api/user", (req, res) => {
 // TODO: session isn't recognized
 app.post("/api/user_streak", (req, res) => {
   if (req.body.username === undefined)
-    return res.status(400).json({ message: "No session/username set", type: "error" })
+    return res.status(400).json({ message: "No username set", type: "error" })
   const username = req.body.username
   console.log("User streak")
   const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
   db.query(sql, [username], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
+    // console.log(data[0])
     return res.json({ message: data[0], type: "success" })
   });
 });
@@ -177,6 +178,7 @@ app.post("/login", (req, res) => {
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
     const user = { id: data[0].id, email: req.body.email, username: data[0].username, password: req.body.password }
     const token = createToken({ id: user.id, email: user.email })
+    console.log("Got token and user", user, token)
     return res.status(200).json({ message: "Success", username: user.username, token: token, isAuthenticated: true, type: "success" })
   });
 });
@@ -207,8 +209,17 @@ app.post("/logout", (req, res, next) => {
 
 // Check if token is same as generated
 app.get("/auth-status", (req, res) => {
-  console.log("Authentication")
-  return res.send({ isAuthenticated: true })
+  console.log(req)
+  if (req.body.token === undefined) {
+    console.log("Unauthorized")
+    return res.send({ isAuthenticated: false, type: "error" })
+  }
+  console.log(req)
+  const token = req.body.token
+  const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+  console.log("Authorized")
+  console.log(decode)
+  return res.send({ isAuthenticated: true, type: "success" })
 });
 
 function createToken(user) {

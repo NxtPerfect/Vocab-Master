@@ -25,18 +25,23 @@ cookie-parser
         - [x] authenticate actions on frontend
 - [x] handle errors on query
 - [x] Use .env
-- [ ] nav stopped showing user streak
-- [ ] home page should call in auth as well, and then call for user_progress
-- [ ] flashcards should call auth before showing
+- [x] home page should call in auth as well, and then call for user_progress
+- [x] flashcards should call auth before showing
+- [x] rate limiting
+- [ ] verify token in auth-status
+    - [ ] now always returns false
+    - [ ] nav stopped showing user streak
+        - [ ] isAuthenticated was set to false
+        token cookie doesn't get sent
+        in the nav component
 - [ ] nav home page doesn't refetch
 - [ ] hash password
 - [ ] save words for later
     - [ ] learn again pending words
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
-- [x] rate limiting
 ---
-`Total tasks: 6/14`
+`Total tasks: 8/14`
 
 # CSS
 - [x] Home
