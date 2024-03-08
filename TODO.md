@@ -28,12 +28,15 @@ cookie-parser
 - [x] home page should call in auth as well, and then call for user_progress
 - [x] flashcards should call auth before showing
 - [x] rate limiting
-- [ ] verify token in auth-status
-    - [ ] now always returns false
-    - [ ] nav stopped showing user streak
-        - [ ] isAuthenticated was set to false
+- [x] verify token in auth-status
+    - [x] now always returns false
+    - [x] nav stopped showing user streak
+        - [x] isAuthenticated was set to false
         token cookie doesn't get sent
         in the nav component
+        - [x] auth-status return false, which sets isAuthenticated to false
+        inside of layout, and that returns false because there's no token
+        sent in the request
 - [ ] nav home page doesn't refetch
 - [ ] hash password
 - [ ] save words for later

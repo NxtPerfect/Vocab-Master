@@ -178,7 +178,6 @@ app.post("/login", (req, res) => {
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
     const user = { id: data[0].id, email: req.body.email, username: data[0].username, password: req.body.password }
     const token = createToken({ id: user.id, email: user.email })
-    console.log("Got token and user", user, token)
     return res.status(200).json({ message: "Success", username: user.username, token: token, isAuthenticated: true, type: "success" })
   });
 });
@@ -208,17 +207,15 @@ app.post("/logout", (req, res, next) => {
 });
 
 // Check if token is same as generated
-app.get("/auth-status", (req, res) => {
-  console.log(req)
+app.post("/auth-status", (req, res) => {
   if (req.body.token === undefined) {
     console.log("Unauthorized")
     return res.send({ isAuthenticated: false, type: "error" })
   }
-  console.log(req)
   const token = req.body.token
+  console.log("Token:", token)
   const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
   console.log("Authorized")
-  console.log(decode)
   return res.send({ isAuthenticated: true, type: "success" })
 });
 

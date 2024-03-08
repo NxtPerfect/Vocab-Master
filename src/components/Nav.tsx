@@ -28,7 +28,7 @@ function Nav({ streak, queryUserStreak }: { streak: number, queryUserStreak: () 
     queryKey: ["auth"],
     queryFn: async () => {
       if (!isAuthenticated) return
-      queryUserStreak()
+      await queryUserStreak()
     },
     onError: (err) => console.log(err),
     enabled: true
