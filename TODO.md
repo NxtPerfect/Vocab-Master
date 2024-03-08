@@ -5,6 +5,7 @@ react frontend
 react-router
 react-query
 cookie-parser
+bcrypt
 
 # Frontend
 - [x] max of 30 words per day
@@ -37,14 +38,22 @@ cookie-parser
         - [x] auth-status return false, which sets isAuthenticated to false
         inside of layout, and that returns false because there's no token
         sent in the request
-- [ ] nav home page doesn't refetch
-- [ ] hash password
+- [x] nav home page doesn't refetch
+- [x] login/register not accessed if logged in
+- [x] hash password
+
+- [?] user progress returns 4,4/4, instead of 4/4
+    most likely issue in query
+
+- [ ] language section still shows button to learn more
+- [ ] /api/user uses username to get progress
+- [ ] disable register fields on registering
 - [ ] save words for later
     - [ ] learn again pending words
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 ---
-`Total tasks: 8/14`
+`Total tasks: 12/17`
 
 # CSS
 - [x] Home
@@ -60,5 +69,7 @@ cookie-parser
 - [ ] Loading website placeholder
     - [x] Animated loading circle, rotates, changes it's width
     - [ ] suspense
+- [ ] Login/register
+    - [ ] on disabled input gray out
 ---
 `Total tasks: 1/5`

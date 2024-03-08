@@ -5,6 +5,7 @@ import Modal from "./Modal";
 import { useQuery } from "react-query";
 import axios from "axios";
 import IconSpinner from "./IconSpinner";
+import { useAuth } from "./AuthProvider";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -12,6 +13,7 @@ function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const {isAuthenticated, login} = useAuth();
   const navigate = useNavigate();
 
   let blocker: Blocker = useBlocker(
@@ -28,7 +30,11 @@ function Register() {
     queryFn: async () => {
       await queryRegister()
     },
-    onSuccess: (data) => console.log(data),
+    onSuccess: (data) => {
+      console.log(data)
+      login()
+      window.location.assign("/")
+    },
     onError: (err) => setErrorMessage(err.response.data),
     refetchOnWindowFocus: false,
     enabled: false
@@ -38,8 +44,9 @@ function Register() {
     try {
       const data = await axios.post("http://localhost:6942/register", { email: email, username: username, password: password })
       console.log("Before check", data)
+      console.log("Type", data.data.type)
       if (data.data.type === "success") {
-        Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
+        Cookies.set("username", data.data.username, { expires: 14, samesite: "Lax" });
         Cookies.set("token", data.data.token, { expires: 14, samesite:"Lax"})
         navigate("/");
         return data.data;
@@ -55,11 +62,8 @@ function Register() {
   function handleSubmit(e: HTMLFormElement) {
     e.preventDefault();
 
-    setErrorMessage(
-      validateRegister(email, username, password, confirmPassword),
-    );
-    if (errorMessage !== "Success") return "Failed";
-    setErrorMessage("")
+    if (validateRegister(email, username, password, confirmPassword) !== "Success") return "Failed";
+    setErrorMessage("Success")
     refetch()
   }
 
@@ -87,6 +91,16 @@ function Register() {
     return "Success";
   }
 
+  if (isAuthenticated) {
+    return (
+    <>
+        <main>
+          User already logged in
+        </main>
+    </>
+    )
+  }
+
   return (
     <>
       <main>
@@ -100,6 +114,7 @@ function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             minLength={5}
+            maxLength={64}
             required
           />
           <label htmlFor="username">Username</label>
@@ -110,6 +125,7 @@ function Register() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             minLength={2}
+            maxLength={32}
             required
           />
           <label htmlFor="password">Password</label>
@@ -120,6 +136,7 @@ function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={8}
+            maxLength={64}
             required
           />
           <label htmlFor="password">Confirm Password</label>
@@ -130,6 +147,7 @@ function Register() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             minLength={8}
+            maxLength={64}
             required
           />
           {errorMessage ? <p className="error-msg">{errorMessage}</p> : null}

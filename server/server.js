@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import { v1 as uuidv1 } from "uuid";
+import bcrypt from "bcryptjs";
 
 const config = dotenv.config()
 const app = express();
@@ -51,7 +52,7 @@ app.get("/api/languages/total", (req, res) => {
 app.post("/api/user", (req, res) => {
   if (req.body.username === undefined) return res.status(400)
   const username = req.body.username
-  const sql = "SELECT language, level, GROUP_CONCAT(COUNT ORDER BY level) userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE username = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
+  const sql = "SELECT language, level, COUNT userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE username = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
   db.query(sql, [username], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
@@ -171,11 +172,12 @@ app.post("/api/date", (req, res) => {
 
 app.post("/login", (req, res) => {
   if (req.body.email === undefined || req.body.password === undefined) return res.status(400)
-  const sql = "SELECT username, id FROM users WHERE email = ? AND password = ?;"
-  const values = [req.body.email, req.body.password]
+  const sql = "SELECT username, id, password FROM users WHERE email = ?;"
+  const values = [req.body.email]
   db.query(sql, [...values], (err, data) => {
     if (err) return res.status(500).json({ message: "Login failed", type: "error" })
     if (data.length === 0) return res.status(401).json({ message: "User doesn't exist", type: "error" })
+    if (!bcrypt.compareSync(req.body.password, data[0].password)) return res.status(401).json({ message: "Invalid credentials", type: "error" })
     const user = { id: data[0].id, email: req.body.email, username: data[0].username, password: req.body.password }
     const token = createToken({ id: user.id, email: user.email })
     return res.status(200).json({ message: "Success", username: user.username, token: token, isAuthenticated: true, type: "success" })
@@ -186,7 +188,10 @@ app.post("/login", (req, res) => {
 // validate email, username and password again
 app.post("/register", (req, res) => {
   if (req.body === undefined) return res.status(400)
-  const values = [uuidv1(), req.body.email, req.body.username, req.body.password];
+  const salt = bcrypt.genSaltSync(15) // number works, env no
+  const pass = bcrypt.hashSync(req.body.password, salt) // hash password
+  console.log(pass)
+  const values = [uuidv1(), req.body.email, req.body.username, pass];
   const valid = "SELECT email FROM users WHERE email LIKE ?;";
   db.query(valid, [values[1]], (err, data) => {
     if (err) return res.status(500).json({ message: "Error validating", type: "error" });
@@ -196,7 +201,7 @@ app.post("/register", (req, res) => {
     db.query(sql, [values], (err, _data) => {
       if (err) return res.status(500).json({ message: "Error registering", type: "error" });
       const token = createToken({ id: values[0], email: values[1] })
-      return res.status(200).json({ message: "Success", token: token, type: "success" });
+      return res.status(200).json({ message: "Success", username: req.body.username, token: token, type: "success" });
     });
   });
 });
@@ -213,7 +218,6 @@ app.post("/auth-status", (req, res) => {
     return res.send({ isAuthenticated: false, type: "error" })
   }
   const token = req.body.token
-  console.log("Token:", token)
   const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
   console.log("Authorized")
   return res.send({ isAuthenticated: true, type: "success" })

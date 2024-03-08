@@ -20,7 +20,7 @@ function Login() {
       await queryLogin()
     },
     onError: (err: Error) => setErrorMessage(err.toString()),
-    onSettled: () => {
+    onSuccess: () => {
       // reload website to get language sections
       console.log("Successful Login")
       setIsAuthenticated(true)
@@ -64,6 +64,16 @@ function Login() {
     refetch();
   }
 
+  if (isAuthenticated) {
+    return (
+    <>
+        <main>
+          User already logged in
+        </main>
+    </>
+    )
+  }
+
   return (
     <>
       <main>
@@ -75,6 +85,7 @@ function Login() {
             name="email"
             placeholder="email@proton.com"
             ref={email}
+            disabled={isLoading}
             required
           />
           <label htmlFor="password">Password</label>
@@ -85,6 +96,7 @@ function Login() {
             ref={password}
             minLength={5}
             maxLength={128}
+            disabled={isLoading}
             required
           />
           <p className="error-msg">{errorMessage}</p>
