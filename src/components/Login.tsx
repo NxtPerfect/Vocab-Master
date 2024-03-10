@@ -67,16 +67,13 @@ function Login() {
   if (isAuthenticated) {
     return (
     <>
-        <main>
           User already logged in
-        </main>
     </>
     )
   }
 
   return (
     <>
-      <main>
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
           <label htmlFor="email">Email</label>
@@ -105,7 +102,6 @@ function Login() {
             <button type="button">Create new account</button>
           </Link>
         </form>
-      </main>
     </>
   );
 }

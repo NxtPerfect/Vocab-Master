@@ -94,16 +94,13 @@ function Register() {
   if (isAuthenticated) {
     return (
     <>
-        <main>
           User already logged in
-        </main>
     </>
     )
   }
 
   return (
     <>
-      <main>
         <form onSubmit={handleSubmit}>
           <h1>Register</h1>
           <label htmlFor="email">Email</label>
@@ -154,7 +151,6 @@ function Register() {
           <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner/> : null}Register</button>
         </form>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-      </main>
     </>
   );
 }

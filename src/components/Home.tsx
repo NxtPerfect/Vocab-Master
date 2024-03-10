@@ -133,7 +133,6 @@ function Home() {
 
   return (
     <>
-      <main>
         {isError ? "Failed to fetch" : error}
         {languages.map(
           (
@@ -152,7 +151,6 @@ function Home() {
             );
           },
         )}
-      </main>
     </>
   );
 }

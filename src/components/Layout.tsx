@@ -72,7 +72,10 @@ function Layout({ children }: { children: ReactElement }) {
   return (
     <>
       <Nav streak={userStreak} queryUserStreak={queryUserStreak} />
-      {children}
+      <main>
+        {children}
+        <div className="blob"></div>
+      </main>
       <Footer />
     </>
   )

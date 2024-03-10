@@ -42,18 +42,62 @@ $border-radius: 1svw;
     background-color: color.scale($bg-alt, $lightness: 20%);
     color: color.scale($color-alt, $lightness: 20%);
   }
+
   &:disabled {
     background-color: color.scale($bg, $blackness: 30%);
     cursor: wait;
+
     &:hover {
       color: $color;
     }
   }
 }
 
+// TODO
+@keyframes move-bg {}
+
+@keyframes move-blob {
+  0% {
+    rotate: 0deg;
+    left: -100%;
+    top: -20%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+
+  25% {
+    rotate: -20deg;
+    aspect-ratio: 1.8;
+    opacity: 0.6;
+  }
+
+  50% {
+    rotate: 40deg;
+    left: 100%;
+    top: 25%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+
+  75% {
+    rotate: 120deg;
+    aspect-ratio: 1.6;
+    opacity: 0.6;
+  }
+
+  100% {
+    rotate: -120deg;
+    left: -100%;
+    top: 70%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+}
+
 * {
   min-width: 0;
   margin: 0;
+  z-index: 1;
   background-color: $background;
   color: $text;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -69,14 +113,23 @@ $border-radius: 1svw;
 }
 
 main {
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-content: center;
   gap: 3rem;
   padding: 3rem 0;
+  // background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0));
   background: linear-gradient(125deg, color.scale($primary, $lightness: -50%) 0%, $background 50%, color.scale($secondary, $lightness: -25%));
+  background-repeat: no-repeat;
+  animation: move-bg 2s ease-in infinite alternate-reverse;
+  z-index: -1;
+  min-height: 66svh;
 
+  * {
+    z-index: 1;
+  }
 
   .language_section,
   .language_section:nth-of-type(2n) {
@@ -90,6 +143,8 @@ main {
     border-radius: $border-radius;
     width: 40svw;
     transition: color 0.1s linear;
+    box-shadow: 0 4svh 4svw -3svw $primary;
+
 
     .link {
       color: $primary;
@@ -174,10 +229,16 @@ main {
         justify-content: space-evenly;
         align-items: center;
         background-color: inherit;
-        box-shadow: black 0 0 1rem;
+        box-shadow: black 0 1svh 2svh;
         height: 100%;
         width: 100%;
         border-radius: $border-radius;
+        transition: box-shadow 0.1s ease-in;
+
+        &:hover {
+          box-shadow: inset white 0 0 .5rem, black 0 1svh 2svh;
+          transition: box-shadow 0.1s ease-in;
+        }
 
         a,
         p,
@@ -196,6 +257,7 @@ main {
             border-radius: $border-radius;
             background-color: $text;
             height: 100%;
+            transition: all .25s ease-out;
           }
         }
 
@@ -205,6 +267,7 @@ main {
 
   .language_section:nth-of-type(2n) {
     background-color: $primary;
+    box-shadow: 0 4svh 4svw -3svw $secondary;
 
 
     .language_section_top {
@@ -222,6 +285,7 @@ main {
 
         &:hover>.icon,
         &:active>.icon {
+
           // transition: background-color 0.1s linear;
           path {
             stroke: color.scale($text, $lightness: 20%);
@@ -309,11 +373,14 @@ form {
 }
 
 nav {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  padding: 1.2rem .5rem;
+  padding: 2svh 1svw;
+  // padding: 1.2rem .5rem;
   background-color: $primary;
 
   * {
@@ -399,13 +466,17 @@ nav {
 }
 
 footer {
+  position: relative;
+  z-index: 1;
   display: grid;
   justify-content: center;
   align-items: center;
   text-align: center;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: $secondary;
-  padding: 5rem 0;
+  // padding: 5rem 0;
+  padding: 5svh 0;
+  margin: 0;
 
   * {
     background-color: inherit;
@@ -443,6 +514,7 @@ footer {
   from {
     rotate: 0deg;
   }
+
   to {
     rotate: 360deg;
   }
@@ -453,6 +525,18 @@ footer {
   left: -0.5rem;
   background-color: transparent;
   animation: spin ease-in-out infinite 1.5s;
+}
+
+.blob {
+  position: fixed;
+  z-index: 0;
+  width: 40rem;
+  aspect-ratio: 1.35;
+  border-radius: 50%;
+  // background-color: lightpink;
+  background-image: linear-gradient(lightpink, lightblue);
+  animation: move-blob 20s infinite ease-in-out forwards alternate-reverse;
+  filter: blur(70rem) contrast(1);
 }
 
 // Mobile CSS

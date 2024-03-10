@@ -7,11 +7,9 @@ function ErrorPage() {
   return (
     <>
       <Layout>
-        <main>
-          <h1>Oops! Something went wrong</h1>
-          <p>If you encounter problems please report them to <Link to={"/"}>us</Link></p>
-          <Link to={"/"}>Go back</Link>
-        </main>
+        <h1>Oops! Something went wrong</h1>
+        <p>If you encounter problems please report them to <Link to={"/"}>us</Link></p>
+        <Link to={"/"}>Go back</Link>
       </Layout>
     </>
   )
