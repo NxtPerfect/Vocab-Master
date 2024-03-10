@@ -94,6 +94,18 @@ $border-radius: 1svw;
   }
 }
 
+@keyframes slide-left {
+  from {
+    opacity: 0;
+    left: -100%;
+  }
+
+  to {
+    opacity: 1;
+    left: 0;
+  }
+}
+
 * {
   min-width: 0;
   margin: 0;
@@ -133,6 +145,7 @@ main {
 
   .language_section,
   .language_section:nth-of-type(2n) {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -144,6 +157,7 @@ main {
     width: 40svw;
     transition: color 0.1s linear;
     box-shadow: 0 4svh 4svw -3svw $primary;
+    animation: slide-left 0.5s ease-out;
 
 
     .link {
@@ -327,6 +341,76 @@ main {
             font-weight: 600;
             font-size: 1.1rem;
           }
+        }
+      }
+    }
+  }
+
+  .flashcard-closed,
+  .flashcard-open {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    grid-column: span 2;
+    width: 50%;
+    aspect-ratio: 1.7;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: $accent;
+    text-align: center;
+    border-radius: $border-radius;
+    box-shadow: $primary 0 4svh 4svh -1.5svw;
+    font-size: 1.25rem;
+    animation: slide-left 0.25s ease-out;
+
+    * {
+      background-color: $accent;
+    }
+
+    button {
+      @include betterButton(10rem, 2rem, $secondary, $text, $primary, $background);
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    .flashcard-top {
+      padding: 1rem;
+      height: 15svh;
+
+      span {
+        padding: 0 2rem;
+      }
+
+      .flashcard-words {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+      }
+    }
+
+    .flashcard-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 40%;
+
+      .flashcard-button-correct {
+        box-shadow: lightgreen 0 .5rem 2rem .05rem;
+
+        &:hover {
+          background-color: lightgreen;
+          color: black;
+        }
+      }
+
+      .flashcard-button-wrong {
+        box-shadow: red 0 .5rem 2rem .05rem;
+
+        &:hover {
+          background-color: red;
+          color: black;
         }
       }
     }

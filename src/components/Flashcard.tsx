@@ -183,22 +183,24 @@ function Flashcard() {
   if (show === true) {
     return (
       <>
-        Flashcard
-        {language}
-        {level}
-        <div>
-          <div key={words[randomIndexes[currentIndex]].word_id}>
-            {words[randomIndexes[currentIndex]].sideA}{" "}
-            {words[randomIndexes[currentIndex]].sideB}
+        <div className="flashcard-open">
+          <div className="flashcard-top">
+            <span>Flashcard {language.charAt(0)?.toUpperCase() + language.slice(1)} {level.charAt(0)?.toUpperCase() + level.slice(1)}</span>
+            <div className="flashcard-words" key={words[randomIndexes[currentIndex]].word_id}>
+              {words[randomIndexes[currentIndex]].sideA}{" "}
+              {words[randomIndexes[currentIndex]].sideB}
+            </div>
           </div>
-          <button type="button" onClick={guessedCorrect}>
-            Correct
-          </button>
-          <button type="button" onClick={guessedWrong}>
-            Wrong
-          </button>
+          <div className="flashcard-buttons">
+            <button className="flashcard-button-correct" type="button" onClick={guessedCorrect}>
+              Correct
+            </button>
+            <button className="flashcard-button-wrong" type="button" onClick={guessedWrong}>
+              Wrong
+            </button>
+          </div>
+          {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </div>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </>
     );
   }
@@ -206,12 +208,12 @@ function Flashcard() {
   // Needs back arrow to navigate to home
   return (
     <>
-      Flashcard
-      {language}
-      {level}
-      <div>
-        <div key={words[randomIndexes[currentIndex]].word_id}>
-          {words[randomIndexes[currentIndex]].sideA}
+      <div className="flashcard-closed">
+        <div className="flashcard-top">
+          <span>Flashcard {language.charAt(0)?.toUpperCase() + language.slice(1)} {level.charAt(0)?.toUpperCase() + level.slice(1)}</span>
+          <div className="flashcard-words" key={words[randomIndexes[currentIndex]].word_id}>
+            {words[randomIndexes[currentIndex]].sideA}
+          </div>
         </div>
         <button
           type="button"
@@ -219,10 +221,10 @@ function Flashcard() {
             setShow(true);
           }}
         >
-          Haha
+          Show
         </button>
-      </div>
-      {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      </div >
     </>
   )
 }

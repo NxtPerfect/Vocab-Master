@@ -28,7 +28,7 @@ const corsOptions = {
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 10000, // 15 minutes
-  limit: 200
+  limit: 100
 })
 
 app.use(bodyParser.json())
