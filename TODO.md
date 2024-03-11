@@ -41,19 +41,23 @@ bcrypt
 - [x] nav home page doesn't refetch
 - [x] login/register not accessed if logged in
 - [x] hash password
-
-- [?] user progress returns 4,4/4, instead of 4/4
-    most likely issue in query
-
-- [ ] language section still shows button to learn more
-- [ ] /api/user uses username to get progress
-- [ ] disable register fields on registering
-- [ ] save words for later
-    - [ ] learn again pending words
+- [x] language section still shows button to learn more
+- [x] /api/user uses username to get progress
+- [x] disable register fields on registering
+- [/] save words for later
+    - [/] learn again pending words
+    - [!] now auth status is false
+    - [x] if word already in user_progress
+    then update it
+    else insert new entry
+    - [!] saving words and updating on progress is untested
+    the due date might be wrong
+- [ ] userstreak needs to set to 0 if user didn't learn
+yesterday
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 ---
-`Total tasks: 12/17`
+`Total tasks: 15/19`
 
 # CSS
 - [x] Home
@@ -61,15 +65,13 @@ bcrypt
     - [x] maybe alter the colors for every 2nd item?
     - [x] progress bar
     - [x] add visible spacing between levels
-    - [ ] minimal mode, where it's black/white, and has no animations
-- [ ] Flashcard
-    - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
+- [/] Flashcard
 - [ ] Error Page
 - [ ] Confirm Exit Modal
-- [ ] Loading website placeholder
+- [/] Loading website placeholder
     - [x] Animated loading circle, rotates, changes it's width
-    - [ ] suspense
-- [ ] Login/register
-    - [ ] on disabled input gray out
+    - [/] suspense
+- [/] Login/register
+    - [/] on disabled input gray out
 ---
-`Total tasks: 1/5`
+`Total tasks: 1/6`

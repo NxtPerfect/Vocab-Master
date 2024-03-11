@@ -28,7 +28,7 @@ const corsOptions = {
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 10000, // 15 minutes
-  limit: 100
+  limit: 200
 })
 
 app.use(bodyParser.json())
@@ -49,49 +49,55 @@ app.get("/api/languages/total", (req, res) => {
 
 // If we read the streak, we should check the last two words
 // we don't want to show streak if the user lost it
-app.post("/api/user", (req, res) => {
-  if (req.body.username === undefined) return res.status(400)
-  const username = req.body.username
-  const sql = "SELECT language, level, COUNT userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE username = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
-  db.query(sql, [username], (err, data) => {
+app.post("/api/user", authenticateToken, (req, res) => {
+  // if (req.body.username === undefined) return res.status(400)
+  // const username = req.body.username
+  const email = req.email
+  const sql = "SELECT language, level, COUNT userProgressTotal, u.streak FROM (SELECT language, level, COUNT(*) COUNT FROM user_progress WHERE user_id = (SELECT user_id FROM users WHERE email = ?) GROUP BY language, level) subquery, users u GROUP BY language, level ORDER BY language, level;"
+  db.query(sql, [email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
   });
 });
 
-// TODO: session isn't recognized
-app.post("/api/user_streak", (req, res) => {
-  if (req.body.username === undefined)
-    return res.status(400).json({ message: "No username set", type: "error" })
-  const username = req.body.username
+// TODO if user didn't progress yesterday
+// set userstreak as 0
+app.post("/api/user_streak", authenticateToken, (req, res) => {
+  // if (req.body.username === undefined)
+  //   return res.status(400).json({ message: "No username set", type: "error" })
+  // const username = req.body.username
+  const email = req.email
   console.log("User streak")
-  const sql = "SELECT streak userStreak FROM users WHERE username = ?;"
-  db.query(sql, [username], (err, data) => {
+  const sql = "SELECT streak userStreak FROM users WHERE email = ?;"
+  db.query(sql, [email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     // console.log(data[0])
     return res.json({ message: data[0], type: "success" })
   });
 });
 
-app.post("/api/:language&:level", (req, res) => {
-  if (req.body.username === undefined) return res.status(400)
-  if (req.params === undefined) return res.status(400)
+// TODO get words in user progress that have due_date as today
+app.post("/api/:language&:level", authenticateToken, (req, res) => {
+  // if (req.body.username === undefined) return res.status(400)
+  // if (req.params === undefined) return res.status(400)
   const { language, level } = req.params
-  const username = req.body.username
+  // const username = req.body.username
+  const email = req.email
   const sql =
-    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE username = ?)) LIMIT 30;";
-  db.query(sql, [language, level, username], (err, data) => {
+    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?)) AND due > CURDATE() LIMIT 30;";
+  db.query(sql, [language, level, email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
   });
 });
 
-app.post("/api/learnt", (req, res) => {
-  if (req.body.username === undefined) return res.status(400)
-  const username = req.body.username
+app.post("/api/learnt", authenticateToken, (req, res) => {
+  // if (req.body.username === undefined) return res.status(400)
+  // const username = req.body.username
+  const email = req.email
   const sql =
-    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE username = ?) GROUP BY language, level ORDER BY language, level;"
-  db.query(sql, [username], (err, data) => {
+    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE email = ?) GROUP BY language, level ORDER BY language, level;"
+  db.query(sql, [email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
 
     const arr = []
@@ -110,27 +116,43 @@ app.post("/api/learnt", (req, res) => {
   * returns 400 if no params passed
   *
   * Should also save in streak into users
+  *
+  * TODO iteration and date calculation
+  * we should check if word is in database
+  * if it is, we update it's iteration, date and due date
+  * if not, we insert it
   */
 app.post("/api/save_progress", authenticateToken, (req, res) => {
   if (req.body.progressData === undefined) return res.status(400)
   const progressData = req.body.progressData;
+  const email = req.email
   const queries = progressData.map((progressItem) => {
-    const { username, word_id, language, level } = progressItem;
+    const { _, word_id, language, level } = progressItem
+    const iteration = 1
+    /*
+      *INSERT INTO `ALLOWANCE` (`EmployeeID`, `Year`, `Month`, `OverTime`,`Medical`,
+      *`Lunch`, `Bonus`, `Allowance`) values (10000001, 2014, 4, 10.00, 10.00,
+      * 10.45, 10.10, 40.55) ON DUPLICATE KEY UPDATE `EmployeeID` = 10000001
+    */
+    // While this query will work, i still need to have the iteration to calculate due_date
+    // unless there's a way to do it in sql?
+    // (x/2)^2+1
+    // query untested
     let sql =
-      "INSERT INTO user_progress (user_id, word_id, language, level, date) VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'));";
+      "INSERT INTO user_progress (user_id, word_id, language, level, date, iteration, due) VALUES ((SELECT id FROM users WHERE email = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'), ?, ?) ON DUPLICATE KEY UPDATE iteration = iteration + 1 AND due = DATE_ADD(CURDATE(), INTERVAL ((iteration + 1 / 2)*(iteration + 1)+1) DAY);";
     return new Promise((resolve, reject) => {
-      db.query(sql, [username, word_id, language, level, moment().format('D-M-YYYY')], (err, data) => {
+      db.query(sql, [email, word_id, language, level, moment().format('D-M-YYYY'), iteration, moment().add(1, 'days').format('D-M-YYYY')], (err, data) => {
         if (err) {
-          console.log(err);
-          return reject(err);
+          console.log(err)
+          return reject(err)
         }
-        resolve(data);
-      });
+        resolve(data)
+      })
       sql = "SELECT CASE WHEN (SELECT datediff((SELECT date FROM user_progress ORDER BY date DESC LIMIT 1), (SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1))) <= 1 THEN 1 WHEN EXISTS((SELECT date dateOlder FROM user_progress ORDER BY date DESC LIMIT 1 OFFSET 1)) THEN 1 ELSE 0 END;"
       db.query(sql, (err, data) => {
         if (err) {
-          console.log(err);
-          return reject(err);
+          console.log(err)
+          return reject(err)
         }
         sql = "UPDATE users SET streak = 1;"
         if (data === 1)
@@ -157,12 +179,13 @@ app.post("/api/save_progress", authenticateToken, (req, res) => {
 // Query for all last learnt words
 // only get the last date from each language/level
 // but then for streak we need all of it
-app.post("/api/date", (req, res) => {
-  if (req.body.username === undefined) return res.status(400)
+app.post("/api/date", authenticateToken, (req, res) => {
+  // if (req.body.username === undefined) return res.status(400)
   if (req.params === undefined) return res.status(400)
-  const username = req.body.username
+  // const username = req.body.username
+  const email = req.email
   const sql =
-    "SELECT * FROM user_progress WHERE user_id = (SELECT id FROM users WHERE username = ?);";
+    "SELECT * FROM user_progress WHERE user_id = (SELECT id FROM users WHERE email = ?);";
   db.query(sql, [username], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
@@ -241,9 +264,13 @@ function authenticateToken(req, res, next) {
   if (token === null) return res.status(401)
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(err)
 
-    if (err) return res.sendStatus(403)
+    if (err) {
+      console.log(err)
+      return res.sendStatus(403)
+    }
+
+    req.email = user.email
 
     next()
   })

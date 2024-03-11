@@ -50,9 +50,7 @@ function Flashcard() {
   async function queryWords() {
     try {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
-        username: Cookie.get("username"),
-        token: Cookie.get("token")
-      });
+      }, { withCredentials: true });
       if (data.data.type !== "success") {
         setErrorMessage(data.data.message)
       }
@@ -88,10 +86,9 @@ function Flashcard() {
    */
   useEffect(() => {
     if (randomIndexes.length === 0 && changedWords) {
-      const progressData: Array<{ username: string, word_id: number, language: string, level: string }> = [];
+      const progressData: Array<{ word_id: number, language: string, level: string }> = [];
       for (const word of words) {
         progressData.push({
-          username: Cookie.get("username"),
           word_id: word.word_id,
           language: language as string,
           level: level as string,
@@ -102,7 +99,7 @@ function Flashcard() {
   }, [randomIndexes]);
 
   // Doesn't send the jwt token
-  async function querySaveProgress(progressData: Array<{ username: string, word_id: number, language: string, level: string }>) {
+  async function querySaveProgress(progressData: Array<{ word_id: number, language: string, level: string }>) {
     try {
       const data = await axios.post("http://localhost:6942/api/save_progress", { progressData }, { withCredentials: true }).finally(navigate("/"))
     } catch (err) {

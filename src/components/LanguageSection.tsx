@@ -41,7 +41,7 @@ function LanguageSection({
                 <div className="progress_bar_container">
                   <div className="progress_bar" style={{ width: `${countLearnt[levelIndex] === undefined ? 0 : (countLearnt[levelIndex] / countTotal[levelIndex]) * 100}%` }} />
                 </div>
-                {countLearnt[levelIndex] === countTotal[levelIndex] ? <p className="disabled">All words learnt</p> : (!isLearnt[levelIndex] ? (<Link
+                {countLearnt[levelIndex] === countTotal[levelIndex] ? (<p className="disabled">All words learnt</p>) : (!isLearnt[levelIndex] ? (<Link
                   className="link"
                   key={levelIndex}
                   to={Cookie.get("username") ? `/flashcard/${language}/${levelLevel}` : '/login'}

@@ -13,7 +13,7 @@ function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const {isAuthenticated, login} = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
   let blocker: Blocker = useBlocker(
@@ -47,7 +47,7 @@ function Register() {
       console.log("Type", data.data.type)
       if (data.data.type === "success") {
         Cookies.set("username", data.data.username, { expires: 14, samesite: "Lax" });
-        Cookies.set("token", data.data.token, { expires: 14, samesite:"Lax"})
+        Cookies.set("token", data.data.token, { expires: 14, samesite: "Lax" })
         navigate("/");
         return data.data;
       }
@@ -93,64 +93,68 @@ function Register() {
 
   if (isAuthenticated) {
     return (
-    <>
-          User already logged in
-    </>
+      <>
+        User already logged in
+      </>
     )
   }
 
   return (
     <>
-        <form onSubmit={handleSubmit}>
-          <h1>Register</h1>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="email@proton.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            minLength={5}
-            maxLength={64}
-            required
-          />
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            minLength={2}
-            maxLength={32}
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="********"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={8}
-            maxLength={64}
-            required
-          />
-          <label htmlFor="password">Confirm Password</label>
-          <input
-            type="password"
-            name="confirm_password"
-            placeholder="********"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            minLength={8}
-            maxLength={64}
-            required
-          />
-          {errorMessage ? <p className="error-msg">{errorMessage}</p> : null}
-          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner/> : null}Register</button>
-        </form>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      <form onSubmit={handleSubmit}>
+        <h1>Register</h1>
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          name="email"
+          placeholder="email@proton.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          minLength={5}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          name="username"
+          placeholder="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          minLength={2}
+          maxLength={32}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="********"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={8}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="password">Confirm Password</label>
+        <input
+          type="password"
+          name="confirm_password"
+          placeholder="********"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          minLength={8}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        {errorMessage ? <p className="error-msg">{errorMessage}</p> : null}
+        <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner /> : null}Register</button>
+      </form>
+      {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
     </>
   );
 }

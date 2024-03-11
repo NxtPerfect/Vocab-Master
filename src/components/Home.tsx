@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookie from "js-cookie";
 import "../App.scss";
 import LanguageSection from "./LanguageSection";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAuth } from "./AuthProvider";
 
@@ -50,13 +50,14 @@ function Home() {
       const data = await axios.get('http://localhost:6942/api/languages/total');
       // Process the data into array
       // I need to win the battle with these types below
-      const temp = data.data.message.map((lang: LanguageDataRaw) => ({
-        language: lang.language as string,
-        level: lang.level.split(",") as Array<string>,
-        countTotal: lang.countTotal.split(",") as Array<number>,
-        countUser: [],
-        isLearnt: []
-      } as Language));
+      const temp = data.data.message.map((lang: LanguageDataRaw) => (
+        {
+          language: lang.language as string,
+          level: lang.level.split(",") as Array<string>,
+          countTotal: lang.countTotal.split(",").map((l) => { return parseInt(l, 10) }) as Array<number>,
+          countUser: [],
+          isLearnt: []
+        } as Language));
       // Add languages, levels and amount of words they have
       // To show proper LanguageSection
       setLanguages((curr: Array<Language>) => [...curr, ...temp]);
@@ -70,9 +71,7 @@ function Home() {
   async function queryUserProgress() {
     try {
       const data = await axios.post("http://localhost:6942/api/user", {
-        username: Cookie.get("username"),
-        token: Cookie.get("token")
-      });
+      }, { withCredentials: true });
       // We return the correct data, now we have to merge it
       // language, level, total words learnt
       if (data.data.message === undefined || data.data.message.length === 0) return;
@@ -106,7 +105,7 @@ function Home() {
   // so i should manually refetch it or something idrk
   async function queryIsLearntToday() {
     try {
-      const data = await axios.post("http://localhost:6942/api/learnt", { username: Cookie.get("username") });
+      const data = await axios.post("http://localhost:6942/api/learnt", {}, { withCredentials: true });
 
       // Instead change languages state
       // to get the isLearnt array
@@ -133,24 +132,24 @@ function Home() {
 
   return (
     <>
-        {isError ? "Failed to fetch" : error}
-        {languages.map(
-          (
-            language: Language,
-            index: number,
-          ) => {
-            return (
-              <LanguageSection
-                index={index}
-                language={language.language}
-                level={language.level}
-                countTotal={language.countTotal}
-                countLearnt={language.countUser}
-                isLearnt={language.isLearnt}
-              />
-            );
-          },
-        )}
+      {isError ? "Failed to fetch" : error}
+      {languages.map(
+        (
+          language: Language,
+          index: number,
+        ) => {
+          return (
+            <LanguageSection
+              index={index}
+              language={language.language}
+              level={language.level}
+              countTotal={language.countTotal}
+              countLearnt={language.countUser}
+              isLearnt={language.isLearnt}
+            />
+          );
+        },
+      )}
     </>
   );
 }
