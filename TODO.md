@@ -45,11 +45,18 @@ bcrypt
 - [x] /api/user uses username to get progress
 - [x] disable register fields on registering
 - [/] save words for later
-    - [/] learn again pending words
-    - [!] now auth status is false
     - [x] if word already in user_progress
     then update it
     else insert new entry
+    - [/] learn again pending words
+        - [/] now language-section doesn't show learn button
+        when date due for each word is more than today
+        return it as learnt
+        currently we return due for the whole section
+        we should try and return it for each word
+        and then count how many there are per section
+        there's an issue in /api/learnt, as we onl get
+        words after today's date?
     - [!] saving words and updating on progress is untested
     the due date might be wrong
 - [ ] userstreak needs to set to 0 if user didn't learn
@@ -73,5 +80,8 @@ yesterday
     - [/] suspense
 - [/] Login/register
     - [/] on disabled input gray out
+- [ ] language section
+    - [ ] when no words left for today, the text shifts down
+    make it equal with text that has button to learn
 ---
 `Total tasks: 1/6`

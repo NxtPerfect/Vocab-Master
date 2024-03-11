@@ -28,6 +28,7 @@ function Login() {
     },
     refetchOnWindowFocus: false,
     enabled: false,
+    retry: false,
   })
 
   async function queryLogin() {

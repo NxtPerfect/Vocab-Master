@@ -96,13 +96,13 @@ app.post("/api/learnt", authenticateToken, (req, res) => {
   // const username = req.body.username
   const email = req.email
   const sql =
-    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE email = ?) GROUP BY language, level ORDER BY language, level;"
+    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE email = ?) GROUP BY language, level ORDER BY language, level AND due > CURDATE();"
   db.query(sql, [email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
 
     const arr = []
     for (const date of data) {
-      arr.push({ language: date.language, level: date.level, isLearnt: date.date === moment().format('YYYY-MM-D') })
+      arr.push({ language: date.language, level: date.level, isLearntToday: date.date === moment().format('YYYY-MM-D'), due: moment().isAfter(date.due) || moment().isSame(date.due) })
     }
     return res.json({ message: arr, type: "success" })
   })
@@ -235,13 +235,13 @@ app.post("/logout", (req, res, next) => {
 });
 
 // Check if token is same as generated
-app.post("/auth-status", (req, res) => {
-  if (req.body.token === undefined) {
-    console.log("Unauthorized")
-    return res.send({ isAuthenticated: false, type: "error" })
-  }
-  const token = req.body.token
-  const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+app.post("/auth-status", authenticateToken, (req, res) => {
+  // if (req.body.token === undefined) {
+  //   console.log("Unauthorized")
+  //   return res.send({ isAuthenticated: false, type: "error" })
+  // }
+  // const token = req.body.token
+  // const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
   console.log("Authorized")
   return res.send({ isAuthenticated: true, type: "success" })
 });

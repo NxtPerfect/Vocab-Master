@@ -18,7 +18,8 @@ interface Language {
   level: Array<string>;
   countTotal: Array<number>;
   countUser: Array<number>;
-  isLearnt: Array<boolean>;
+  isLearntToday: Array<boolean>;
+  due: Array<boolean>;
 }
 
 type LanguageDataRaw = {
@@ -56,7 +57,8 @@ function Home() {
           level: lang.level.split(",") as Array<string>,
           countTotal: lang.countTotal.split(",").map((l) => { return parseInt(l, 10) }) as Array<number>,
           countUser: [],
-          isLearnt: []
+          isLearntToday: [],
+          due: []
         } as Language));
       // Add languages, levels and amount of words they have
       // To show proper LanguageSection
@@ -113,9 +115,10 @@ function Home() {
       let last_index: number = 0
       setLanguages((curr: Array<Language>) => {
         curr.map((lang: Language) => {
-          data.data.message.map((learnt: { language: string, level: string, isLearnt: boolean }) => {
+          data.data.message.map((learnt: { language: string, level: string, isLearntToday: boolean, due: boolean }) => {
             if (lang.language === learnt.language && lang.level.includes(learnt.level, last_index)) {
-              lang.isLearnt.push(learnt.isLearnt)
+              lang.isLearntToday.push(learnt.isLearntToday)
+              lang.due.push(learnt.due)
               last_index = lang.level.findIndex(element => { element === learnt.level })
             }
           })
@@ -123,6 +126,7 @@ function Home() {
         return [...curr]
       }
       );
+      console.log(languages)
       return data.data;
     } catch (err) {
       console.log(err);
@@ -145,7 +149,8 @@ function Home() {
               level={language.level}
               countTotal={language.countTotal}
               countLearnt={language.countUser}
-              isLearnt={language.isLearnt}
+              isLearntToday={language.isLearntToday}
+              countDue={language.due.filter((due) => due).length}
             />
           );
         },

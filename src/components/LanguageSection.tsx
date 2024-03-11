@@ -14,8 +14,9 @@ function LanguageSection({
   level,
   countTotal,
   countLearnt,
-  isLearnt
-}: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number>, isLearnt: Array<boolean> }) {
+  isLearntToday,
+  countDue
+}: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number>, isLearntToday: Array<boolean>, countDue: Array<number> }) {
   const [fold, setFold] = useState<boolean>(false)
 
   return (
@@ -35,13 +36,13 @@ function LanguageSection({
           {!fold
             ? level.map((levelLevel: string, levelIndex: number) => (
               <div className="language_level">
-                {isLearnt[levelIndex] ? "✅" : "❌"}
+                {isLearntToday[levelIndex] ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
                 <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
                 <div className="progress_bar_container">
                   <div className="progress_bar" style={{ width: `${countLearnt[levelIndex] === undefined ? 0 : (countLearnt[levelIndex] / countTotal[levelIndex]) * 100}%` }} />
                 </div>
-                {countLearnt[levelIndex] === countTotal[levelIndex] ? (<p className="disabled">All words learnt</p>) : (!isLearnt[levelIndex] ? (<Link
+                {countLearnt[levelIndex] === countTotal[levelIndex] && countDue[levelIndex] === 0 ? (<p className="disabled">No words for today</p>) : (!isLearntToday[levelIndex] ? (<Link
                   className="link"
                   key={levelIndex}
                   to={Cookie.get("username") ? `/flashcard/${language}/${levelLevel}` : '/login'}

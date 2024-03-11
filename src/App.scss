@@ -156,7 +156,7 @@ main {
     border-radius: $border-radius;
     width: 40svw;
     transition: color 0.1s linear;
-    box-shadow: 0 1svh 4svw 0svw $secondary;
+    box-shadow: 0 2svh 1svw -1svw color.adjust($secondary, $alpha: -0.4);
     animation: slide-left 0.5s ease-out;
 
 
@@ -281,7 +281,7 @@ main {
 
   .language_section:nth-of-type(2n) {
     background-color: $primary;
-    box-shadow: 0 1svh 4svw 0svw $primary;
+    box-shadow: 0 2svh 1svw -1svw color.adjust($primary, $alpha: -0.4);
 
 
     .language_section_top {
