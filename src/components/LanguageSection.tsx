@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
+import Cookie from "js-cookie";
 
 
 /*
@@ -13,9 +13,12 @@ function LanguageSection({
   language,
   level,
   countTotal,
-  countLearnt
-}: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number> }) {
-  const [fold, setFold] = useState<boolean>(false);
+  countLearnt,
+  isLearntToday,
+  countDue
+}: { index: number; language: string; level: Array<string>, countTotal: Array<number>, countLearnt: Array<number>, isLearntToday: Array<boolean>, countDue: Array<number> }) {
+  const [fold, setFold] = useState<boolean>(false)
+
   return (
     <>
       <div
@@ -33,20 +36,20 @@ function LanguageSection({
           {!fold
             ? level.map((levelLevel: string, levelIndex: number) => (
               <div className="language_level">
-                {fold ? "✅" : "❌"}
+                {isLearntToday[levelIndex] ? "✅" : "❌"}
                 <h3> Level: {levelLevel.toUpperCase()}</h3>
                 <p>Progress: {countLearnt[levelIndex] !== undefined ? countLearnt[levelIndex] : 0}/{countTotal[levelIndex]}</p>
-                <div>
-                  Progress bar
+                <div className="progress_bar_container">
+                  <div className="progress_bar" style={{ width: `${countLearnt[levelIndex] === undefined ? 0 : (countLearnt[levelIndex] / countTotal[levelIndex]) * 100}%` }} />
                 </div>
-                <Link
+                {countLearnt[levelIndex] === countTotal[levelIndex] && countDue[levelIndex] === 0 ? (<p className="disabled">No words for today</p>) : (!isLearntToday[levelIndex] ? (<Link
                   className="link"
                   key={levelIndex}
-                  to={Cookies.get("email") ? `/flashcard/${language}/${levelLevel}` : '/login'}
+                  to={Cookie.get("username") ? `/flashcard/${language}/${levelLevel}` : '/login'}
                   style={{ textDecoration: "none" }}
                 >
-                  {Cookies.get("email") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
-                </Link>
+                  {Cookie.get("username") ? <button type="button">Learn now</button> : <button type="button">Log in to learn</button>}
+                </Link>) : <p className="disabled">Come back tomorrow</p>)}
               </div>
             ))
             : "(...)"}

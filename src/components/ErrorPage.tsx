@@ -1,17 +1,16 @@
 import { Link } from "react-router-dom"
-import Footer from "./components/Footer"
-import Nav from "./components/Nav"
+import Footer from "./Footer"
+import Nav from "./Nav"
+import Layout from "./Layout"
 
 function ErrorPage() {
   return (
     <>
-      <Nav />
-      <main>
+      <Layout>
         <h1>Oops! Something went wrong</h1>
         <p>If you encounter problems please report them to <Link to={"/"}>us</Link></p>
         <Link to={"/"}>Go back</Link>
-      </main>
-      <Footer />
+      </Layout>
     </>
   )
 }

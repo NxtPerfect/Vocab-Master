@@ -35,20 +35,81 @@ $border-radius: 1svw;
   &:hover {
     background-color: $bg-alt;
     color: $color-alt;
-    // transition: color 0.1s linear, background-color 0.1s linear;
     cursor: pointer;
   }
 
   &:active {
     background-color: color.scale($bg-alt, $lightness: 20%);
     color: color.scale($color-alt, $lightness: 20%);
-    // transition: color 0.1s linear, background-color 0.1s linear;
+  }
+
+  &:disabled {
+    background-color: color.scale($bg, $blackness: 30%);
+    cursor: wait;
+
+    &:hover {
+      color: $color;
+    }
+  }
+}
+
+// TODO
+@keyframes move-bg {}
+
+@keyframes move-blob {
+  0% {
+    rotate: 0deg;
+    left: -100%;
+    top: -20%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+
+  25% {
+    rotate: -20deg;
+    aspect-ratio: 1.8;
+    opacity: 0.6;
+  }
+
+  50% {
+    rotate: 40deg;
+    left: 100%;
+    top: 25%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+
+  75% {
+    rotate: 120deg;
+    aspect-ratio: 1.6;
+    opacity: 0.6;
+  }
+
+  100% {
+    rotate: -120deg;
+    left: -100%;
+    top: 70%;
+    aspect-ratio: 1.35;
+    opacity: 1;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    opacity: 0;
+    left: -100%;
+  }
+
+  to {
+    opacity: 1;
+    left: 0;
   }
 }
 
 * {
   min-width: 0;
   margin: 0;
+  z-index: 1;
   background-color: $background;
   color: $text;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -59,18 +120,32 @@ $border-radius: 1svw;
   flex-direction: column;
 }
 
+.disabled {
+  color: #a0a0a0;
+}
+
 main {
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-content: center;
   gap: 3rem;
   padding: 3rem 0;
+  // background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0));
   background: linear-gradient(125deg, color.scale($primary, $lightness: -50%) 0%, $background 50%, color.scale($secondary, $lightness: -25%));
+  background-repeat: no-repeat;
+  animation: move-bg 2s ease-in infinite alternate-reverse;
+  z-index: -1;
+  min-height: 66svh;
 
+  * {
+    z-index: 1;
+  }
 
   .language_section,
   .language_section:nth-of-type(2n) {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -81,6 +156,9 @@ main {
     border-radius: $border-radius;
     width: 40svw;
     transition: color 0.1s linear;
+    box-shadow: 0 2svh 1svw -1svw color.adjust($secondary, $alpha: -0.4);
+    animation: slide-left 0.5s ease-out;
+
 
     .link {
       color: $primary;
@@ -165,15 +243,36 @@ main {
         justify-content: space-evenly;
         align-items: center;
         background-color: inherit;
-        box-shadow: black 0 0 1rem;
+        box-shadow: black 0 1svh 2svh;
         height: 100%;
         width: 100%;
         border-radius: $border-radius;
+        transition: box-shadow 0.1s ease-in;
+
+        &:hover {
+          box-shadow: inset white 0 0 .5rem, black 0 1svh 2svh;
+          transition: box-shadow 0.1s ease-in;
+        }
 
         a,
         p,
         h3 {
           background-color: inherit;
+        }
+
+        .progress_bar_container {
+          border-radius: $border-radius;
+          background-color: $background;
+          min-width: max(2rem, 8svw);
+          max-width: 20rem;
+          height: 0.6rem;
+
+          .progress_bar {
+            border-radius: $border-radius;
+            background-color: $text;
+            height: 100%;
+            transition: all .25s ease-out;
+          }
         }
 
       }
@@ -182,6 +281,7 @@ main {
 
   .language_section:nth-of-type(2n) {
     background-color: $primary;
+    box-shadow: 0 2svh 1svw -1svw color.adjust($primary, $alpha: -0.4);
 
 
     .language_section_top {
@@ -199,6 +299,7 @@ main {
 
         &:hover>.icon,
         &:active>.icon {
+
           // transition: background-color 0.1s linear;
           path {
             stroke: color.scale($text, $lightness: 20%);
@@ -244,6 +345,76 @@ main {
       }
     }
   }
+
+  .flashcard-closed,
+  .flashcard-open {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    grid-column: span 2;
+    width: 50%;
+    aspect-ratio: 1.7;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: $accent;
+    text-align: center;
+    border-radius: $border-radius;
+    box-shadow: $primary 0 4svh 4svh -1.5svw;
+    font-size: 1.25rem;
+    animation: slide-left 0.25s ease-out;
+
+    * {
+      background-color: $accent;
+    }
+
+    button {
+      @include betterButton(10rem, 2rem, $secondary, $text, $primary, $background);
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    .flashcard-top {
+      padding: 1rem;
+      height: 15svh;
+
+      span {
+        padding: 0 2rem;
+      }
+
+      .flashcard-words {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+      }
+    }
+
+    .flashcard-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 40%;
+
+      .flashcard-button-correct {
+        box-shadow: lightgreen 0 .5rem 2rem .05rem;
+
+        &:hover {
+          background-color: lightgreen;
+          color: black;
+        }
+      }
+
+      .flashcard-button-wrong {
+        box-shadow: red 0 .5rem 2rem .05rem;
+
+        &:hover {
+          background-color: red;
+          color: black;
+        }
+      }
+    }
+  }
 }
 
 form {
@@ -276,14 +447,24 @@ form {
     font-size: 1rem;
     font-weight: bold;
   }
+
+  .error-msg {
+    color: #f00000;
+    background-color: $accent;
+    font-weight: 700;
+    font-size: 14pt;
+  }
 }
 
 nav {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  padding: 1.2rem .5rem;
+  padding: 2svh 1svw;
+  // padding: 1.2rem .5rem;
   background-color: $primary;
 
   * {
@@ -369,13 +550,17 @@ nav {
 }
 
 footer {
+  position: relative;
+  z-index: 1;
   display: grid;
   justify-content: center;
   align-items: center;
   text-align: center;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: $secondary;
-  padding: 5rem 0;
+  // padding: 5rem 0;
+  padding: 5svh 0;
+  margin: 0;
 
   * {
     background-color: inherit;
@@ -407,6 +592,35 @@ footer {
       }
     }
   }
+}
+
+@keyframes spin {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 360deg;
+  }
+}
+
+.spinner {
+  position: relative;
+  left: -0.5rem;
+  background-color: transparent;
+  animation: spin ease-in-out infinite 1.5s;
+}
+
+.blob {
+  position: fixed;
+  z-index: 0;
+  width: 40rem;
+  aspect-ratio: 1.35;
+  border-radius: 50%;
+  // background-color: lightpink;
+  background-image: linear-gradient(lightpink, lightblue);
+  animation: move-blob 20s infinite ease-in-out forwards alternate-reverse;
+  filter: blur(70rem) contrast(1);
 }
 
 // Mobile CSS

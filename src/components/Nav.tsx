@@ -1,23 +1,74 @@
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import Cookie from "js-cookie";
+import axios from "axios";
+import { Dispatch, SetStateAction, Suspense, useEffect } from "react";
+import { useQuery } from "react-query";
+import { useAuth } from "./AuthProvider";
 
-function Nav({ streak }: { streak: number }) {
+function Nav({ streak, queryUserStreak }: { streak: number, queryUserStreak: () => Promise<void>, isAuthenticated: boolean, setIsAuthenticated: Dispatch<SetStateAction<boolean>>, queryAuthStatus: () => Promise<void> }) {
+  const { isAuthenticated, setIsAuthenticated, _, logout } = useAuth();
   const navigate = useNavigate();
-  function unsetCookies() {
-    Cookies.remove("email");
-    navigate("/");
+  async function unsetCookies() {
+    Cookie.remove("username");
+    Cookie.remove("token")
+    logout()
+    try {
+      await axios.post('http://localhost:6942/logout').then(setIsAuthenticated(false)).then(navigate(0))
+    }
+    catch (err) {
+      console.log(err)
+      throw (err)
+    }
+    finally {
+      navigate(0)
+    }
   }
-  if (Cookies.get("email") !== undefined) {
+
+  const { isLoading, isError, isFetching, data, error } = useQuery({
+    queryKey: ["auth"],
+    queryFn: async () => {
+      if (!isAuthenticated) return
+      await queryUserStreak()
+    },
+    onError: (err) => console.log(err),
+    enabled: true
+  })
+
+  // const { isPend, isErr, dat, err } = useQuery({
+  //   queryKey: ["streak"],
+  //   queryFn: async () => {
+  //     await queryUserStreak()
+  //   },
+  // })
+
+  // async function queryAuthStatus() {
+  //   try {
+  //     const data = await axios.get("http://localhost:6942/auth-status", { withCredentials: true })
+  //     setIsAuthenticated(data.data.isAuthenticated)
+  //   } catch (err) {
+  //     console.log(err);
+  //     throw err;
+  //   }
+  // }
+
+
+
+  // this if statement should instead call the auth-status
+  if (isAuthenticated) {
     return (
       <>
         <nav>
-          <h1>Vocab Master</h1>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <h1>Vocab Master</h1>
+          </Link>
           <div className="nav_buttons">
             <Link className="link" to="/">
               Home
             </Link>
-            <p>🔥{streak} days</p>
-            {Cookies.get("email")}
+            <Suspense fallback={"Loading..."}>
+              <span>{streak !== 0 ? `🔥 ${streak} days ` : "❌fail "}
+                {Cookie.get("username")}</span>
+            </Suspense>
             <button type="button" onClick={unsetCookies}>
               Log out
             </button>

@@ -1,53 +1,63 @@
-import { Link, useBlocker, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import Nav from "./Nav";
-import { ChangeEvent, FormEventHandler, useState } from "react";
-import Modal from "./Modal";
-import Footer from "./Footer";
-import { useQuery } from "react-query";
+import { Link, useNavigate } from "react-router-dom";
+import Cookie from "js-cookie";
+import { FormEventHandler, useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
+import { useAuth } from "./AuthProvider";
+import IconSpinner from "./IconSpinner";
 
 function Login() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  let blocker: Blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      (email !== "" || password !== "") &&
-      currentLocation.pathname !== nextLocation.pathname,
-  );
-
+  const email = useRef()
+  const password = useRef()
+  const { isAuthenticated, setIsAuthenticated, login, logout } = useAuth()
+  const queryClient = useQueryClient()
+  const [errorMessage, setErrorMessage] = useState<string>("")
   const navigate = useNavigate();
 
-  const { data, refetch } = useQuery({
+  const { isLoading, isError, error, data, refetch } = useQuery({
     queryKey: ["login"],
     queryFn: async () => {
       await queryLogin()
     },
-    onSuccess: (data) => console.log(data),
-    onError: (err) => console.log(err),
+    onError: (err: Error) => setErrorMessage(err.toString()),
+    onSuccess: () => {
+      // reload website to get language sections
+      console.log("Successful Login")
+      setIsAuthenticated(true)
+      window.location.assign("/")
+    },
     refetchOnWindowFocus: false,
-    enabled: false
+    enabled: false,
+    retry: false,
   })
 
   async function queryLogin() {
     try {
-      const data = await axios.post('http://localhost:6942/login', { email: email, password: password });
-      if (data.data.message === "Success") {
-        navigate("/");
-        Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
-        Cookies.set("user_id", data.data.user_id[0].id, {
-          expires: 7,
-          samesite: "strict",
-        });
-        return data.data;
+      setErrorMessage("")
+      const data = await axios.post('http://localhost:6942/login', { email: email.current.value, password: password.current.value });
+      if (data.data.type !== "success") {
+        console.log(data.status)
+        setErrorMessage(data.status.toString())
+        return
       }
-      alert("User doesn't exist")
-      return data.data;
+      console.log(data.data)
+      Cookie.set("username", data.data.username, { expires: 14, samesite: "Lax" })
+      Cookie.set("token", data.data.token, { expires: 14, samesite: "Lax" })
+      // login()
+      setIsAuthenticated(true)
+      console.log(isAuthenticated)
+      navigate("/")
+      return data.data
     } catch (err) {
-      console.log(err);
-      throw err;
+      console.log(err)
+      throw err
     }
   }
+  //
+  // useEffect(() => {
+  //   queryClient.invalidateQueries("languages")
+  //   queryClient.invalidateQueries("auth")
+  // }, [queryClient])
 
   function handleSubmit(e: FormEventHandler<HTMLFormElement>) {
     e.preventDefault();
@@ -55,18 +65,16 @@ function Login() {
     refetch();
   }
 
-  function updateEmail(e: ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value);
-  }
-
-  function updatePassword(e: ChangeEvent<HTMLInputElement>) {
-    setPassword(e.target.value);
+  if (isAuthenticated) {
+    return (
+    <>
+          User already logged in
+    </>
+    )
   }
 
   return (
     <>
-      <Nav />
-      <main>
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
           <label htmlFor="email">Email</label>
@@ -74,8 +82,8 @@ function Login() {
             type="email"
             name="email"
             placeholder="email@proton.com"
-            value={email}
-            onChange={updateEmail}
+            ref={email}
+            disabled={isLoading}
             required
           />
           <label htmlFor="password">Password</label>
@@ -83,18 +91,18 @@ function Login() {
             type="password"
             name="password"
             placeholder="********"
-            value={password}
-            onChange={updatePassword}
+            ref={password}
+            minLength={5}
+            maxLength={128}
+            disabled={isLoading}
             required
           />
-          <button type="submit">Login</button>
+          <p className="error-msg">{errorMessage}</p>
+          <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner /> : null}Login</button>
           <Link to={"/register"} style={{ textDecoration: "none" }}>
             <button type="button">Create new account</button>
           </Link>
         </form>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-      </main>
-      <Footer />
     </>
   );
 }

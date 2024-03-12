@@ -1,84 +1,88 @@
 # Focus on Minimum Viable Product
-apparently i only need transition on the normal element
-not on hover/active/focus
-
 express backend
+express-session
 react frontend
 react-router
 react-query
+cookie-parser
+bcrypt
 
 # Frontend
-- [x] home page
-    - [x] more language sections
-    - [x] footer
-    - [x] folding language sections
-- [x] top nav bar with name, home, login, signup, logout
-- [x] flashcard page
-    - [x] correct/wrong button
-    - [x] reveal button
-    - [x] pick randomly words
-    - [x] randomly pick numbers from 0 to n
-    - [x] use that list of numbers to go through with index, to show that word
-    - [x] words type, with english/translated field, as well as "guessed" bool
-        - [x] if guessed once, set it to true, if already true, remove that number from list and go index -1
-        - [x] if guessed wrong, reset that atribute
-        - [x] sometimes "All words learnt" gets rendered, and doesn't let flashcards to load
-    - [x] max of 30 words per day
-    - [x] check which ones are already learnt, don't select these
-    - [x] modal window confirmation before exiting
-    - [ ] progress bar for how many words learnt -> as gradient
-- [/] login/register page
-    - [x] validate password correct in database
-    - [x] signup button
-    - [x] set cookie with username + userid
-    - [x] register new account
-    - [x] regex if password, login and email are correct
-    - [x] we're assuming there's only one user with that username
-    validate that on registering, only unique email 
-    - [x] check if password == confirm password
-    - [x] return error message to show above the form, below the header
-    - [x] use email for login
-    - [x] react query for fetches
-    - [ ] animated loading circle, rotates, changes it's width
-    - [ ] flashcards are literally cards, on press reveal them, give tooltip below the card that you need to press it, also on hover
-    - [ ] minimal mode, where it's black/white, and has no animations
-    - [ ] as cookie save secret token from database
-    - [ ] write tests
+- [x] max of 30 words per day
+- [ ] write tests
+---
+`Total tasks: 1/2`
 
 # Backend
-- [x] read words from sql database
-- [x] login/register backend
-- [x] save user progress
-    - [x] currently the fetch runs instantly after render
-    - [x] it throws an error anyway
-    - [x] don't show words if in user_progress
-- [x] show words learnt / total count of words
-- [/] show an indicator if we already lernt from that level
-    --[x] We need to store date of when we add words
-    probably in user_progress
-    --[ ] then we just need to check if that's today's date
-    if yes then check the indicator, else no
-    and we'll also know if we're on streak or not
-    and we can also add that timeout as we now know
-        -- so how do we structure it?
-        We need information on all the languages for setting the icon
-        we need just last learnt for streak, which we can get from all of them
-    as well as show the learn button only if we didn't learn it today
-    !! THIS NEEDS TO BE DONE SERVER SIDE, IF WE SAVE DATA FROM THEN
-    IT CAN BE EASILY OFF AND FOCKED !!
-- [ ] add 24h timeout, before next study can be done, so that you don't spam it
-- [ ] currently even if there are no words to learn we still can press the button
-- [ ] hash password
+- [x] We only read last streak in home, but we should also see
+    if user has valid streak, if no then we should show that
+- [x] error message on login
+- [x] as cookie save secret token from database
+    - [x] Implement Secure Auth
+        - [x] Create context, to pass in auth status
+        - [x] Send jwt
+            - [x] generate unique uuid for user
+            - [x] send token to backend when user_progress
+        - [x] authenticate actions on frontend
+- [x] handle errors on query
+- [x] Use .env
+- [x] home page should call in auth as well, and then call for user_progress
+- [x] flashcards should call auth before showing
+- [x] rate limiting
+- [x] verify token in auth-status
+    - [x] now always returns false
+    - [x] nav stopped showing user streak
+        - [x] isAuthenticated was set to false
+        token cookie doesn't get sent
+        in the nav component
+        - [x] auth-status return false, which sets isAuthenticated to false
+        inside of layout, and that returns false because there's no token
+        sent in the request
+- [x] nav home page doesn't refetch
+- [x] login/register not accessed if logged in
+- [x] hash password
+- [x] language section still shows button to learn more
+- [x] /api/user uses username to get progress
+- [x] disable register fields on registering
+- [x] save words for later
+    - [x] if word already in user_progress
+    then update it
+    else insert new entry
+    - [x] learn again pending words
+        - [x] now language-section doesn't show learn button
+        when date due for each word is more than today
+        return it as learnt
+        currently we return due for the whole section
+        we should try and return it for each word
+        and then count how many there are per section
+
+        there's an issue in /api/learnt, as we only get
+        words after today's date?
+    - [x] saving words and updating on progress is untested
+    the due date might be wrong
+- [x] userstreak needs to set to 0 if user didn't learn
+    yesterday
+- [ ] cleanup ternary operators
+- [ ] count of how many words left on the bottom of flashcard
+---
+`Total tasks: 17/19`
 
 # CSS
 - [x] Home
     - [x] when folding, it doesn't change height
     - [x] maybe alter the colors for every 2nd item?
-    - [ ] gradient as progress bar
+    - [x] progress bar
     - [x] add visible spacing between levels
-- [x] Nav
-- [x] Footer
-- [ ] Flashcard
-- [x] Login
-- [x] Register
+- [/] Flashcard
 - [ ] Error Page
+- [ ] Confirm Exit Modal
+- [/] Loading website placeholder
+    - [x] Animated loading circle, rotates, changes it's width
+    - [/] suspense
+- [/] Login/register
+    - [/] on disabled input gray out
+- [ ] language section
+    - [ ] when no words left for today, the text shifts down
+    make it equal with text that has button to learn
+---
+`Total tasks: 1/6`

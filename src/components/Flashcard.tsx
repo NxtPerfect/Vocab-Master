@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+import Cookie from "js-cookie";
 import { useEffect, useState } from "react";
 import {
   NavigateFunction,
@@ -7,12 +7,11 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { Word } from "../App";
-import Nav from "./Nav";
+import { Word } from "./Home";
 import Modal from "./Modal";
-import Footer from "./Footer";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { useAuth } from "./AuthProvider";
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]);
@@ -20,6 +19,8 @@ function Flashcard() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [show, setShow] = useState<boolean>(false);
   const [changedWords, setChangedWords] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const { isAuthenticated } = useAuth();
   const params: Params = useParams();
   const language: string | undefined = params.language;
   const level: string | undefined = params.level;
@@ -27,7 +28,8 @@ function Flashcard() {
   let blocker: Blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       randomIndexes.length !== 0 &&
-      currentLocation.pathname !== nextLocation.pathname,
+      currentLocation.pathname !== nextLocation.pathname &&
+      errorMessage !== null,
   );
 
   /** Access api
@@ -36,18 +38,23 @@ function Flashcard() {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
+      if (!isAuthenticated) {
+        setErrorMessage("Not authenticated")
+        return
+      }
       await queryWords()
     },
-    onSuccess: (data: { language: string, level: string, word_id: number, sideA: string, sideB: string }) => console.log(data),
-    onError: (err: Error) => console.log(err)
+    onError: (err: Error) => setErrorMessage(err.toString())
   })
 
   async function queryWords() {
     try {
       const data = await axios.post(`http://localhost:6942/api/${language}&${level}`, {
-        user_id: Cookies.get("user_id")
-      });
-      setWords(data.data);
+      }, { withCredentials: true });
+      if (data.data.type !== "success") {
+        setErrorMessage(data.data.message)
+      }
+      setWords(data.data.message);
       setChangedWords(true);
       return data.data;
     } catch (err) {
@@ -79,28 +86,27 @@ function Flashcard() {
    */
   useEffect(() => {
     if (randomIndexes.length === 0 && changedWords) {
-      const progressData: Array<object> = [];
+      const progressData: Array<{ word_id: number, language: string, level: string }> = [];
       for (const word of words) {
         progressData.push({
-          user_id: Cookies.get("user_id"),
           word_id: word.word_id,
-          language: language,
-          level: level,
+          language: language as string,
+          level: level as string,
         });
       }
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ progressData }),
-      };
-      fetch("http://localhost:6942/api/save_progress", requestOptions).then(
-        () => {
-          console.log("All words lernt");
-          navigate("/");
-        },
-      );
+      querySaveProgress(progressData)
     }
   }, [randomIndexes]);
+
+  // Doesn't send the jwt token
+  async function querySaveProgress(progressData: Array<{ word_id: number, language: string, level: string }>) {
+    try {
+      const data = await axios.post("http://localhost:6942/api/save_progress", { progressData }, { withCredentials: true }).finally(navigate("/"))
+    } catch (err) {
+      console.log(err)
+      throw (err)
+    }
+  }
 
   function incrementIndex() {
     if (currentIndex + 1 >= randomIndexes.length) {
@@ -119,6 +125,7 @@ function Flashcard() {
         curr.filter((index) => index !== randomIndexes[currentIndex]),
       );
       setShow(false);
+      // If randomindexes length 0 then save progress
       return;
     }
     setWords((words) => {
@@ -146,12 +153,18 @@ function Flashcard() {
     incrementIndex();
   }
 
-  if (words.length === 0) {
+  if (!isAuthenticated) {
     return (
       <>
-        <Nav />
+        {errorMessage}
+      </>
+    );
+  }
+
+  if (isPending || words.length === 0) {
+    return (
+      <>
         Loading words...
-        <Footer />
       </>
     );
   }
@@ -159,9 +172,7 @@ function Flashcard() {
   if (randomIndexes.length === 0) {
     return (
       <>
-        <Nav />
         All words learnt!!!
-        <Footer />
       </>
     );
   }
@@ -169,37 +180,37 @@ function Flashcard() {
   if (show === true) {
     return (
       <>
-        <Nav />
-        Flashcard
-        {language}
-        {level}
-        <div>
-          <div key={words[randomIndexes[currentIndex]].word_id}>
-            {words[randomIndexes[currentIndex]].sideA}{" "}
-            {words[randomIndexes[currentIndex]].sideB}
+        <div className="flashcard-open">
+          <div className="flashcard-top">
+            <span>Flashcard {language.charAt(0)?.toUpperCase() + language.slice(1)} {level.charAt(0)?.toUpperCase() + level.slice(1)}</span>
+            <div className="flashcard-words" key={words[randomIndexes[currentIndex]].word_id}>
+              {words[randomIndexes[currentIndex]].sideA}{" "}
+              {words[randomIndexes[currentIndex]].sideB}
+            </div>
           </div>
-          <button type="button" onClick={guessedCorrect}>
-            Correct
-          </button>
-          <button type="button" onClick={guessedWrong}>
-            Wrong
-          </button>
+          <div className="flashcard-buttons">
+            <button className="flashcard-button-correct" type="button" onClick={guessedCorrect}>
+              Correct
+            </button>
+            <button className="flashcard-button-wrong" type="button" onClick={guessedWrong}>
+              Wrong
+            </button>
+          </div>
+          {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </div>
-        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-        <Footer />
       </>
     );
   }
 
+  // Needs back arrow to navigate to home
   return (
     <>
-      <Nav />
-      Flashcard
-      {language}
-      {level}
-      <div>
-        <div key={words[randomIndexes[currentIndex]].word_id}>
-          {words[randomIndexes[currentIndex]].sideA}
+      <div className="flashcard-closed">
+        <div className="flashcard-top">
+          <span>Flashcard {language.charAt(0)?.toUpperCase() + language.slice(1)} {level.charAt(0)?.toUpperCase() + level.slice(1)}</span>
+          <div className="flashcard-words" key={words[randomIndexes[currentIndex]].word_id}>
+            {words[randomIndexes[currentIndex]].sideA}
+          </div>
         </div>
         <button
           type="button"
@@ -207,12 +218,15 @@ function Flashcard() {
             setShow(true);
           }}
         >
-          Haha
+          Show
         </button>
-      </div>
-      {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-      <Footer />
+        {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
+      </div >
     </>
-  );
+  )
 }
-export default Flashcard;
+export default Flashcard
+
+export function flashcardLoader() {
+  return "Free sex"
+}

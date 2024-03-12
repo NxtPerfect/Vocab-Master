@@ -1,11 +1,11 @@
 import { useBlocker, useNavigate } from "react-router-dom";
-import Nav from "./Nav";
 import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import Modal from "./Modal";
-import Footer from "./Footer";
 import { useQuery } from "react-query";
 import axios from "axios";
+import IconSpinner from "./IconSpinner";
+import { useAuth } from "./AuthProvider";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -13,6 +13,7 @@ function Register() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
   let blocker: Blocker = useBlocker(
@@ -24,13 +25,17 @@ function Register() {
       currentLocation.pathname !== nextLocation.pathname,
   );
 
-  const { data, refetch } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ["register"],
     queryFn: async () => {
       await queryRegister()
     },
-    onSuccess: (data) => console.log(data),
-    onError: (err) => console.log(err),
+    onSuccess: (data) => {
+      console.log(data)
+      login()
+      window.location.assign("/")
+    },
+    onError: (err) => setErrorMessage(err.response.data),
     refetchOnWindowFocus: false,
     enabled: false
   })
@@ -39,12 +44,15 @@ function Register() {
     try {
       const data = await axios.post("http://localhost:6942/register", { email: email, username: username, password: password })
       console.log("Before check", data)
-      if (data.data === "Success") {
+      console.log("Type", data.data.type)
+      if (data.data.type === "success") {
+        Cookies.set("username", data.data.username, { expires: 14, samesite: "Lax" });
+        Cookies.set("token", data.data.token, { expires: 14, samesite: "Lax" })
         navigate("/");
-        Cookies.set("email", email, { expires: 7, samesite: "none", secure: true });
-        return data;
+        return data.data;
       }
       console.log("After check", data);
+      setErrorMessage(data.status.toString())
       alert("User exists");
     } catch (err) {
       console.log(err)
@@ -54,55 +62,9 @@ function Register() {
   function handleSubmit(e: HTMLFormElement) {
     e.preventDefault();
 
-    setErrorMessage(
-      validateRegister(email, username, password, confirmPassword),
-    );
-    if (errorMessage !== "Success") return "Failed";
+    if (validateRegister(email, username, password, confirmPassword) !== "Success") return "Failed";
+    setErrorMessage("Success")
     refetch()
-    // setErrorMessage(
-    //   validateRegister(email, username, password, confirmPassword),
-    // );
-    // if (errorMessage !== "Success") return "Failed";
-    // const requestOptions = {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   mode: "cors",
-    //   body: JSON.stringify({
-    //     email: email,
-    //     username: username,
-    //     password: password,
-    //   }),
-    // };
-    // fetch("http://localhost:6942/register", requestOptions)
-    //   .then((res) => {
-    //     return res.json();
-    //   })
-    //   .then((data) => {
-    //     if (data === "Success") {
-    //       navigate("/");
-    //       Cookies.set("username", username, { expires: 7, samesite: "none", secure: true });
-    //       return data;
-    //     }
-    //     console.log(data);
-    //     alert("User exists");
-    //   })
-    //   .catch((err) => console.log(err));
-  }
-
-  function updateEmail(e: ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value);
-  }
-
-  function updateUsername(e: ChangeEvent<HTMLInputElement>) {
-    setUsername(e.target.value);
-  }
-
-  function updatePassword(e: ChangeEvent<HTMLInputElement>) {
-    setPassword(e.target.value);
-  }
-
-  function updateConfirmPassword(e: ChangeEvent<HTMLInputElement>) {
-    setConfirmPassword(e.target.value);
   }
 
   function validateRegister(
@@ -129,54 +91,70 @@ function Register() {
     return "Success";
   }
 
+  if (isAuthenticated) {
+    return (
+      <>
+        User already logged in
+      </>
+    )
+  }
+
   return (
     <>
-      <Nav />
-      <main>
-        <form onSubmit={handleSubmit}>
-          <h1>Register</h1>
-          {errorMessage !== "Success" ? errorMessage : null}
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="email@proton.com"
-            value={email}
-            onChange={updateEmail}
-            required
-          />
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="username"
-            value={username}
-            onChange={updateUsername}
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="********"
-            value={password}
-            onChange={updatePassword}
-            required
-          />
-          <label htmlFor="password">Confirm Password</label>
-          <input
-            type="password"
-            name="confirm_password"
-            placeholder="********"
-            value={confirmPassword}
-            onChange={updateConfirmPassword}
-            required
-          />
-          <button type="submit">Register</button>
-          {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
-        </form>
-      </main>
-      <Footer />
+      <form onSubmit={handleSubmit}>
+        <h1>Register</h1>
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          name="email"
+          placeholder="email@proton.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          minLength={5}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          name="username"
+          placeholder="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          minLength={2}
+          maxLength={32}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="********"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={8}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        <label htmlFor="password">Confirm Password</label>
+        <input
+          type="password"
+          name="confirm_password"
+          placeholder="********"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          minLength={8}
+          maxLength={64}
+          required
+          disabled={isLoading}
+        />
+        {errorMessage ? <p className="error-msg">{errorMessage}</p> : null}
+        <button type="submit" disabled={isLoading}>{isLoading ? <IconSpinner /> : null}Register</button>
+      </form>
+      {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
     </>
   );
 }
