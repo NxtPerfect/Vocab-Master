@@ -60,12 +60,12 @@ bcrypt
         words after today's date?
     - [x] saving words and updating on progress is untested
     the due date might be wrong
-- [/] userstreak needs to set to 0 if user didn't learn
-yesterday
+- [x] userstreak needs to set to 0 if user didn't learn
+    yesterday
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 ---
-`Total tasks: 16/19`
+`Total tasks: 17/19`
 
 # CSS
 - [x] Home

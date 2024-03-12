@@ -62,16 +62,19 @@ app.post("/api/user", authenticateToken, (req, res) => {
 
 // TODO if user didn't progress yesterday
 // set userstreak as 0
+// check if valid streak, if no set to 0, if yes
+// show streak from database
+// the query is correct but returns the rows name as query, instead of "userStreak"
 app.post("/api/user_streak", authenticateToken, (req, res) => {
   // if (req.body.username === undefined)
   //   return res.status(400).json({ message: "No username set", type: "error" })
   // const username = req.body.username
   const email = req.email
-  console.log("User streak")
-  const sql = "SELECT streak userStreak FROM users WHERE email = ?;"
-  db.query(sql, [email], (err, data) => {
-    if (err) return res.json({ message: err, type: "error" })
-    // console.log(data[0])
+  // const sql = "SELECT streak userStreak FROM users WHERE email = ?;"
+  const sql = "SELECT (CASE WHEN DATEDIFF((SELECT date FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) ORDER BY date DESC LIMIT 1), CURDATE()) > 1 THEN 0 ELSE (SELECT streak userStreak FROM users WHERE email = ?) END) AS userStreak;"
+  db.query(sql, [email, email], (err, data) => {
+    if (err) return res.status(500).json({ message: err, type: "error" })
+    console.log("User streak", data[0])
     return res.json({ message: data[0], type: "success" })
   });
 });

@@ -62,7 +62,7 @@ function Layout({ children }: { children: ReactElement }) {
     try {
       const data = await axios.post("http://localhost:6942/api/user_streak", {}, { withCredentials: true })
       setUserStreak(data.data.message.userStreak)
-      console.log(userStreak)
+      console.log("User Streak", userStreak)
     } catch (err) {
       console.log(err)
       throw err
