@@ -196,6 +196,7 @@ function Flashcard() {
               Wrong
             </button>
           </div>
+          <p className="flashcard-words-left">{randomIndexes.length}</p>
           {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </div>
       </>
@@ -220,6 +221,7 @@ function Flashcard() {
         >
           Show
         </button>
+        <p className="flashcard-words-left">{randomIndexes.length}</p>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </div >
     </>

@@ -31,6 +31,7 @@ type LanguageDataRaw = {
 function Home() {
   const [languages, setLanguages] = useState<Array<Language>>([])
   const { isAuthenticated } = useAuth()
+  const [errorMessage, setErrorMessage] = useState<string>("")
 
   // Fetch all languages and user's progress if logged in
   const { isLoading, isError, isFetching, data, error } = useQuery({
@@ -68,6 +69,7 @@ function Home() {
       return data.data;
     } catch (err) {
       console.log(err);
+      setErrorMessage(err.toString())
       throw err;
     }
   }
@@ -100,6 +102,7 @@ function Home() {
       return data.data;
     } catch (err) {
       console.log(err);
+      setErrorMessage(err.toString())
       throw err;
     }
   }
@@ -132,13 +135,13 @@ function Home() {
       return data.data;
     } catch (err) {
       console.log(err);
+      setErrorMessage(err.toString())
       throw err;
     }
   }
 
   return (
     <>
-      {isError ? "Failed to fetch" : error}
       {languages.map(
         (
           language: Language,
@@ -156,6 +159,7 @@ function Home() {
             />
           );
         },
+        { errorMessage }
       )}
     </>
   );

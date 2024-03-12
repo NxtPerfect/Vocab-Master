@@ -62,10 +62,13 @@ bcrypt
     the due date might be wrong
 - [x] userstreak needs to set to 0 if user didn't learn
     yesterday
+- [x] count of how many words left on the bottom of flashcard
+- [x] on fetch auth-status/user returns forbidden
+which then shows "failed to fetch" on home page
+if user isn't logged in
 - [ ] cleanup ternary operators
-- [ ] count of how many words left on the bottom of flashcard
 ---
-`Total tasks: 17/19`
+`Total tasks: 19/20`
 
 # CSS
 - [x] Home
@@ -73,16 +76,16 @@ bcrypt
     - [x] maybe alter the colors for every 2nd item?
     - [x] progress bar
     - [x] add visible spacing between levels
-- [/] Flashcard
-- [ ] Error Page
-- [ ] Confirm Exit Modal
+- [x] Flashcard
+- [x] Error Page
+- [x] Confirm Exit Modal
 - [/] Loading website placeholder
     - [x] Animated loading circle, rotates, changes it's width
     - [/] suspense
-- [/] Login/register
-    - [/] on disabled input gray out
-- [ ] language section
-    - [ ] when no words left for today, the text shifts down
+- [x] Login/register
+    - [x] on disabled input gray out
+- [x] language section
+    - [x] when no words left for today, the text shifts down
     make it equal with text that has button to learn
 ---
-`Total tasks: 1/6`
+`Total tasks: 6/7`

@@ -53,9 +53,6 @@ $border-radius: 1svw;
   }
 }
 
-// TODO
-@keyframes move-bg {}
-
 @keyframes move-blob {
   0% {
     rotate: 0deg;
@@ -106,6 +103,16 @@ $border-radius: 1svw;
   }
 }
 
+@keyframes show-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 * {
   min-width: 0;
   margin: 0;
@@ -122,6 +129,9 @@ $border-radius: 1svw;
 
 .disabled {
   color: #a0a0a0;
+  height: 2rem;
+  text-align: center;
+  line-height: 2rem;
 }
 
 main {
@@ -363,8 +373,13 @@ main {
     font-size: 1.25rem;
     animation: slide-left 0.25s ease-out;
 
-    * {
-      background-color: $accent;
+    .flashcard-top,
+    p {
+      background-color: inherit;
+
+      * {
+        background-color: inherit;
+      }
     }
 
     button {
@@ -434,11 +449,20 @@ form {
     background-color: inherit;
   }
 
+  h1 {
+    background-color: inherit;
+  }
+
   input {
     border: 0;
     border-radius: $border-radius;
     background-color: $secondary;
     padding: .5rem;
+
+    &:disabled {
+      background-color: color.grayscale($secondary);
+      cursor: not-allowed;
+    }
   }
 
   button,
@@ -617,10 +641,97 @@ footer {
   width: 40rem;
   aspect-ratio: 1.35;
   border-radius: 50%;
-  // background-color: lightpink;
   background-image: linear-gradient(lightpink, lightblue);
   animation: move-blob 20s infinite ease-in-out forwards alternate-reverse;
   filter: blur(70rem) contrast(1);
+}
+
+.page-not-found {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: transparent;
+  grid-column: span 2;
+  height: 100%;
+
+  h1 {
+    margin: 1rem;
+  }
+
+  * {
+    background-color: transparent;
+    grid-column: span 2;
+    margin: 0.25rem;
+  }
+
+  a {
+    transition: color 0.1s linear;
+  }
+
+  a:hover {
+    color: $primary;
+  }
+
+  a:active {
+    color: color.adjust($primary, $lightness: 10%);
+  }
+}
+
+.modal-blocker {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  background-color: color.adjust(black, $alpha: -0.4);
+  backdrop-filter: blur(10px);
+  height: 100svh;
+  width: 100svw;
+  top: 0;
+  left: 0;
+  animation: show-in 0.05s linear;
+
+  div>* {
+    margin: 2rem 1rem;
+  }
+
+
+  .modal-blocker-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: $border-radius;
+    background-color: $accent;
+    max-width: 50svw;
+    aspect-ratio: 1.5;
+
+    h2,
+    div {
+      background-color: inherit;
+      color: $text;
+    }
+
+    .modal-ok {
+
+      &:hover {
+        background-color: color.adjust(red, $lightness: 20%);
+      }
+    }
+
+    .modal-cancel {
+      background-color: $primary;
+      color: $background;
+
+      &:hover {
+        background-color: lightgreen;
+      }
+    }
+  }
+
+
 }
 
 // Mobile CSS
