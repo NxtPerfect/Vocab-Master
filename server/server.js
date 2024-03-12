@@ -84,7 +84,7 @@ app.post("/api/:language&:level", authenticateToken, (req, res) => {
   // const username = req.body.username
   const email = req.email
   const sql =
-    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?)) AND due > CURDATE() LIMIT 30;";
+    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) AND u.due > CURDATE()) LIMIT 30;";
   db.query(sql, [language, level, email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
     return res.json({ message: data, type: "success" })
@@ -96,7 +96,7 @@ app.post("/api/learnt", authenticateToken, (req, res) => {
   // const username = req.body.username
   const email = req.email
   const sql =
-    "SELECT language, level, CONVERT(MAX(u.date), CHAR) date FROM user_progress u WHERE user_id = (SELECT id FROM users WHERE email = ?) GROUP BY language, level ORDER BY language, level AND due > CURDATE();"
+    "SELECT language, level, CONVERT(MAX(date), CHAR) date FROM user_progress WHERE user_id = (SELECT id FROM users WHERE email = ?) AND due > CURDATE() GROUP BY language, level ORDER BY language, level;"
   db.query(sql, [email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
 
@@ -139,9 +139,9 @@ app.post("/api/save_progress", authenticateToken, (req, res) => {
     // (x/2)^2+1
     // query untested
     let sql =
-      "INSERT INTO user_progress (user_id, word_id, language, level, date, iteration, due) VALUES ((SELECT id FROM users WHERE email = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'), ?, ?) ON DUPLICATE KEY UPDATE iteration = iteration + 1 AND due = DATE_ADD(CURDATE(), INTERVAL ((iteration + 1 / 2)*(iteration + 1)+1) DAY);";
+      "INSERT INTO user_progress (user_id, word_id, language, level, date, iteration, due) VALUES ((SELECT id FROM users WHERE email = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'), ?, DATE_ADD(CURDATE(), INTERVAL 1 DAY)) ON DUPLICATE KEY UPDATE iteration = iteration + 1, due = DATE_ADD(CURDATE(), INTERVAL ((iteration / 2)*(iteration)+1) DAY), date = CURDATE();";
     return new Promise((resolve, reject) => {
-      db.query(sql, [email, word_id, language, level, moment().format('D-M-YYYY'), iteration, moment().add(1, 'days').format('D-M-YYYY')], (err, data) => {
+      db.query(sql, [email, word_id, language, level, moment().format('D-M-YYYY'), iteration], (err, data) => {
         if (err) {
           console.log(err)
           return reject(err)

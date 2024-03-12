@@ -44,27 +44,28 @@ bcrypt
 - [x] language section still shows button to learn more
 - [x] /api/user uses username to get progress
 - [x] disable register fields on registering
-- [/] save words for later
+- [x] save words for later
     - [x] if word already in user_progress
     then update it
     else insert new entry
-    - [/] learn again pending words
-        - [/] now language-section doesn't show learn button
+    - [x] learn again pending words
+        - [x] now language-section doesn't show learn button
         when date due for each word is more than today
         return it as learnt
         currently we return due for the whole section
         we should try and return it for each word
         and then count how many there are per section
-        there's an issue in /api/learnt, as we onl get
+
+        there's an issue in /api/learnt, as we only get
         words after today's date?
-    - [!] saving words and updating on progress is untested
+    - [x] saving words and updating on progress is untested
     the due date might be wrong
-- [ ] userstreak needs to set to 0 if user didn't learn
+- [/] userstreak needs to set to 0 if user didn't learn
 yesterday
 - [ ] cleanup ternary operators
 - [ ] count of how many words left on the bottom of flashcard
 ---
-`Total tasks: 15/19`
+`Total tasks: 16/19`
 
 # CSS
 - [x] Home

@@ -43,7 +43,9 @@ function Home() {
       await queryIsLearntToday()
     },
     onError: (err) => console.log(err),
-    enabled: true
+    enabled: true,
+    retry: false,
+    refetchOnWindowFocus: false
   })
 
   async function queryLanguageData() {
