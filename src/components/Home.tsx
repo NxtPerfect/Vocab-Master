@@ -5,6 +5,7 @@ import LanguageSection from "./LanguageSection";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAuth } from "./AuthProvider";
+import IconSpinner from "./IconSpinner";
 
 export interface Word {
   word_id: number;

@@ -391,6 +391,7 @@ main {
     .flashcard-top {
       padding: 1rem;
       height: 15svh;
+      line-height: 7.5svh;
 
       span {
         padding: 0 2rem;
@@ -410,6 +411,7 @@ main {
       justify-content: space-around;
       align-items: center;
       width: 40%;
+      background: none;
 
       .flashcard-button-correct {
         box-shadow: lightgreen 0 .5rem 2rem .05rem;
@@ -429,6 +431,34 @@ main {
         }
       }
     }
+
+
+    .flashcard-words-left {
+      margin: -2rem 0;
+      background: none;
+
+      p {
+        i {
+          background: none;
+        }
+
+        i:nth-child(1) {
+          background: none;
+          color: color.adjust(color.adjust(lightgreen, $lightness: -15%), $whiteness: 5%);
+        }
+
+        i:nth-child(2) {
+          background: none;
+          color: color.adjust(color.adjust(red, $lightness: 15%), $whiteness: 15%);
+        }
+
+        .active {
+          text-decoration: underline;
+          text-underline-offset: .2rem;
+        }
+      }
+    }
+
   }
 }
 
@@ -575,7 +605,7 @@ nav {
 
 footer {
   position: relative;
-  z-index: 1;
+  z-index: 0;
   display: grid;
   justify-content: center;
   align-items: center;

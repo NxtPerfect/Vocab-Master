@@ -79,13 +79,15 @@ if user isn't logged in
 - [x] Flashcard
 - [x] Error Page
 - [x] Confirm Exit Modal
-- [/] Loading website placeholder
+- [x] Loading website placeholder
     - [x] Animated loading circle, rotates, changes it's width
-    - [/] suspense
+    - [x] suspense
 - [x] Login/register
     - [x] on disabled input gray out
 - [x] language section
     - [x] when no words left for today, the text shifts down
     make it equal with text that has button to learn
+- [ ] if section learnt today, gray it out with text
+to come back tomorrow
 ---
-`Total tasks: 6/7`
+`Total tasks: 7/7`

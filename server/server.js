@@ -74,7 +74,7 @@ app.post("/api/user_streak", authenticateToken, (req, res) => {
   const sql = "SELECT (CASE WHEN DATEDIFF((SELECT date FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) ORDER BY date DESC LIMIT 1), CURDATE()) > 1 THEN 0 ELSE (SELECT streak userStreak FROM users WHERE email = ?) END) AS userStreak;"
   db.query(sql, [email, email], (err, data) => {
     if (err) return res.status(500).json({ message: err, type: "error" })
-    console.log("User streak", data[0])
+    // console.log("User streak", data[0])
     return res.json({ message: data[0], type: "success" })
   });
 });
@@ -87,9 +87,10 @@ app.post("/api/:language&:level", authenticateToken, (req, res) => {
   // const username = req.body.username
   const email = req.email
   const sql =
-    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) AND u.due > CURDATE()) LIMIT 30;";
+    "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) AND u.due < CURDATE()) LIMIT 30;";
   db.query(sql, [language, level, email], (err, data) => {
     if (err) return res.json({ message: err, type: "error" })
+    console.log("Got language ", data.length)
     return res.json({ message: data, type: "success" })
   });
 });

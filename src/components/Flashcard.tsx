@@ -12,6 +12,7 @@ import Modal from "./Modal";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { useAuth } from "./AuthProvider";
+import IconSpinner from "./IconSpinner";
 
 function Flashcard() {
   const [words, setWords] = useState<Array<Word>>([]);
@@ -20,6 +21,7 @@ function Flashcard() {
   const [show, setShow] = useState<boolean>(false);
   const [changedWords, setChangedWords] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [countWordsReview, setCountWordsReview] = useState<number>(0);
   const { isAuthenticated } = useAuth();
   const params: Params = useParams();
   const language: string | undefined = params.language;
@@ -125,7 +127,7 @@ function Flashcard() {
         curr.filter((index) => index !== randomIndexes[currentIndex]),
       );
       setShow(false);
-      // If randomindexes length 0 then save progress
+      setCountWordsReview((curr) => curr - 1);
       return;
     }
     setWords((words) => {
@@ -135,6 +137,7 @@ function Flashcard() {
         return word;
       });
     });
+    setCountWordsReview((curr) => curr + 1);
     setShow(false);
     incrementIndex();
   }
@@ -148,6 +151,7 @@ function Flashcard() {
           return word;
         });
       });
+      setCountWordsReview((curr) => curr - 1);
     }
     setShow(false);
     incrementIndex();
@@ -164,7 +168,7 @@ function Flashcard() {
   if (isPending || words.length === 0) {
     return (
       <>
-        Loading words...
+        <IconSpinner style={{ gridColumn: "span 2", scale: "2" }} />
       </>
     );
   }
@@ -196,7 +200,11 @@ function Flashcard() {
               Wrong
             </button>
           </div>
-          <p className="flashcard-words-left">{randomIndexes.length}</p>
+          <span className="flashcard-words-left">Words left:
+            <p>
+              <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
+            </p>
+          </span>
           {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </div>
       </>
@@ -221,7 +229,11 @@ function Flashcard() {
         >
           Show
         </button>
-        <p className="flashcard-words-left">{randomIndexes.length}</p>
+        <span className="flashcard-words-left">Words left:
+          <p>
+            <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
+          </p>
+        </span>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </div >
     </>
