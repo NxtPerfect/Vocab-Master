@@ -192,6 +192,11 @@ function Flashcard() {
               {words[randomIndexes[currentIndex]].sideB}
             </div>
           </div>
+          <span className="flashcard-words-left">Words left:
+            <p>
+              <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
+            </p>
+          </span>
           <div className="flashcard-buttons">
             <button className="flashcard-button-correct" type="button" onClick={guessedCorrect}>
               Correct
@@ -200,11 +205,6 @@ function Flashcard() {
               Wrong
             </button>
           </div>
-          <span className="flashcard-words-left">Words left:
-            <p>
-              <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
-            </p>
-          </span>
           {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
         </div>
       </>
@@ -221,6 +221,11 @@ function Flashcard() {
             {words[randomIndexes[currentIndex]].sideA}
           </div>
         </div>
+        <span className="flashcard-words-left">Words left:
+          <p>
+            <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
+          </p>
+        </span>
         <button
           type="button"
           onClick={() => {
@@ -229,11 +234,6 @@ function Flashcard() {
         >
           Show
         </button>
-        <span className="flashcard-words-left">Words left:
-          <p>
-            <i className={!words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{randomIndexes.length - countWordsReview}</i> <i className={words[randomIndexes[currentIndex]].guessed ? "active" : ""}>{countWordsReview}</i>
-          </p>
-        </span>
         {blocker.state === "blocked" ? <Modal blocker={blocker} /> : null}
       </div >
     </>
