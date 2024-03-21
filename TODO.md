@@ -10,6 +10,8 @@ bcrypt
 # Frontend
 - [x] max of 30 words per day
 - [ ] write tests
+    - [x] doing vitest
+    - [ ] useAuth issue, useAuth not defined 
 ---
 `Total tasks: 1/2`
 
