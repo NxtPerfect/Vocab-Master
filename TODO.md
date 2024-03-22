@@ -9,9 +9,16 @@ bcrypt
 
 # Frontend
 - [x] max of 30 words per day
-- [ ] write tests
+- [/] write unit tests
     - [x] doing vitest
-    - [ ] useAuth issue, useAuth not defined 
+    - [x] useAuth issue, useAuth not defined 
+    - [/] now we aren't actually logged in
+    - [x] Footer
+    - [/] Flashcard
+        useBlocker issue, needs to be within a data router
+        needs further debugging
+- [ ] integration tests
+    - [ ] links
 ---
 `Total tasks: 1/2`
 

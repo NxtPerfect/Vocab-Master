@@ -3,6 +3,7 @@ import Nav from "../Nav";
 import Cookie from "js-cookie";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
+import AuthProvider from "../AuthProvider";
 
 describe("Nav", () => {
   beforeEach(() => {
@@ -14,7 +15,7 @@ describe("Nav", () => {
       logout: vitest.fn(),
     }))
     vitest.doMock("react-router-dom", async () => {
-      const mod = await vitest.importActual < typeof import("react-router-dom") > (
+      const mod = await vitest.importActual<typeof import("react-router-dom")>(
         "react-router-dom"
       )
       return {
@@ -22,18 +23,26 @@ describe("Nav", () => {
         useNavigate: () => mockedUseNavigate,
       }
     })
-    vitest.doMock("./AuthProvider", async () => {
+    vitest.mock("./AuthProvider", async () => {
       return {
         useAuth: () => mockedUseAuth,
-      };
-    });
+      }
+    })
   })
   afterEach(() => {
     vitest.restoreAllMocks()
   })
   test('should render navbar with user streak and username', () => {
     const queryClient = new QueryClient()
-    const nav = render(<QueryClientProvider client={queryClient}><BrowserRouter><Nav /></BrowserRouter></QueryClientProvider>)
+    Cookie.set("username", "admin", { expires: 14, samesite: "Lax" })
+    const nav = render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <Nav />
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>)
     expect(nav).exist
 
     const logo = screen.getByRole('heading', { name: /Vocab Master/i })
@@ -45,18 +54,20 @@ describe("Nav", () => {
     expect(screen.getByText("Home")).exist
 
     // TODO: fails since we aren't logged in
-    // const span = screen.getByRole('generic', { name: /fail/i })
-    // expect(span).exist
-    //
-    // Cookie.set("username", "admin", { expires: 14, samesite: "Lax" })
-    // const username = screen.getByRole('generic', { name: /admin/i })
-    // expect(username).exist
-    // expect(screen.getByText("admin")).exist
-    // Cookie.remove("username")
+    // as isAuthenticated is set to false
+    // it always fails
+    const span = screen.getByRole('generic', { name: /fail/i })
+    expect(span).exist
+    expect(screen.getByText("fail")).exist
+
+    const username = screen.getByRole('generic', { name: /admin/i })
+    expect(username).exist
+    expect(screen.getByText("admin")).exist
+    Cookie.remove("username")
+    expect(screen.getByText("admin")).not.exist
   })
   test('should render navbar as guest', () => {
-    const { isAuthenticated, setIsAuthenticated } = useAuth();
-    setIsAuthenticated(false);
+    const queryClient = new QueryClient()
     const nav = render(<QueryClientProvider client={queryClient}><BrowserRouter><Nav /></BrowserRouter></QueryClientProvider>)
 
     const home = screen.getByRole('link', { name: /Home/i })
