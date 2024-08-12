@@ -5,8 +5,8 @@ created with ![React](https://img.shields.io/badge/react-blue?style=for-the-badg
 ![Home](preview/home.jpg)
 ![Register](preview/register.jpg)
 ![HomeLogged](preview/home_logged.jpg)
-![FlashcardSide1](flashcard_side1.jpg)
-![FlashcardSide2](flashcard_side2.jpg)
+![FlashcardSide1](preview/flashcard_side1.jpg)
+![FlashcardSide2](preview/flashcard_side2.jpg)
 
 ## Features
 - flashcards
