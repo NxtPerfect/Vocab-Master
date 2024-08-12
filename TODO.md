@@ -98,5 +98,8 @@ if user isn't logged in
     make it equal with text that has button to learn
 - [ ] if section learnt today, gray it out with text
 to come back tomorrow
+- [ ] media query to change color based on browser preference
+
+- [ ] mobile version
 ---
-`Total tasks: 7/7`
+`Total tasks: 7/10`

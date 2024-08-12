@@ -135,3 +135,5 @@ tsconfig.*
 vite.*
 *.odt
 *.docx
+public/*.csv
+public/backup
