@@ -137,6 +137,14 @@ $border-radius: 1svw;
 main {
   overflow: hidden;
   display: grid;
+
+  @media screen and (max-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    gap: 8rem;
+    padding: 1rem;
+  }
+
   grid-template-columns: 1fr 1fr;
   justify-items: center;
   align-content: center;
@@ -165,6 +173,11 @@ main {
     padding-bottom: 2.5rem;
     border-radius: $border-radius;
     width: 40svw;
+
+    @media screen and (max-width: 900px) {
+      width: 80svw;
+    }
+
     transition: color 0.1s linear;
     box-shadow: 0 2svh 1svw -1svw color.adjust($secondary, $alpha: -0.4);
     animation: slide-left 0.5s ease-out;
@@ -236,6 +249,12 @@ main {
     .language_levels_wrapper {
       display: flex;
       flex-direction: row;
+
+      @media screen and (max-width: 900px) {
+        flex-direction: column;
+        height: 80svh;
+      }
+
       justify-content: space-evenly;
       align-items: center;
       width: max(100%, 8rem);
@@ -276,6 +295,10 @@ main {
           min-width: max(2rem, 8svw);
           max-width: 20rem;
           height: 0.6rem;
+
+          @media screen and (max-width: 900px) {
+            width: 60svw;
+          }
 
           .progress_bar {
             border-radius: $border-radius;
@@ -362,7 +385,14 @@ main {
     display: flex;
     flex-direction: column;
     grid-column: span 2;
+
+    @media screen and (max-width: 900px) {
+      width: 90svw;
+      height: 75svh;
+    }
+
     width: 50%;
+
     aspect-ratio: 1.7;
     justify-content: space-evenly;
     align-items: center;
@@ -383,6 +413,12 @@ main {
     }
 
     button {
+      @media screen and (max-width: 900px) {
+        height: 7svh;
+        width: 65svw;
+        font-size: 1.45rem;
+      }
+
       @include betterButton(10rem, 2rem, $secondary, $text, $primary, $background);
       font-size: 1.25rem;
       font-weight: 400;
@@ -392,6 +428,10 @@ main {
       padding: 1rem;
       height: 15svh;
       line-height: 7.5svh;
+
+      @media screen and (max-width: 900px) {
+        font-size: 1.25rem;
+      }
 
       span {
         padding: 0 2rem;
@@ -410,10 +450,22 @@ main {
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
+
+      @media screen and (max-width: 900px) {
+        width: 75svw;
+        gap: 2rem;
+      }
+
       width: 40%;
       background: none;
 
       .flashcard-button-correct {
+        @media screen and (max-width: 900px) {
+          height: 7svh;
+          width: 35svw;
+          font-size: 1.25rem;
+        }
+
         box-shadow: lightgreen 0 .5rem 2rem .05rem;
 
         &:hover {
@@ -423,6 +475,12 @@ main {
       }
 
       .flashcard-button-wrong {
+        @media screen and (max-width: 900px) {
+          height: 7svh;
+          width: 35svw;
+          font-size: 1.25rem;
+        }
+
         box-shadow: red 0 .5rem 2rem .05rem;
 
         &:hover {
@@ -472,6 +530,12 @@ form {
   padding: 2rem 0;
   margin: auto;
   grid-column: span 2;
+
+  @media screen and (max-width: 900px) {
+    width: 90svw;
+    height: 70svh;
+  }
+
   width: max(35svw, 25rem);
   height: max(30svh, 15rem);
 
@@ -489,6 +553,11 @@ form {
     background-color: $secondary;
     padding: .5rem;
 
+    @media screen and (max-width: 900px) {
+      height: 5svh;
+      font-size: .9rem;
+    }
+
     &:disabled {
       background-color: color.grayscale($secondary);
       cursor: not-allowed;
@@ -497,6 +566,12 @@ form {
 
   button,
   a {
+    @media screen and (max-width: 900px) {
+      height: 6svh;
+      width: 25svh;
+      font-size: 1.25rem;
+    }
+
     @include betterButton(10rem, 2rem, $primary, $background, $secondary, $text);
     font-size: 1rem;
     font-weight: bold;
@@ -527,6 +602,11 @@ nav {
 
   h1 {
     color: $secondary;
+
+    @media screen and (max-width: 900px) {
+      font-size: 1.25rem;
+    }
+
     font-size: 2rem;
     text-decoration: underline;
     text-decoration-thickness: .2rem;
@@ -535,6 +615,12 @@ nav {
   .nav_buttons {
     display: flex;
     flex-direction: row;
+
+    @media screen and (max-width: 900px) {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
     justify-content: space-between;
     align-items: center;
     background-color: $primary;
@@ -597,8 +683,15 @@ nav {
     }
 
     button {
+      @media screen and (max-width: 900px) {
+        height: 5svh;
+        width: 35svw;
+        font-size: 1.25rem;
+      }
+
       @include betterButton(5rem, 1.5rem, $secondary, $text, $accent, $text);
       margin: 0 1rem;
+
     }
   }
 }
@@ -735,6 +828,12 @@ footer {
     align-items: center;
     border-radius: $border-radius;
     background-color: $accent;
+
+    @media screen and (max-width: 900px) {
+      max-width: 100svw;
+      aspect-ratio: .75;
+    }
+
     max-width: 50svw;
     aspect-ratio: 1.5;
 
@@ -744,7 +843,17 @@ footer {
       color: $text;
     }
 
+    div {
+      @media screen and (max-width: 900px) {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+
     .modal-ok {
+      @media screen and (max-width: 900px) {
+        width: 45svw;
+      }
 
       &:hover {
         background-color: color.adjust(red, $lightness: 20%);
@@ -755,18 +864,13 @@ footer {
       background-color: $primary;
       color: $background;
 
+      @media screen and (max-width: 900px) {
+        width: 45svw;
+      }
+
       &:hover {
         background-color: lightgreen;
       }
     }
-  }
-
-
-}
-
-// Mobile CSS
-@media screen and (max-width: 900px) {
-  * {
-    background-color: red;
   }
 }

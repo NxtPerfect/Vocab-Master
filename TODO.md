@@ -75,9 +75,8 @@ bcrypt
 - [x] on fetch auth-status/user returns forbidden
 which then shows "failed to fetch" on home page
 if user isn't logged in
-- [ ] cleanup ternary operators
 ---
-`Total tasks: 19/20`
+`Total tasks: 19/19`
 
 # CSS
 - [x] Home
@@ -98,8 +97,7 @@ if user isn't logged in
     make it equal with text that has button to learn
 - [ ] if section learnt today, gray it out with text
 to come back tomorrow
-- [ ] media query to change color based on browser preference
 
-- [ ] mobile version
+- [/] mobile version
 ---
-`Total tasks: 7/10`
+`Total tasks: 7/9`
