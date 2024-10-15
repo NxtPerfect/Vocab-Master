@@ -60,31 +60,17 @@ app.post("/api/user", authenticateToken, (req, res) => {
   });
 });
 
-// TODO if user didn't progress yesterday
-// set userstreak as 0
-// check if valid streak, if no set to 0, if yes
-// show streak from database
-// the query is correct but returns the rows name as query, instead of "userStreak"
 app.post("/api/user_streak", authenticateToken, (req, res) => {
-  // if (req.body.username === undefined)
-  //   return res.status(400).json({ message: "No username set", type: "error" })
-  // const username = req.body.username
   const email = req.email
-  // const sql = "SELECT streak userStreak FROM users WHERE email = ?;"
   const sql = "SELECT (CASE WHEN DATEDIFF((SELECT date FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) ORDER BY date DESC LIMIT 1), CURDATE()) > 1 THEN 0 ELSE (SELECT streak userStreak FROM users WHERE email = ?) END) AS userStreak;"
   db.query(sql, [email, email], (err, data) => {
     if (err) return res.status(500).json({ message: err, type: "error" })
-    // console.log("User streak", data[0])
     return res.json({ message: data[0], type: "success" })
   });
 });
 
-// TODO get words in user progress that have due_date as today
 app.post("/api/:language&:level", authenticateToken, (req, res) => {
-  // if (req.body.username === undefined) return res.status(400)
-  // if (req.params === undefined) return res.status(400)
   const { language, level } = req.params
-  // const username = req.body.username
   const email = req.email
   const sql =
     "SELECT w.* FROM words w WHERE w.language = ? AND w.level = ? AND w.word_id NOT IN (SELECT u.word_id FROM user_progress u WHERE u.user_id = (SELECT id FROM users WHERE email = ?) AND u.due < CURDATE()) LIMIT 30;";
@@ -96,8 +82,6 @@ app.post("/api/:language&:level", authenticateToken, (req, res) => {
 });
 
 app.post("/api/learnt", authenticateToken, (req, res) => {
-  // if (req.body.username === undefined) return res.status(400)
-  // const username = req.body.username
   const email = req.email
   const sql =
     "SELECT language, level, CONVERT(MAX(date), CHAR) date FROM user_progress WHERE user_id = (SELECT id FROM users WHERE email = ?) AND due > CURDATE() GROUP BY language, level ORDER BY language, level;"
@@ -133,15 +117,6 @@ app.post("/api/save_progress", authenticateToken, (req, res) => {
   const queries = progressData.map((progressItem) => {
     const { _, word_id, language, level } = progressItem
     const iteration = 1
-    /*
-      *INSERT INTO `ALLOWANCE` (`EmployeeID`, `Year`, `Month`, `OverTime`,`Medical`,
-      *`Lunch`, `Bonus`, `Allowance`) values (10000001, 2014, 4, 10.00, 10.00,
-      * 10.45, 10.10, 40.55) ON DUPLICATE KEY UPDATE `EmployeeID` = 10000001
-    */
-    // While this query will work, i still need to have the iteration to calculate due_date
-    // unless there's a way to do it in sql?
-    // (x/2)^2+1
-    // query untested
     let sql =
       "INSERT INTO user_progress (user_id, word_id, language, level, date, iteration, due) VALUES ((SELECT id FROM users WHERE email = ?), ?, ?, ?, STR_TO_DATE(?, '%d-%m-%Y'), ?, DATE_ADD(CURDATE(), INTERVAL 1 DAY)) ON DUPLICATE KEY UPDATE iteration = iteration + 1, due = DATE_ADD(CURDATE(), INTERVAL ((iteration / 2)*(iteration)+1) DAY), date = CURDATE();";
     return new Promise((resolve, reject) => {
@@ -180,13 +155,8 @@ app.post("/api/save_progress", authenticateToken, (req, res) => {
     });
 });
 
-// Query for all last learnt words
-// only get the last date from each language/level
-// but then for streak we need all of it
 app.post("/api/date", authenticateToken, (req, res) => {
-  // if (req.body.username === undefined) return res.status(400)
   if (req.params === undefined) return res.status(400)
-  // const username = req.body.username
   const email = req.email
   const sql =
     "SELECT * FROM user_progress WHERE user_id = (SELECT id FROM users WHERE email = ?);";
@@ -211,12 +181,10 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Check if email in there already, if not add
-// validate email, username and password again
 app.post("/register", (req, res) => {
   if (req.body === undefined) return res.status(400)
-  const salt = bcrypt.genSaltSync(15) // number works, env no
-  const pass = bcrypt.hashSync(req.body.password, salt) // hash password
+  const salt = bcrypt.genSaltSync(15)
+  const pass = bcrypt.hashSync(req.body.password, salt)
   console.log(pass)
   const values = [uuidv1(), req.body.email, req.body.username, pass];
   const valid = "SELECT email FROM users WHERE email LIKE ?;";
@@ -233,19 +201,11 @@ app.post("/register", (req, res) => {
   });
 });
 
-// TODO: Clear out jwt?
 app.post("/logout", (req, res, next) => {
   return res.cookie("token", null)
 });
 
-// Check if token is same as generated
 app.post("/auth-status", authenticateToken, (req, res) => {
-  // if (req.body.token === undefined) {
-  //   console.log("Unauthorized")
-  //   return res.send({ isAuthenticated: false, type: "error" })
-  // }
-  // const token = req.body.token
-  // const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
   console.log("Authorized")
   return res.send({ isAuthenticated: true, type: "success" })
 });
@@ -261,7 +221,6 @@ function createToken(user) {
   )
 }
 
-// TODO: doesn't get the token
 function authenticateToken(req, res, next) {
   const token = req.cookies["token"];
 

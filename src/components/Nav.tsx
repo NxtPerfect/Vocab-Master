@@ -34,24 +34,6 @@ function Nav({ streak, queryUserStreak }: { streak: number, queryUserStreak: () 
     enabled: true
   })
 
-  // const { isPend, isErr, dat, err } = useQuery({
-  //   queryKey: ["streak"],
-  //   queryFn: async () => {
-  //     await queryUserStreak()
-  //   },
-  // })
-
-  // async function queryAuthStatus() {
-  //   try {
-  //     const data = await axios.get("http://localhost:6942/auth-status", { withCredentials: true })
-  //     setIsAuthenticated(data.data.isAuthenticated)
-  //   } catch (err) {
-  //     console.log(err);
-  //     throw err;
-  //   }
-  // }
-
-
 
   // this if statement should instead call the auth-status
   if (isAuthenticated) {
